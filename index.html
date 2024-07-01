@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Airsoft QR Scanner</title>
+  <script>
+    function getGeoLocation() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function(position) {
+          var latitude = position.coords.latitude;
+          var longitude = position.coords.longitude;
+          var device = navigator.userAgent;
+          
+          var scriptUrl = "https://script.google.com/macros/s/AKfycbyvolWn8qu-IqiNR08FfpreGoXutF_dqTVmFtAEOLVZe8v0OuepPCDvs0YyNITgW6IP/exec";
+          var url = `${scriptUrl}?latitude=${latitude}&longitude=${longitude}&device=${encodeURIComponent(device)}`;
+          
+          // Redirigir a la URL del script
+          window.location.href = url;
+        });
+      } else {
+        alert("Geolocation is not supported by this browser.");
+      }
+    }
+  </script>
+</head>
+<body onload="getGeoLocation()">
+  <h1>Scanning...</h1>
+</body>
+</html>
