@@ -84,10 +84,12 @@
       const parser = new UAParser();
       const result = parser.getResult();
       const device = result.device.model || result.device.vendor || "Unknown Device";
+      const os = result.os.name + " " + (result.os.version || "Unknown Version");
+      const browser = result.browser.name + " " + result.browser.version;
       return {
         device: device,
-        os: result.os.name + " " + result.os.version,
-        browser: result.browser.name + " " + result.browser.version
+        os: os,
+        browser: browser
       };
     }
 
