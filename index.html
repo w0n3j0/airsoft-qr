@@ -2,19 +2,82 @@
 <html>
 <head>
   <title>Airsoft QR Scanner</title>
+  <style>
+    body {
+      background-color: black;
+      color: green;
+      font-family: monospace;
+      overflow: hidden;
+    }
+
+    #matrix {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      white-space: pre;
+      font-size: 20px;
+      line-height: 1.2em;
+    }
+
+    @keyframes blink {
+      0% { opacity: 1; }
+      50% { opacity: 0; }
+      100% { opacity: 1; }
+    }
+
+    #blink {
+      animation: blink 1s infinite;
+    }
+  </style>
   <script>
+    const matrixCharacters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ123456789@#$%^&*()_+{}:"<>?`~';
+    let interval;
+
     function getGeoLocation() {
+      const matrixDiv = document.getElementById('matrix');
+      let columns = Math.floor(window.innerWidth / 20);
+      let matrixText = '';
+
+      for (let i = 0; i < 100; i++) {
+        let row = '';
+        for (let j = 0; j < columns; j++) {
+          row += matrixCharacters.charAt(Math.floor(Math.random() * matrixCharacters.length)) + ' ';
+        }
+        matrixText += row + '\n';
+      }
+
+      matrixDiv.textContent = matrixText;
+      
+      interval = setInterval(() => {
+        let newMatrixText = '';
+        for (let i = 0; i < 100; i++) {
+          let row = '';
+          for (let j = 0; j < columns; j++) {
+            row += matrixCharacters.charAt(Math.floor(Math.random() * matrixCharacters.length)) + ' ';
+          }
+          newMatrixText += row + '\n';
+        }
+        matrixDiv.textContent = newMatrixText;
+      }, 100);
+
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(function(position) {
-          var latitude = position.coords.latitude;
-          var longitude = position.coords.longitude;
-          var device = navigator.userAgent;
-          
-          var scriptUrl = "https://script.google.com/macros/s/AKfycbyvolWn8qu-IqiNR08FfpreGoXutF_dqTVmFtAEOLVZe8v0OuepPCDvs0YyNITgW6IP/exec";
-          var url = `${scriptUrl}?latitude=${latitude}&longitude=${longitude}&device=${encodeURIComponent(device)}`;
-          
-          // Redirigir a la URL del script
-          window.location.href = url;
+          setTimeout(() => {
+            clearInterval(interval);
+            matrixDiv.textContent = "Data recorded. Thank you!";
+            matrixDiv.style.color = "lime";
+            
+            var latitude = position.coords.latitude;
+            var longitude = position.coords.longitude;
+            var device = navigator.userAgent;
+            
+            var scriptUrl = "https://script.google.com/macros/s/AKfycbyvolWn8qu-IqiNR08FfpreGoXutF_dqTVmFtAEOLVZe8v0OuepPCDvs0YyNITgW6IP/exec";
+            var url = `${scriptUrl}?latitude=${latitude}&longitude=${longitude}&device=${encodeURIComponent(device)}`;
+            
+            // Redirigir a la URL del script
+            window.location.href = url;
+          }, 5000);
         });
       } else {
         alert("Geolocation is not supported by this browser.");
@@ -23,6 +86,6 @@
   </script>
 </head>
 <body onload="getGeoLocation()">
-  <h1>Scanning...</h1>
+  <div id="matrix"></div>
 </body>
 </html>
