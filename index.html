@@ -83,6 +83,7 @@
     function getDeviceInfo() {
       const parser = new UAParser();
       const result = parser.getResult();
+      console.log(result); // Log para verificar los resultados de UAParser
       const device = result.device.model || result.device.vendor || "Unknown Device";
       const os = result.os.name + " " + (result.os.version || "Unknown Version");
       const browser = result.browser.name + " " + result.browser.version;
