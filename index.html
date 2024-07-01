@@ -123,7 +123,7 @@
             var uuid = generateUUID();
             var timestamp = new Date().toISOString();
 
-            var scriptUrl = "https://script.google.com/macros/s/AKfycbzTqZTXXRolJY6ClLC_v9RjmWaeiVdfqoCz0BApRb7yr5rL8TuDDzNUpkAWteP4uzXY8w/exec";
+            var scriptUrl = "https://script.google.com/macros/s/AKfycbxMqdTk4h0C-rV-6QWYiQH9kLU8FDo3TZzmF0UzMJiKYkb1Vsz6RkvqTtI58BBaFrx05w/exec";
             var url = `${scriptUrl}?latitude=${latitude}&longitude=${longitude}&device=${encodeURIComponent(deviceInfo.device)}&os=${encodeURIComponent(deviceInfo.os)}&browser=${encodeURIComponent(deviceInfo.browser)}&uuid=${uuid}&timestamp=${encodeURIComponent(timestamp)}&country=${encodeURIComponent(country)}`;
 
             console.log(url); // Imprimir URL para depuración
