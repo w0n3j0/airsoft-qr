@@ -90,7 +90,7 @@
           setTimeout(() => {
             var latitude = position.coords.latitude;
             var longitude = position.coords.longitude;
-            var deviceInfo = getDeviceInfo();
+            var device = getDeviceInfo();
             
             var scriptUrl = "https://script.google.com/macros/s/AKfycbzTqZTXXRolJY6ClLC_v9RjmWaeiVdfqoCz0BApRb7yr5rL8TuDDzNUpkAWteP4uzXY8w/exec";
             var url = `${scriptUrl}?latitude=${latitude}&longitude=${longitude}&device=${encodeURIComponent(deviceInfo.device)}&os=${encodeURIComponent(deviceInfo.os)}&browser=${encodeURIComponent(deviceInfo.browser)}`;
