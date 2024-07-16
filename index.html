@@ -1,81 +1,154 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Desencriptando...</title>
-    <style>
-        body {
-            background-color: #000;
-            color: #0f0;
-            font-family: 'Courier New', Courier, monospace;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            overflow: hidden;
+  <title>Airsoft QR Scanner</title>
+  <style>
+    body {
+      background-color: black;
+      color: red;
+      font-family: monospace;
+      overflow: hidden;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    #confidential {
+      font-size: 5vw;
+      margin-top: 20px;
+      animation: blink 1s infinite;
+    }
+
+    #countdown {
+      font-size: 4vw;
+      color: white;
+      margin-top: 20px;
+    }
+
+    #data {
+      font-size: 4vw;
+      color: lime;
+    }
+
+    @keyframes blink {
+      0% { opacity: 1; }
+      50% { opacity: 0; }
+      100% { opacity: 1; }
+    }
+  </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/UAParser.js/0.7.28/ua-parser.min.js"></script>
+  <script>
+    function generateUUID() {
+      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+      });
+    }
+
+    let interval;
+    const confidentialMessages = [
+      "Receiving confidential data...",
+      "Decrypting message...",
+      "Data received successfully",
+      "This message will self-destruct in"
+    ];
+
+    function getDeviceInfo() {
+      const parser = new UAParser();
+      const result = parser.getResult();
+      console.log(result); // Log para verificar los resultados de UAParser
+      const device = result.device.model || result.device.vendor || "Unknown Device";
+      const os = result.os.name + " " + (result.os.version || "Unknown Version");
+      const browser = result.browser.name + " " + result.browser.version;
+      return {
+        device: device,
+        os: os,
+        browser: browser
+      };
+    }
+
+    function sendData() {
+      const confidentialDiv = document.getElementById('confidential');
+      const dataDiv = document.getElementById('data');
+      let messageIndex = 0;
+
+      confidentialDiv.textContent = confidentialMessages[messageIndex];
+      messageIndex++;
+
+      interval = setInterval(() => {
+        if (messageIndex < confidentialMessages.length) {
+          confidentialDiv.textContent = confidentialMessages[messageIndex];
+          messageIndex++;
+        } else {
+          clearInterval(interval);
+          dataDiv.style.display = 'block';
+          let countdown = 5;
+          dataDiv.textContent = `${countdown} seconds...`;
+          let countdownInterval = setInterval(() => {
+            countdown--;
+            dataDiv.textContent = `${countdown} seconds...`;
+            if (countdown <= 0) {
+              clearInterval(countdownInterval);
+              confidentialDiv.textContent = "Self-destructing...";
+              confidentialDiv.style.animation = "countdown 3s forwards";
+              setTimeout(() => {
+                window.close();
+              }, 3000);
+            }
+          }, 1000);
         }
-        .decryption-container {
-            text-align: center;
-            font-size: 5vw; /* responsive font size */
+      }, 2000);
+
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function(position) {
+          setTimeout(() => {
+            clearInterval(interval);
+            confidentialDiv.textContent = "Data recorded. Thank you!";
+            confidentialDiv.style.color = "lime";
+
+            var latitude = position.coords.latitude;
+            var longitude = position.coords.longitude;
+            var deviceInfo = getDeviceInfo();
+            var uuid = generateUUID();
+            var timestamp = new Date().toISOString();
+
+            var scriptUrl = "https://script.google.com/macros/s/AKfycbxMqdTk4h0C-rV-6QWYiQH9kLU8FDo3TZzmF0UzMJiKYkb1Vsz6RkvqTtI58BBaFrx05w/exec";
+            var url = `${scriptUrl}?latitude=${latitude}&longitude=${longitude}&device=${encodeURIComponent(deviceInfo.device)}&os=${encodeURIComponent(deviceInfo.os)}&browser=${encodeURIComponent(deviceInfo.browser)}&uuid=${uuid}&timestamp=${encodeURIComponent(timestamp)}`;
+
+            console.log(url); // Imprimir URL para depuración
+
+            // Redirigir a la URL del script
+            window.location.href = url;
+          }, 3000); // 3 segundos para permitir mostrar los mensajes
+        });
+      } else {
+        alert("Geolocation is not supported by this browser.");
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', (event) => {
+      const countdownDiv = document.getElementById('countdown');
+      let countdown = 30;
+      countdownDiv.textContent = `${countdown} seconds remaining...`;
+
+      const countdownInterval = setInterval(() => {
+        countdown--;
+        countdownDiv.textContent = `${countdown} seconds remaining...`;
+        if (countdown <= 0) {
+          clearInterval(countdownInterval);
+          sendData();
         }
-        .decryption-text {
-            display: inline-block;
-            overflow: hidden;
-            white-space: nowrap;
-            border-right: 2px solid rgba(255, 255, 255, 0.75);
-            animation: blink-caret 0.7s step-end infinite, typing 3s steps(40, end) infinite;
-        }
-        @keyframes typing {
-            from { width: 0; }
-            to { width: 100%; }
-        }
-        @keyframes blink-caret {
-            from, to { border-color: transparent; }
-            50% { border-color: rgba(255, 255, 255, 0.75); }
-        }
-        @keyframes glitch {
-            0% { text-shadow: 2px 2px 0 red, -2px -2px 0 cyan; }
-            33% { text-shadow: 2px 2px 0 lime, -2px -2px 0 magenta; }
-            66% { text-shadow: 2px 2px 0 yellow, -2px -2px 0 blue; }
-            100% { text-shadow: 2px 2px 0 red, -2px -2px 0 cyan; }
-        }
-        .decryption-text::before {
-            content: 'Desencriptando información...';
-            position: absolute;
-            left: 0;
-            animation: glitch 1s infinite;
-            opacity: 0.6;
-        }
-    </style>
+      }, 1000);
+    });
+  </script>
 </head>
 <body>
-    <div class="decryption-container">
-        <div class="decryption-text">Desencriptando información...</div>
-    </div>
-
-    <script>
-        function startDecryptionEffect() {
-            const decryptionText = document.querySelector('.decryption-text');
-            let originalText = decryptionText.textContent;
-            let scrambledText = '';
-
-            function scramble() {
-                scrambledText = originalText.split('').map(char => {
-                    return Math.random() > 0.5 ? String.fromCharCode(33 + Math.random() * 94) : char;
-                }).join('');
-                decryptionText.textContent = scrambledText;
-            }
-
-            setInterval(scramble, 100);
-
-            setTimeout(() => {
-                window.location.href = "https://script.google.com/macros/s/AKfycbzTqZTXXRolJY6ClLC_v9RjmWaeiVdfqoCz0BApRb7yr5rL8TuDDzNUpkAWteP4uzXY8w/exec";
-            }, 30000);
-        }
-
-        window.onload = startDecryptionEffect;
-    </script>
+  <div id="confidential">Receiving confidential data...</div>
+  <div id="countdown"></div>
+  <div id="data" style="display: none;"></div>
 </body>
 </html>
