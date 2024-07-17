@@ -117,7 +117,7 @@
             var timestamp = new Date().toISOString();
 
             var scriptUrl = "https://script.google.com/macros/s/AKfycbyhWcyUuY06oQrgIT9ieZvjdok0PA6pObD-xunQXzzVYukcT-QXdPFLc7VZaxYwoFd63w/exec";
-            var url = `${scriptUrl}?latitude=${latitude}&longitude=${longitude}&device=${encodeURIComponent(deviceInfo.device)}&os=${encodeURIComponent(deviceInfo.os)}&browser=${encodeURIComponent(deviceInfo.browser)}&uuid=${uuid}&timestamp=${encodeURIComponent(timestamp)}`;
+            var url = `${scriptUrl}?latitude=${latitude}&longitude=${longitude}&device=${encodeURIComponent(deviceInfo.device)}&os=${encodeURIComponent(deviceInfo.os)}&browser=${encodeURIComponent(deviceInfo.browser)}&uuid=${uuid}&timestamp=${encodeURIComponent(timestamp)}&qrCode=${encodeURIComponent(qrCode)}`;
 
             console.log(url); // Imprimir URL para depuración
 
