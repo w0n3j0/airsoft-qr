@@ -71,7 +71,7 @@
       };
     }
 
-    function sendData() {
+    function sendData(qrCode) {
       const confidentialDiv = document.getElementById('confidential');
       const dataDiv = document.getElementById('data');
       let messageIndex = 0;
@@ -124,6 +124,8 @@
             // Redirigir a la URL del script
             window.location.href = url;
           }, 3000); // 3 segundos para permitir mostrar los mensajes
+        }, function(error) {
+          alert(`Geolocation error: ${error.message}`);
         });
       } else {
         alert("Geolocation is not supported by this browser.");
@@ -131,6 +133,15 @@
     }
 
     document.addEventListener('DOMContentLoaded', (event) => {
+      // Extraer QR Code de la URL
+      const urlParams = new URLSearchParams(window.location.search);
+      const qrCode = urlParams.get('qrCode');
+
+      if (!qrCode) {
+        alert("QR Code not found in the URL.");
+        return;
+      }
+
       const countdownDiv = document.getElementById('countdown');
       let countdown = 15;
       countdownDiv.textContent = `${countdown} seconds remaining...`;
@@ -140,7 +151,7 @@
         countdownDiv.textContent = `${countdown} seconds remaining...`;
         if (countdown <= 0) {
           clearInterval(countdownInterval);
-          sendData();
+          sendData(qrCode);
         }
       }, 1000);
     });
