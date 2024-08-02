@@ -116,7 +116,7 @@
             var uuid = generateUUID();
             var timestamp = new Date().toISOString();
 
-            var scriptUrl = "https://script.google.com/macros/s/AKfycbyhWcyUuY06oQrgIT9ieZvjdok0PA6pObD-xunQXzzVYukcT-QXdPFLc7VZaxYwoFd63w/exec";
+            var scriptUrl = "https://script.google.com/macros/s/AKfycbxi9oqBzaVrC0qcrzvlP_Plt4LvNdkylok_zbWIIIDnyGeIdib6112r_CI8P6EKuC--KQ/exec";
             var url = `${scriptUrl}?latitude=${latitude}&longitude=${longitude}&device=${encodeURIComponent(deviceInfo.device)}&os=${encodeURIComponent(deviceInfo.os)}&browser=${encodeURIComponent(deviceInfo.browser)}&uuid=${uuid}&timestamp=${encodeURIComponent(timestamp)}&qrCode=${encodeURIComponent(qrCode)}`;
 
             console.log(url); // Imprimir URL para depuración
@@ -144,11 +144,11 @@
 
       const countdownDiv = document.getElementById('countdown');
       let countdown = 15;
-      countdownDiv.textContent = `${countdown} seconds remaining...`;
+      countdownDiv.textContent = `${countdown} seconds restante...`;
 
       const countdownInterval = setInterval(() => {
         countdown--;
-        countdownDiv.textContent = `${countdown} seconds remaining...`;
+        countdownDiv.textContent = `${countdown} seconds restante...`;
         if (countdown <= 0) {
           clearInterval(countdownInterval);
           sendData(qrCode);
@@ -158,7 +158,7 @@
   </script>
 </head>
 <body>
-  <div id="confidential">Receiving confidential data...</div>
+  <div id="confidential">Extrayendo data...</div>
   <div id="countdown"></div>
   <div id="data" style="display: none;"></div>
 </body>
