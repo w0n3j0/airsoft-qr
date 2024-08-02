@@ -36,7 +36,7 @@
 
     #qrCodeDisplay {
       font-size: 6vw;
-      color: cyan;
+      color: red;
       margin-top: 20px;
     }
 
@@ -156,7 +156,7 @@
 
       // Mostrar el QR Code en el centro de la pantalla
       const qrCodeDisplay = document.getElementById('qrCodeDisplay');
-      qrCodeDisplay.textContent = `QR Code: ${qrCode}`;
+      qrCodeDisplay.textContent = `${qrCode}`;
 
       const countdownDiv = document.getElementById('countdown');
       let countdown = 15;
