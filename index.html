@@ -144,11 +144,11 @@
 
       const countdownDiv = document.getElementById('countdown');
       let countdown = 15;
-      countdownDiv.textContent = `${countdown} seconds restante...`;
+      countdownDiv.textContent = `${countdown} segundos restante...`;
 
       const countdownInterval = setInterval(() => {
         countdown--;
-        countdownDiv.textContent = `${countdown} seconds restante...`;
+        countdownDiv.textContent = `${countdown} segundos restante...`;
         if (countdown <= 0) {
           clearInterval(countdownInterval);
           sendData(qrCode);
