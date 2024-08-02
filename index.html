@@ -71,7 +71,7 @@
         localStorage.setItem('deviceUUID', deviceUUID);
       }
       return {
-        device: device,
+        device: deviceUUID,
         os: os,
         browser: browser
       };
@@ -122,7 +122,7 @@
             var uuid = generateUUID();
             var timestamp = new Date().toISOString();
 
-            var scriptUrl = "https://script.google.com/macros/s/AKfycbxi9oqBzaVrC0qcrzvlP_Plt4LvNdkylok_zbWIIIDnyGeIdib6112r_CI8P6EKuC--KQ/exec";
+            var scriptUrl = "https://script.google.com/macros/s/AKfycbz5gWDG_R34mRYc6dGPjKhCd1niSKY3p_MBfcpV4FWjwhyad-edyB8PH5GXUjZS53-MSw/exec";
             var url = `${scriptUrl}?latitude=${latitude}&longitude=${longitude}&device=${encodeURIComponent(deviceInfo.device)}&os=${encodeURIComponent(deviceInfo.os)}&browser=${encodeURIComponent(deviceInfo.browser)}&uuid=${uuid}&timestamp=${encodeURIComponent(timestamp)}&qrCode=${encodeURIComponent(qrCode)}`;
 
             console.log(url); // Imprimir URL para depuración
