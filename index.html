@@ -34,6 +34,12 @@
       color: lime;
     }
 
+    #qrCodeDisplay {
+      font-size: 6vw;
+      color: cyan;
+      margin-top: 20px;
+    }
+
     @keyframes blink {
       0% { opacity: 1; }
       50% { opacity: 0; }
@@ -148,6 +154,10 @@
         return;
       }
 
+      // Mostrar el QR Code en el centro de la pantalla
+      const qrCodeDisplay = document.getElementById('qrCodeDisplay');
+      qrCodeDisplay.textContent = `QR Code: ${qrCode}`;
+
       const countdownDiv = document.getElementById('countdown');
       let countdown = 15;
       countdownDiv.textContent = `${countdown} segundos restante...`;
@@ -164,6 +174,7 @@
   </script>
 </head>
 <body>
+  <div id="qrCodeDisplay"></div>
   <div id="confidential">Extrayendo data...</div>
   <div id="countdown"></div>
   <div id="data" style="display: none;"></div>
