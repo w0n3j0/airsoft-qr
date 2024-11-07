@@ -20,7 +20,6 @@
     #confidential {
       font-size: 5vw;
       margin-top: 20px;
-      animation: blink 1s infinite;
     }
 
     #countdown {
@@ -39,12 +38,6 @@
       color: green;
       margin-top: 20px;
     }
-
-    @keyframes blink {
-      0% { opacity: 1; }
-      50% { opacity: 0; }
-      100% { opacity: 1; }
-    }
   </style>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/UAParser.js/0.7.28/ua-parser.min.js"></script>
   <script>
@@ -55,24 +48,21 @@
       });
     }
 
-    let interval;
     const confidentialMessages = [
-      "Extrayendo data...",
-      "Desencriptando",
-      "Data copiada correctamente",
-      "Esta terminal se desconectara en..."
+      "Estableciendo conexión segura...",
+      "Desencriptando datos...",
+      "Conexión desactivada",
+      "Enviando mensaje a la base operativa..."
     ];
 
     function getDeviceInfo() {
       const parser = new UAParser();
       const result = parser.getResult();
-      console.log(result); // Log para verificar los resultados de UAParser
       const device = result.device.model || result.device.vendor || "Unknown Device";
       const os = result.os.name + " " + (result.os.version || "Unknown Version");
       const browser = result.browser.name + " " + result.browser.version;
       let deviceUUID = localStorage.getItem('deviceUUID');
       if (!deviceUUID) {
-        // Generate a new UUID if none exists
         deviceUUID = generateUUID();
         localStorage.setItem('deviceUUID', deviceUUID);
       }
@@ -83,69 +73,63 @@
       };
     }
 
+    function decryptText(element, text, speed) {
+      let characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+      let iterations = 0;
+      const interval = setInterval(() => {
+        element.textContent = text.split('').map((letter, i) => {
+          if (i < iterations) {
+            return text[i];
+          }
+          return characters[Math.floor(Math.random() * characters.length)];
+        }).join('');
+        if (iterations >= text.length) {
+          clearInterval(interval);
+        }
+        iterations += 1;
+      }, speed);
+    }
+
     function sendData(qrCode) {
       const confidentialDiv = document.getElementById('confidential');
-      const dataDiv = document.getElementById('data');
       let messageIndex = 0;
 
-      confidentialDiv.textContent = confidentialMessages[messageIndex];
-      messageIndex++;
-
-      interval = setInterval(() => {
+      function displayNextMessage() {
         if (messageIndex < confidentialMessages.length) {
-          confidentialDiv.textContent = confidentialMessages[messageIndex];
+          decryptText(confidentialDiv, confidentialMessages[messageIndex], 50);
           messageIndex++;
+          setTimeout(displayNextMessage, 3000);
         } else {
-          clearInterval(interval);
-          dataDiv.style.display = 'block';
-          let countdown = 5;
-          dataDiv.textContent = `${countdown} segundos...`;
-          let countdownInterval = setInterval(() => {
-            countdown--;
-            dataDiv.textContent = `${countdown} segundos...`;
-            if (countdown <= 0) {
-              clearInterval(countdownInterval);
-              confidentialDiv.textContent = "desconectando...";
-              confidentialDiv.style.animation = "countdown 3s forwards";
-              setTimeout(() => {
-                window.close();
-              }, 3000);
-            }
-          }, 1000);
+          if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(function(position) {
+              confidentialDiv.textContent = "Datos enviados.";
+              confidentialDiv.style.color = "lime";
+
+              var latitude = position.coords.latitude;
+              var longitude = position.coords.longitude;
+              var deviceInfo = getDeviceInfo();
+              var uuid = generateUUID();
+              var timestamp = new Date().toISOString();
+
+              var scriptUrl = "https://script.google.com/macros/s/AKfycbwNK7i1B4W6tavYUu2WuVMB0pQZHQjcm1fRjExpX8AFM_KijfdyjyqxQQFtcT9nwTdtRg/exec";
+              var url = `${scriptUrl}?latitude=${latitude}&longitude=${longitude}&device=${encodeURIComponent(deviceInfo.device)}&os=${encodeURIComponent(deviceInfo.os)}&browser=${encodeURIComponent(deviceInfo.browser)}&uuid=${uuid}&timestamp=${encodeURIComponent(timestamp)}&qrCode=${encodeURIComponent(qrCode)}`;
+
+              console.log(url);
+
+              window.location.href = url;
+            }, function(error) {
+              alert(`Geolocation error: ${error.message}`);
+            });
+          } else {
+            alert("Geolocation is not supported by this browser.");
+          }
         }
-      }, 2000);
-
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(function(position) {
-          setTimeout(() => {
-            clearInterval(interval);
-            confidentialDiv.textContent = "Data copiada.";
-            confidentialDiv.style.color = "lime";
-
-            var latitude = position.coords.latitude;
-            var longitude = position.coords.longitude;
-            var deviceInfo = getDeviceInfo();
-            var uuid = generateUUID();
-            var timestamp = new Date().toISOString();
-
-            var scriptUrl = "https://script.google.com/macros/s/AKfycbwNK7i1B4W6tavYUu2WuVMB0pQZHQjcm1fRjExpX8AFM_KijfdyjyqxQQFtcT9nwTdtRg/exec";
-            var url = `${scriptUrl}?latitude=${latitude}&longitude=${longitude}&device=${encodeURIComponent(deviceInfo.device)}&os=${encodeURIComponent(deviceInfo.os)}&browser=${encodeURIComponent(deviceInfo.browser)}&uuid=${uuid}&timestamp=${encodeURIComponent(timestamp)}&qrCode=${encodeURIComponent(qrCode)}`;
-
-            console.log(url); // Imprimir URL para depuración
-
-            // Redirigir a la URL del script
-            window.location.href = url;
-          }, 3000); // 3 segundos para permitir mostrar los mensajes
-        }, function(error) {
-          alert(`Geolocation error: ${error.message}`);
-        });
-      } else {
-        alert("Geolocation is not supported by this browser.");
       }
+
+      displayNextMessage();
     }
 
     document.addEventListener('DOMContentLoaded', (event) => {
-      // Extraer QR Code de la URL
       const urlParams = new URLSearchParams(window.location.search);
       const qrCode = urlParams.get('qrCode');
 
@@ -154,17 +138,16 @@
         return;
       }
 
-      // Mostrar el QR Code en el centro de la pantalla
       const qrCodeDisplay = document.getElementById('qrCodeDisplay');
       qrCodeDisplay.textContent = `${qrCode}`;
 
       const countdownDiv = document.getElementById('countdown');
       let countdown = 15;
-      countdownDiv.textContent = `${countdown} segundos restante...`;
+      countdownDiv.textContent = `${countdown} segundos restantes...`;
 
       const countdownInterval = setInterval(() => {
         countdown--;
-        countdownDiv.textContent = `${countdown} segundos restante...`;
+        countdownDiv.textContent = `${countdown} segundos restantes...`;
         if (countdown <= 0) {
           clearInterval(countdownInterval);
           sendData(qrCode);
@@ -175,7 +158,7 @@
 </head>
 <body>
   <div id="qrCodeDisplay"></div>
-  <div id="confidential">Extrayendo data...</div>
+  <div id="confidential">Preparando...</div>
   <div id="countdown"></div>
   <div id="data" style="display: none;"></div>
 </body>
