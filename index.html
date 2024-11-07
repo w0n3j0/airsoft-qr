@@ -111,7 +111,7 @@
               var uuid = generateUUID();
               var timestamp = new Date().toISOString();
 
-              var scriptUrl = "https://script.google.com/macros/s/AKfycbwNK7i1B4W6tavYUu2WuVMB0pQZHQjcm1fRjExpX8AFM_KijfdyjyqxQQFtcT9nwTdtRg/exec";
+              var scriptUrl = "https://script.google.com/macros/s/AKfycbwpdunk18ShNPieRE0mb3wKpGnXF91FczYJWLMz6dpEmsFTb7wbOfnwZuDtz_NxSOLowg/exec";
               var url = `${scriptUrl}?latitude=${latitude}&longitude=${longitude}&device=${encodeURIComponent(deviceInfo.device)}&os=${encodeURIComponent(deviceInfo.os)}&browser=${encodeURIComponent(deviceInfo.browser)}&uuid=${uuid}&timestamp=${encodeURIComponent(timestamp)}&qrCode=${encodeURIComponent(qrCode)}`;
 
               console.log(url);
