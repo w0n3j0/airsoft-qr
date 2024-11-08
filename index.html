@@ -68,20 +68,22 @@
     }
 
     #confidential {
-      font-size: 3vw;
+      font-size: 24px; /* Aumentado */
       margin-top: 20px;
       white-space: pre-wrap;
+      max-width: 90%;
+      word-wrap: break-word;
     }
 
     #countdown {
-      font-size: 2vw;
+      font-size: 20px; /* Aumentado */
       color: #ffffff;
       margin-top: 20px;
       text-shadow: 0 0 5px #ffffff;
     }
 
     #qrCodeDisplay {
-      font-size: 4vw;
+      font-size: 28px; /* Aumentado */
       margin-top: 20px;
     }
 
@@ -91,10 +93,11 @@
       border-right: .15em solid #00ff00;
       white-space: nowrap;
       margin: 0 auto;
-      letter-spacing: .15em;
+      letter-spacing: .1em; /* Reducido para mejorar en móviles */
       animation:
         typing 3.5s steps(40, end),
         blink-caret .75s step-end infinite;
+      max-width: 90%; /* Para evitar desbordamiento en móviles */
     }
 
     @keyframes typing {
@@ -105,6 +108,25 @@
     @keyframes blink-caret {
       from, to { border-color: transparent }
       50% { border-color: #00ff00; }
+    }
+
+    /* Ajustes para dispositivos móviles */
+    @media (max-width: 600px) {
+      #confidential {
+        font-size: 32px; /* Aumentado para móviles */
+      }
+
+      #countdown {
+        font-size: 28px; /* Aumentado para móviles */
+      }
+
+      #qrCodeDisplay {
+        font-size: 36px; /* Aumentado para móviles */
+      }
+
+      .typing {
+        letter-spacing: .05em; /* Ajuste para móviles */
+      }
     }
 
   </style>
@@ -122,7 +144,7 @@
       "Accediendo al sistema central...",
       "Plantando dispositivo explosivo...",
       "Cuenta regresiva iniciada",
-      "¡Evacúa el área inmediatamente!"
+      "Evacúa el área inmediatamente"
     ];
 
     function getDeviceInfo() {
