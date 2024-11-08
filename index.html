@@ -6,8 +6,10 @@
     @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
 
     body {
-      background-color: black;
-      color: #00ff00;
+      background-image: url('https://getwallpapers.com/wallpaper/full/c/c/6/1374103-camouflage-desktop-wallpaper-2560x1600-hd.jpg');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
       font-family: 'Orbitron', monospace;
       overflow: hidden;
       text-align: center;
@@ -18,40 +20,23 @@
       height: 100vh;
       margin: 0;
       position: relative;
-    }
-
-    #confidential {
-      font-size: 3vw;
-      margin-top: 20px;
-      white-space: pre-wrap;
-      text-shadow: 0 0 10px #00ff00;
-    }
-
-    #countdown {
-      font-size: 2vw;
-      color: #ffffff;
-      margin-top: 20px;
-      text-shadow: 0 0 5px #ffffff;
-    }
-
-    #qrCodeDisplay {
-      font-size: 4vw;
       color: #00ff00;
-      margin-top: 20px;
-      text-shadow: 0 0 10px #00ff00;
     }
 
-    /* Animación de fondo */
-    @keyframes scan {
-      0% {
-        background-position: 0 0;
-      }
-      100% {
-        background-position: 0 100vh;
-      }
-    }
-
+    /* Superposición semitransparente */
     body::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.7); /* Ajusta la opacidad según sea necesario */
+      z-index: 1;
+    }
+
+    /* Animación de escaneo */
+    body::after {
       content: '';
       position: absolute;
       top: 0;
@@ -64,6 +49,40 @@
       );
       background-size: 100% 50px;
       animation: scan 5s linear infinite;
+      z-index: 2;
+    }
+
+    @keyframes scan {
+      0% {
+        background-position: 0 0;
+      }
+      100% {
+        background-position: 0 100vh;
+      }
+    }
+
+    #confidential, #countdown, #qrCodeDisplay {
+      position: relative;
+      z-index: 3;
+      text-shadow: 0 0 10px #00ff00, 0 0 20px #00ff00;
+    }
+
+    #confidential {
+      font-size: 3vw;
+      margin-top: 20px;
+      white-space: pre-wrap;
+    }
+
+    #countdown {
+      font-size: 2vw;
+      color: #ffffff;
+      margin-top: 20px;
+      text-shadow: 0 0 5px #ffffff;
+    }
+
+    #qrCodeDisplay {
+      font-size: 4vw;
+      margin-top: 20px;
     }
 
     /* Animación de escritura */
