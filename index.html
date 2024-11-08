@@ -3,10 +3,12 @@
 <head>
   <title>Airsoft QR Scanner</title>
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
+
     body {
       background-color: black;
-      color: red;
-      font-family: monospace;
+      color: #00ff00;
+      font-family: 'Orbitron', monospace;
       overflow: hidden;
       text-align: center;
       display: flex;
@@ -15,35 +17,84 @@
       align-items: center;
       height: 100vh;
       margin: 0;
+      position: relative;
     }
 
     #confidential {
-      font-size: 5vw;
+      font-size: 3vw;
       margin-top: 20px;
+      white-space: pre-wrap;
+      text-shadow: 0 0 10px #00ff00;
     }
 
     #countdown {
-      font-size: 4vw;
-      color: white;
+      font-size: 2vw;
+      color: #ffffff;
       margin-top: 20px;
-    }
-
-    #data {
-      font-size: 4vw;
-      color: lime;
+      text-shadow: 0 0 5px #ffffff;
     }
 
     #qrCodeDisplay {
-      font-size: 6vw;
-      color: green;
+      font-size: 4vw;
+      color: #00ff00;
       margin-top: 20px;
+      text-shadow: 0 0 10px #00ff00;
     }
+
+    /* Animación de fondo */
+    @keyframes scan {
+      0% {
+        background-position: 0 0;
+      }
+      100% {
+        background-position: 0 100vh;
+      }
+    }
+
+    body::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: linear-gradient(
+        rgba(0, 255, 0, 0.1) 1px,
+        transparent 1px
+      );
+      background-size: 100% 50px;
+      animation: scan 5s linear infinite;
+    }
+
+    /* Animación de escritura */
+    .typing {
+      overflow: hidden;
+      border-right: .15em solid #00ff00;
+      white-space: nowrap;
+      margin: 0 auto;
+      letter-spacing: .15em;
+      animation:
+        typing 3.5s steps(40, end),
+        blink-caret .75s step-end infinite;
+    }
+
+    @keyframes typing {
+      from { width: 0 }
+      to { width: 100% }
+    }
+
+    @keyframes blink-caret {
+      from, to { border-color: transparent }
+      50% { border-color: #00ff00; }
+    }
+
   </style>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/UAParser.js/0.7.28/ua-parser.min.js"></script>
   <script>
     function generateUUID() {
       return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-        var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+        var r = Math.random() * 16 | 0,
+          v = c == 'x' ? r : (r & 0x3 | 0x8);
         return v.toString(16);
       });
     }
@@ -73,36 +124,39 @@
       };
     }
 
-    function decryptText(element, text, speed) {
-      let characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-      let iterations = 0;
-      const interval = setInterval(() => {
-        element.textContent = text.split('').map((letter, i) => {
-          if (i < iterations) {
-            return text[i];
-          }
-          return characters[Math.floor(Math.random() * characters.length)];
-        }).join('');
-        if (iterations >= text.length) {
-          clearInterval(interval);
+    function typeWriter(element, text, speed, callback) {
+      let i = 0;
+      function typing() {
+        if (i < text.length) {
+          element.innerHTML += text.charAt(i);
+          i++;
+          setTimeout(typing, speed);
+        } else {
+          if (callback) callback();
         }
-        iterations += 1;
-      }, speed);
+      }
+      typing();
     }
 
     function sendData(qrCode) {
       const confidentialDiv = document.getElementById('confidential');
+      confidentialDiv.innerHTML = '';
+      confidentialDiv.classList.remove('typing');
       let messageIndex = 0;
 
       function displayNextMessage() {
         if (messageIndex < confidentialMessages.length) {
-          decryptText(confidentialDiv, confidentialMessages[messageIndex], 50);
-          messageIndex++;
-          setTimeout(displayNextMessage, 3000);
+          confidentialDiv.innerHTML = '';
+          confidentialDiv.classList.add('typing');
+          typeWriter(confidentialDiv, confidentialMessages[messageIndex], 50, () => {
+            confidentialDiv.classList.remove('typing');
+            messageIndex++;
+            setTimeout(displayNextMessage, 1000);
+          });
         } else {
           if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(function(position) {
-              confidentialDiv.textContent = "Datos enviados.";
+              confidentialDiv.innerHTML = "Datos enviados.";
               confidentialDiv.style.color = "lime";
 
               var latitude = position.coords.latitude;
@@ -116,7 +170,10 @@
 
               console.log(url);
 
-              window.location.href = url;
+              setTimeout(() => {
+                window.location.href = url;
+              }, 2000);
+
             }, function(error) {
               alert(`Geolocation error: ${error.message}`);
             });
@@ -139,15 +196,15 @@
       }
 
       const qrCodeDisplay = document.getElementById('qrCodeDisplay');
-      qrCodeDisplay.textContent = `${qrCode}`;
+      qrCodeDisplay.textContent = `Código: ${qrCode}`;
 
       const countdownDiv = document.getElementById('countdown');
-      let countdown = 15;
-      countdownDiv.textContent = `${countdown} segundos restantes...`;
+      let countdown = 5;
+      countdownDiv.textContent = `Escaneando en ${countdown} segundos...`;
 
       const countdownInterval = setInterval(() => {
         countdown--;
-        countdownDiv.textContent = `${countdown} segundos restantes...`;
+        countdownDiv.textContent = `Escaneando en ${countdown} segundos...`;
         if (countdown <= 0) {
           clearInterval(countdownInterval);
           sendData(qrCode);
@@ -160,6 +217,5 @@
   <div id="qrCodeDisplay"></div>
   <div id="confidential">Preparando...</div>
   <div id="countdown"></div>
-  <div id="data" style="display: none;"></div>
 </body>
 </html>
