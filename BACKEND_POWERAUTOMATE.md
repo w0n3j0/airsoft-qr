@@ -211,11 +211,23 @@ Rechazar   \       |
 2. **Nombre de lista:** Selecciona "Capturas Airsoft"
 3. **Filtrar consulta (Filter Query):** Click en "Mostrar opciones avanzadas" y pega:
    ```
+   field_2 eq '@{variables('varDeviceID')}' and field_1 eq '@{variables('varEquipoCapitalizado')}'
+   ```
+   **⚠️ IMPORTANTE:** Usa `field_2` y `field_1` en lugar de `DeviceID` y `Equipo` porque SharePoint usa nombres internos.
+   
+   **Si prefieres usar los nombres de display (puede fallar):**
+   ```
    DeviceID eq '@{variables('varDeviceID')}' and Equipo eq '@{variables('varEquipoCapitalizado')}'
    ```
    **¿Qué hace?** Busca si este celular ya capturó antes para este equipo
    
-4. **Ordenar por (Order By):** Escribe `Timestamp desc`
+4. **Ordenar por (Order By):** Escribe `field_3 desc` 
+   **⚠️ IMPORTANTE:** Usa `field_3` en lugar de `Timestamp` porque SharePoint usa nombres internos.
+   
+   **Si prefieres usar el nombre de display (puede fallar):**
+   ```
+   Timestamp desc
+   ```
    **¿Qué hace?** Ordena de más reciente a más antigua
    
 5. **Máximo superior (Top Count):** Escribe `1`
@@ -252,12 +264,50 @@ Necesitamos verificar si pasaron los 30 minutos.
 
 **Nombre:** `UltimaCaptura`
 
-**Entradas:**
+**⚠️ PROBLEMA COMÚN: Esta expresión puede fallar si el nombre de columna es diferente.**
+
+**Entradas (OPCIÓN 1 - Estándar):**
 ```
 first(body('Obtener_elementos')?['value'])?['Timestamp']
 ```
 
-Esto obtiene la fecha/hora de la última captura de este dispositivo.
+**⚠️ PROBLEMA ENCONTRADO: SharePoint usa nombres internos como `field_3` en lugar de `Timestamp`**
+
+**Entradas (OPCIÓN CORREGIDA - Usar el nombre interno):**
+```
+first(body('Obtener_elementos')?['value'])?['field_3']
+```
+
+**🔍 EXPLICACIÓN DEL PROBLEMA:**
+SharePoint asigna nombres internos automáticamente a las columnas personalizadas:
+- `field_1` = Columna "Equipo" 
+- `field_2` = Columna "DeviceID"
+- `field_3` = Columna "Timestamp" ← **Esta es la que necesitas**
+- `field_4` = Columna "UserAgent"
+- etc.
+
+**Entradas (OPCIÓN 2 - Más robusta con múltiples nombres):**
+```
+coalesce(
+  first(body('Obtener_elementos')?['value'])?['field_3'],
+  first(body('Obtener_elementos')?['value'])?['Timestamp'],
+  first(body('Obtener_elementos')?['value'])?['Created'],
+  first(body('Obtener_elementos')?['value'])?['Modified']
+)
+```
+
+**Entradas (OPCIÓN 3 - Para debugging):**
+```
+first(body('Obtener_elementos')?['value'])
+```
+
+**🔍 DEBUGGING: Primero usa la OPCIÓN 3** para ver la estructura completa del elemento devuelto. Esto te mostrará todos los campos disponibles y sus nombres exactos.
+
+**Nombres posibles de la columna de fecha en SharePoint:**
+- `Timestamp` (si así la nombraste)
+- `Created` (fecha de creación automática)
+- `Modified` (fecha de modificación automática)
+- `Timestamp0` (si SharePoint renombró la columna)
 
 #### Acción 3.2: Compose - Calcular Minutos Transcurridos
 
@@ -267,10 +317,23 @@ Esto obtiene la fecha/hora de la última captura de este dispositivo.
 
 **Entradas:**
 ```
-div(sub(ticks(utcNow()), ticks(outputs('UltimaCaptura'))), 600000000)
+if(
+  equals(outputs('UltimaCaptura'), null),
+  999999,
+  div(sub(ticks(utcNow()), ticks(outputs('UltimaCaptura'))), 600000000)
+)
 ```
 
-**Explicación:** Esto calcula cuántos minutos pasaron desde la última captura hasta ahora.
+**Explicación:** 
+- Primero verifica si `UltimaCaptura` es `null` (no debería pasar en esta rama, pero por seguridad)
+- Si es `null`, devuelve un número muy alto (999999 minutos) para que siempre pase el cooldown
+- Si no es `null`, calcula los minutos transcurridos desde la última captura
+
+**🔧 Alternativa más robusta (recomendada):**
+```
+div(sub(ticks(utcNow()), ticks(coalesce(outputs('UltimaCaptura'), '1900-01-01T00:00:00.000Z'))), 600000000)
+```
+Esta versión usa `coalesce()` para proporcionar una fecha muy antigua si `UltimaCaptura` es `null`.
 
 #### Acción 3.3: Condición - ¿Cooldown todavía activo?
 
@@ -340,6 +403,8 @@ Es la primera vez que este dispositivo captura. **No agregues nada aquí**, el F
   - **Longitud:** `@{variables('varLongitud')}`
   - **Precision:** `@{variables('varPrecision')}`
   - **Estado:** `Activa`
+
+**📝 NOTA IMPORTANTE:** En la acción "Create item", Power Automate **SÍ** te muestra los nombres de columnas correctos (Equipo, DeviceID, etc.) en lugar de los nombres internos (field_1, field_2). Solo en "Get items" usa los nombres internos.
 
 #### Acción 5: Respuesta Exitosa
 
@@ -733,6 +798,160 @@ En Power Automate, después de crear el elemento:
 - Verifica la consulta de filtro en "Get items"
 - Comprueba que el campo Timestamp esté en formato ISO
 - Revisa la expresión de cálculo de minutos
+
+### ❌ Error: "UltimaCaptura viene vacío" y "The template language function 'ticks' expects a string timestamp. The provided value is null"
+
+**Problema:** La acción `UltimaCaptura` devuelve `null` cuando intenta obtener el timestamp de SharePoint.
+
+**Causas más comunes:**
+1. **Nombre de columna incorrecto:** El campo `Timestamp` no existe o tiene otro nombre
+2. **Campo vacío:** El elemento existe pero el campo fecha está vacío
+3. **Estructura JSON diferente:** SharePoint devuelve la fecha con otro formato
+4. **Consulta no devuelve resultados:** `Obtener_elementos` está vacío
+
+**🔍 PASO 1: DEBUGGING OBLIGATORIO**
+
+Antes que nada, **modifica temporalmente** la acción `UltimaCaptura` para usar:
+```
+first(body('Obtener_elementos')?['value'])
+```
+
+Esto te mostrará **toda la estructura** del elemento devuelto. Ejecuta el Flow y verás algo como:
+```json
+{
+  "ID": 1,
+  "Title": "abc-123",
+  "Equipo": "India",
+  "DeviceID": "test-device",
+  "Timestamp": "2025-10-06T15:30:00Z",
+  "Created": "2025-10-06T15:30:15Z",
+  "Modified": "2025-10-06T15:30:15Z",
+  "AuthorId": 10
+}
+```
+
+**🔍 PASO 2: IDENTIFICAR EL CAMPO CORRECTO**
+
+Busca en la respuesta del paso anterior cuál es el **nombre exacto** del campo de fecha:
+- ¿Aparece `"Timestamp"`? → Usa `['Timestamp']`
+- ¿Aparece `"Created"`? → Usa `['Created']`
+- ¿Aparece `"Timestamp0"`? → Usa `['Timestamp0']`
+- ¿No aparece ningún timestamp? → El elemento no tiene fecha
+
+**🔧 SOLUCIONES POR ORDEN DE PREFERENCIA:**
+
+**Solución A: Usar el nombre correcto encontrado**
+Si encontraste que el campo se llama `Created` en lugar de `Timestamp`:
+```
+first(body('Obtener_elementos')?['value'])?['Created']
+```
+
+**Solución B: Fórmula robusta con múltiples opciones**
+```
+coalesce(
+  first(body('Obtener_elementos')?['value'])?['Timestamp'],
+  first(body('Obtener_elementos')?['value'])?['Created'],
+  first(body('Obtener_elementos')?['value'])?['Modified']
+)
+```
+
+**Solución C: Verificar que existan elementos**
+Si `Obtener_elementos` está devolviendo lista vacía, agrega esta condición antes:
+```
+if(
+  greater(length(body('Obtener_elementos')?['value']), 0),
+  first(body('Obtener_elementos')?['value'])?['Timestamp'],
+  null
+)
+```
+
+**🔧 SOLUCIÓN DEFINITIVA PARA MinutosTranscurridos:**
+
+Una vez identificado el problema en `UltimaCaptura`, actualiza `MinutosTranscurridos`:
+```
+if(
+  or(
+    equals(outputs('UltimaCaptura'), null),
+    equals(outputs('UltimaCaptura'), '')
+  ),
+  999999,
+  div(sub(ticks(utcNow()), ticks(outputs('UltimaCaptura'))), 600000000)
+)
+```
+
+### 🔍 **TABLA DE MAPEO DE CAMPOS SHAREPOINT**
+
+**PROBLEMA IDENTIFICADO:** SharePoint usa nombres internos en las consultas. Aquí está el mapeo correcto:
+
+| Nombre de Columna | Nombre Interno SharePoint | Usar en Consultas | Usar en Create Item |
+|-------------------|---------------------------|-------------------|-------------------|
+| **Equipo** | `field_1` | ✅ `field_1` | ✅ `Equipo` |
+| **DeviceID** | `field_2` | ✅ `field_2` | ✅ `DeviceID` |
+| **Timestamp** | `field_3` | ✅ `field_3` | ✅ `Timestamp` |
+| **UserAgent** | `field_4` | ✅ `field_4` | ✅ `UserAgent` |
+| **Latitud** | `field_5` | ✅ `field_5` | ✅ `Latitud` |
+| **Longitud** | `field_6` | ✅ `field_6` | ✅ `Longitud` |
+| **Precision** | `field_7` | ✅ `field_7` | ✅ `Precision` |
+| **Estado** | `field_10` | ✅ `field_10` | ✅ `Estado` |
+
+**📋 RESUMEN DE CAMBIOS NECESARIOS:**
+
+1. **En UltimaCaptura:** Usar `['field_3']` en lugar de `['Timestamp']`
+2. **En Filter Query:** Usar `field_2 eq '...' and field_1 eq '...'`
+3. **En Order By:** Usar `field_3 desc`
+4. **En Create Item:** Mantener los nombres normales (Equipo, DeviceID, etc.)
+
+**� VERIFICACIÓN ADICIONAL:**
+
+Si el problema persiste, verifica también:
+1. **Permisos:** ¿Puede Power Automate leer la lista de SharePoint?
+2. **Datos de prueba:** ¿Existe al menos un elemento en SharePoint para ese dispositivo?
+3. **Filtro correcto:** ¿La consulta `DeviceID eq '@{variables('varDeviceID')}'` está funcionando?
+
+**⚡ QUICK FIX TEMPORAL:**
+
+Si necesitas que funcione YA mientras debuggeas, usa esto en `MinutosTranscurridos`:
+```
+999999
+```
+Esto hará que siempre permita la captura (cooldown siempre expirado).
+
+### ❌ Error: "Consulta de SharePoint no devuelve elementos"
+
+**Problema:** `Obtener_elementos` devuelve lista vacía aunque deberían existir capturas previas.
+
+**Debugging paso a paso:**
+
+1. **Verifica la consulta manualmente en SharePoint:**
+   - Ve a tu lista "Capturas Airsoft"
+   - Busca elementos que tengan el mismo `DeviceID` y `Equipo`
+   - ¿Existen? Si no, el dispositivo nunca capturó antes
+
+2. **Verifica nombres exactos de columnas:**
+   - En SharePoint: Configuración → Configuración de lista → Columnas
+   - Asegúrate que las columnas se llamen **exactamente** `DeviceID` y `Equipo`
+   - Si tienen nombres diferentes, actualiza la consulta
+
+3. **Testa la consulta desde Power Automate:**
+   - Agrega una acción `Compose` temporal después de `Obtener_elementos`:
+   ```
+   {
+     "TotalElementos": "@{length(body('Obtener_elementos')?['value'])}",
+     "DeviceIDBuscado": "@{variables('varDeviceID')}",
+     "EquipoBuscado": "@{variables('varEquipoCapitalizado')}",
+     "TodosLosElementos": "@{body('Obtener_elementos')?['value']}"
+   }
+   ```
+
+4. **Problema común: Filtro con caracteres especiales**
+   Si el `DeviceID` tiene caracteres especiales, escápalos:
+   ```
+   DeviceID eq '@{replace(variables('varDeviceID'), "'", "''")}'
+   ```
+  "TotalElementos": "@{length(body('Obtener_elementos')?['value'])}"
+}
+```
+Ejecuta el Flow y revisa qué devuelve esta acción para identificar el problema.
 
 ### Error CORS en el navegador
 
