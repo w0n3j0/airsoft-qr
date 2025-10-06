@@ -117,15 +117,18 @@ function showGPSAnimation(team) {
     
     gpsScreen.classList.remove('hidden');
     
-    // Mostrar coordenadas del evento desde el inicio
-    coordsDisplay.textContent = `${EVENT_LOCATION.lat.toFixed(6)}, ${EVENT_LOCATION.lng.toFixed(6)}`;
+    // Mostrar coordenadas del evento desde el inicio de forma responsive
+    const coords = `${EVENT_LOCATION.lat.toFixed(6)}, ${EVENT_LOCATION.lng.toFixed(6)}`;
+    coordsDisplay.textContent = coords;
     
     // Iniciar canvas de mapa con ubicación del evento
     initMapCanvas();
     
     // Obtener ubicación GPS del usuario para validación
     if ('geolocation' in navigator) {
-        statusText.textContent = 'Localizando jugador...';
+        // Mensaje más corto para pantallas pequeñas
+        const isMobile = window.innerWidth <= 600;
+        statusText.textContent = isMobile ? 'Localizando...' : 'Localizando jugador...';
         
         navigator.geolocation.getCurrentPosition(
             (position) => {
@@ -141,7 +144,12 @@ function showGPSAnimation(team) {
                     EVENT_LOCATION.lat, EVENT_LOCATION.lng
                 );
                 
-                statusText.textContent = `Distancia: ${Math.round(distance)}m | ±${Math.round(userLocation.accuracy)}m`;
+                // Mensaje adaptado al tamaño de pantalla
+                if (isMobile) {
+                    statusText.textContent = `${Math.round(distance)}m | ±${Math.round(userLocation.accuracy)}m`;
+                } else {
+                    statusText.textContent = `Distancia: ${Math.round(distance)}m | Precisión: ±${Math.round(userLocation.accuracy)}m`;
+                }
                 
                 // Animar zoom del mapa hacia el evento
                 setTimeout(() => {
@@ -157,7 +165,8 @@ function showGPSAnimation(team) {
             },
             (error) => {
                 console.warn('Error GPS:', error);
-                statusText.textContent = 'Posición del jugador desconocida';
+                const errorMsg = isMobile ? 'Posición desconocida' : 'Posición del jugador desconocida';
+                statusText.textContent = errorMsg;
                 
                 // Continuar con animación del evento
                 setTimeout(() => {
@@ -193,12 +202,30 @@ function initMapCanvas() {
     const canvas = document.getElementById('mapCanvas');
     const ctx = canvas.getContext('2d');
     
-    // Ajustar tamaño al dispositivo
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+    // Ajustar tamaño al dispositivo con high DPI support
+    const dpr = window.devicePixelRatio || 1;
+    const rect = canvas.getBoundingClientRect();
+    
+    canvas.width = rect.width * dpr;
+    canvas.height = rect.height * dpr;
+    canvas.style.width = rect.width + 'px';
+    canvas.style.height = rect.height + 'px';
+    
+    ctx.scale(dpr, dpr);
     
     // Cargar mapa real de fondo desde OpenStreetMap
-    loadMapBackground(ctx, canvas.width, canvas.height);
+    loadMapBackground(ctx, rect.width, rect.height);
+    
+    // Reajustar canvas al cambiar orientación
+    window.addEventListener('resize', debounce(() => {
+        const newRect = canvas.getBoundingClientRect();
+        canvas.width = newRect.width * dpr;
+        canvas.height = newRect.height * dpr;
+        canvas.style.width = newRect.width + 'px';
+        canvas.style.height = newRect.height + 'px';
+        ctx.scale(dpr, dpr);
+        loadMapBackground(ctx, newRect.width, newRect.height);
+    }, 100));
 }
 
 // Cargar mapa real de OpenStreetMap como fondo
@@ -535,6 +562,48 @@ function setupMiniGame() {
     
     renderPins();
     updateMatchCount();
+    
+    // Agregar listener para redimensionamiento
+    window.addEventListener('resize', debounce(redrawConnections, 100));
+    window.addEventListener('orientationchange', () => {
+        setTimeout(redrawConnections, 200);
+    });
+}
+
+// Función para redibujar las conexiones al cambiar tamaño de pantalla
+function redrawConnections() {
+    const svg = document.getElementById('connections');
+    if (!svg) return;
+    
+    // Limpiar conexiones existentes
+    svg.innerHTML = '';
+    connections.length = 0;
+    
+    // Redibujar conexiones para pins conectados
+    const connectedPins = document.querySelectorAll('.pin.connected');
+    const leftPins = Array.from(connectedPins).filter(pin => pin.dataset.side === 'left');
+    
+    leftPins.forEach(leftPin => {
+        const rightPin = Array.from(connectedPins).find(pin => 
+            pin.dataset.side === 'right' && pin.dataset.id === leftPin.dataset.id
+        );
+        if (rightPin) {
+            drawConnection(leftPin, rightPin);
+        }
+    });
+}
+
+// Función debounce para optimizar el redimensionamiento
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
 }
 
 function renderPins() {
@@ -642,28 +711,47 @@ function drawConnection(leftPin, rightPin) {
     const svg = document.getElementById('connections');
     const gameContainer = document.querySelector('.wires-game');
     
+    // Obtener las posiciones de los pins
     const leftRect = leftPin.getBoundingClientRect();
     const rightRect = rightPin.getBoundingClientRect();
     const containerRect = gameContainer.getBoundingClientRect();
     
-    // Coordenadas relativas al contenedor SVG
-    const x1 = leftRect.left + leftRect.width / 2 - containerRect.left - 80;
+    // Calcular coordenadas relativas al contenedor del juego
+    const x1 = leftRect.left + leftRect.width / 2 - containerRect.left;
     const y1 = leftRect.top + leftRect.height / 2 - containerRect.top;
-    const x2 = rightRect.left + rightRect.width / 2 - containerRect.left - 80;
+    const x2 = rightRect.left + rightRect.width / 2 - containerRect.left;
     const y2 = rightRect.top + rightRect.height / 2 - containerRect.top;
     
+    // Crear la línea de conexión
     const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
     line.setAttribute('x1', x1);
     line.setAttribute('y1', y1);
     line.setAttribute('x2', x2);
     line.setAttribute('y2', y2);
-    line.setAttribute('stroke', leftPin.dataset.color === 'red' ? '#FF4444' : 
-                                 leftPin.dataset.color === 'green' ? '#00FF88' : '#4488FF');
-    line.setAttribute('stroke-width', '3');
+    
+    // Asignar color basado en el pin
+    const color = leftPin.dataset.color === 'red' ? '#FF4444' : 
+                  leftPin.dataset.color === 'green' ? '#00FF88' : '#4488FF';
+    line.setAttribute('stroke', color);
+    line.setAttribute('stroke-width', '4');
     line.setAttribute('stroke-linecap', 'round');
+    line.setAttribute('opacity', '0');
+    
+    // Añadir efecto de glow
+    line.style.filter = `drop-shadow(0 0 6px ${color})`;
     
     svg.appendChild(line);
     connections.push(line);
+    
+    // Animar la aparición de la línea
+    line.animate([
+        { opacity: 0, strokeDasharray: `0 ${Math.sqrt((x2-x1)**2 + (y2-y1)**2)}` },
+        { opacity: 1, strokeDasharray: `${Math.sqrt((x2-x1)**2 + (y2-y1)**2)} 0` }
+    ], {
+        duration: 400,
+        easing: 'cubic-bezier(0.4, 0, 0.2, 1)',
+        fill: 'forwards'
+    });
 }
 
 function updateMatchCount() {

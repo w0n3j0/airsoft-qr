@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test de Captura - Power Automate</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #1a1a1a;
+            color: #fff;
+        }
+        .test-section {
+            background: #2a2a2a;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            border-left: 4px solid #4CAF50;
+        }
+        button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 4px;
+            margin: 5px;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        .error {
+            border-left-color: #f44336;
+        }
+        .warning {
+            border-left-color: #ff9800;
+        }
+        #output {
+            background: #000;
+            padding: 15px;
+            border-radius: 4px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .success { color: #4CAF50; }
+        .error-text { color: #f44336; }
+        .warning-text { color: #ff9800; }
+        .info { color: #2196F3; }
+    </style>
+</head>
+<body>
+    <h1>🧪 Test de Captura - Power Automate</h1>
+    
+    <div class="test-section">
+        <h3>📍 Configuración Actual</h3>
+        <p><strong>URL Endpoint:</strong> <span id="currentUrl">Cargando...</span></p>
+        <p><strong>Device ID:</strong> <span id="deviceId">Generando...</span></p>
+        <p><strong>Timestamp:</strong> <span id="timestamp">--</span></p>
+    </div>
+
+    <div class="test-section">
+        <h3>🎯 Tests de Captura</h3>
+        <button onclick="testIndiaCapture()">🇮🇳 Test Captura India</button>
+        <button onclick="testPakistanCapture()">🇵🇰 Test Captura Pakistan</button>
+        <button onclick="testWithGPS()">📍 Test con GPS Simulado</button>
+        <button onclick="testCooldownScenario()">⏰ Test Escenario Cooldown</button>
+        <button onclick="clearOutput()">🧹 Limpiar Output</button>
+    </div>
+
+    <div class="test-section">
+        <h3>📊 Output de Respuestas</h3>
+        <div id="output">Listo para testear...\n</div>
+    </div>
+
+    <div class="test-section warning">
+        <h3>⚠️ Notas Importantes</h3>
+        <ul>
+            <li>Este test envía datos reales al Flow de Power Automate</li>
+            <li>Los datos aparecerán en tu lista de SharePoint</li>
+            <li>El cooldown de 30 minutos se aplicará después del primer test exitoso</li>
+            <li>Usa un Device ID diferente para cada test si quieres evitar cooldown</li>
+        </ul>
+    </div>
+
+    <script>
+        let CONFIG = null;
+        let deviceId = generateUUID();
+        
+        // Generar UUID para Device ID
+        function generateUUID() {
+            return 'test-' + 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+                const r = Math.random() * 16 | 0;
+                const v = c === 'x' ? r : (r & 0x3 | 0x8);
+                return v.toString(16);
+            });
+        }
+
+        // Cargar configuración
+        async function loadConfig() {
+            try {
+                const response = await fetch('config.json');
+                if (response.ok) {
+                    CONFIG = await response.json();
+                    document.getElementById('currentUrl').textContent = CONFIG.apiUrl;
+                    log('✅ Config cargada correctamente', 'success');
+                } else {
+                    throw new Error('No se pudo cargar config.json');
+                }
+            } catch (error) {
+                log('❌ Error cargando config: ' + error.message, 'error-text');
+                document.getElementById('currentUrl').textContent = 'ERROR: No se pudo cargar';
+            }
+        }
+
+        // Logging con colores
+        function log(message, type = '') {
+            const output = document.getElementById('output');
+            const timestamp = new Date().toLocaleTimeString();
+            const line = `[${timestamp}] ${message}\n`;
+            
+            if (type) {
+                output.innerHTML += `<span class="${type}">${line}</span>`;
+            } else {
+                output.textContent += line;
+            }
+            
+            output.scrollTop = output.scrollHeight;
+        }
+
+        // Actualizar timestamp cada segundo
+        function updateTimestamp() {
+            document.getElementById('timestamp').textContent = new Date().toISOString();
+        }
+
+        // Test básico India
+        async function testIndiaCapture() {
+            await sendTestCapture('india', 'Test básico equipo India');
+        }
+
+        // Test básico Pakistan  
+        async function testPakistanCapture() {
+            await sendTestCapture('pakistan', 'Test básico equipo Pakistan');
+        }
+
+        // Test con GPS simulado
+        async function testWithGPS() {
+            const location = {
+                lat: -32.8311426,
+                lng: -60.7055789,
+                accuracy: 10
+            };
+            await sendTestCapture('india', 'Test con GPS simulado', location);
+        }
+
+        // Test escenario cooldown (mismo device, mismo team)
+        async function testCooldownScenario() {
+            log('🔄 Enviando primera captura...', 'info');
+            await sendTestCapture('india', 'Primera captura (debería funcionar)');
+            
+            setTimeout(async () => {
+                log('🔄 Enviando segunda captura (mismo device/team)...', 'info');
+                await sendTestCapture('india', 'Segunda captura (debería activar cooldown)');
+            }, 2000);
+        }
+
+        // Función principal de envío
+        async function sendTestCapture(team, description, location = null) {
+            if (!CONFIG) {
+                log('❌ Config no cargada, no se puede enviar', 'error-text');
+                return;
+            }
+
+            const payload = {
+                team: team,
+                ts: new Date().toISOString(),
+                deviceId: deviceId,
+                userAgent: `TestScript/1.0 (${navigator.userAgent})`,
+                location: location
+            };
+
+            log(`📤 Enviando: ${description}`, 'info');
+            log(`📦 Payload: ${JSON.stringify(payload, null, 2)}`, '');
+
+            try {
+                const response = await fetch(CONFIG.apiUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                const responseText = await response.text();
+                let responseData;
+                
+                try {
+                    responseData = JSON.parse(responseText);
+                } catch {
+                    responseData = responseText;
+                }
+
+                if (response.ok) {
+                    log(`✅ SUCCESS (${response.status}): ${JSON.stringify(responseData, null, 2)}`, 'success');
+                } else {
+                    log(`⚠️ HTTP ${response.status}: ${JSON.stringify(responseData, null, 2)}`, 'warning-text');
+                }
+
+            } catch (error) {
+                log(`❌ ERROR: ${error.message}`, 'error-text');
+            }
+
+            log('─'.repeat(50), '');
+        }
+
+        // Limpiar output
+        function clearOutput() {
+            document.getElementById('output').textContent = 'Output limpio...\n';
+        }
+
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('deviceId').textContent = deviceId;
+            updateTimestamp();
+            setInterval(updateTimestamp, 1000);
+            loadConfig();
+        });
+    </script>
+</body>
+</html>
