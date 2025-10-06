@@ -1,0 +1,827 @@
+/* ============================================
+   RESET Y BASE
+   ============================================ */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    /* Colores India */
+    --india-primary: #1BBE84;
+    --india-accent: #E8C547;
+    --india-glow: rgba(27, 190, 132, 0.6);
+    
+    /* Colores Pakistán */
+    --pakistan-primary: #0B7A4B;
+    --pakistan-accent: #C2B280;
+    --pakistan-glow: rgba(11, 122, 75, 0.6);
+    
+    /* Colores comunes */
+    --bg-dark: #0B0F12;
+    --bg-panel: #131A20;
+    --text-primary: #E0E4E8;
+    --text-secondary: #8A9199;
+    --border-color: rgba(255, 255, 255, 0.1);
+    --error-color: #FF4444;
+    --success-color: #00FF88;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', sans-serif;
+    background: var(--bg-dark);
+    color: var(--text-primary);
+    min-height: 100vh;
+    min-height: -webkit-fill-available;
+    overflow-x: hidden;
+    position: relative;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    touch-action: pan-y;
+    overscroll-behavior: none;
+}
+
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        repeating-linear-gradient(
+            0deg,
+            rgba(255, 255, 255, 0.03) 0px,
+            transparent 1px,
+            transparent 2px,
+            rgba(255, 255, 255, 0.03) 3px
+        );
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0.08;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* ============================================
+   SELECTOR DE BANDO
+   ============================================ */
+.selector {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background: var(--bg-dark);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+}
+
+.selector-container {
+    text-align: center;
+    padding: 2rem;
+    max-width: 600px;
+    width: 100%;
+}
+
+.selector h1 {
+    font-size: clamp(2rem, 8vw, 3.5rem);
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    margin-bottom: 0.5rem;
+    color: var(--text-primary);
+    text-transform: uppercase;
+}
+
+.selector-subtitle {
+    font-size: 1.1rem;
+    color: var(--text-secondary);
+    margin-bottom: 3rem;
+    letter-spacing: 0.05em;
+}
+
+.team-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.team-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    padding: 1.5rem 2rem;
+    background: var(--bg-panel);
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    color: var(--text-primary);
+    font-size: 1.3rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.team-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+    transition: left 0.5s;
+}
+
+.team-btn:hover::before {
+    left: 100%;
+}
+
+.team-btn.india {
+    border-color: var(--india-primary);
+}
+
+.team-btn.india:hover {
+    background: rgba(27, 190, 132, 0.1);
+    border-color: var(--india-accent);
+    box-shadow: 0 0 20px var(--india-glow);
+}
+
+.team-btn.pakistan {
+    border-color: var(--pakistan-primary);
+}
+
+.team-btn.pakistan:hover {
+    background: rgba(11, 122, 75, 0.1);
+    border-color: var(--pakistan-accent);
+    box-shadow: 0 0 20px var(--pakistan-glow);
+}
+
+.flag-icon {
+    width: 60px;
+    height: 40px;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+}
+
+/* ============================================
+   ANIMACIÓN GPS Y MAPA
+   ============================================ */
+.gps-animation {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background: var(--bg-dark);
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.map-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+#mapCanvas {
+    width: 100%;
+    height: 100%;
+    background: #0a1e2a;
+    image-rendering: pixelated;
+}
+
+.map-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 10;
+}
+
+.crosshair {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 60px;
+    height: 60px;
+    border: 3px solid var(--theme-primary, #1BBE84);
+    border-radius: 50%;
+    box-shadow: 0 0 20px var(--theme-glow, rgba(27, 190, 132, 0.6)),
+                inset 0 0 20px var(--theme-glow, rgba(27, 190, 132, 0.3));
+    animation: crosshairPulse 2s ease-in-out infinite;
+}
+
+.crosshair::before,
+.crosshair::after {
+    content: '';
+    position: absolute;
+    background: var(--theme-primary, #1BBE84);
+    box-shadow: 0 0 10px var(--theme-glow, rgba(27, 190, 132, 0.8));
+}
+
+.crosshair::before {
+    top: 50%;
+    left: -20px;
+    right: -20px;
+    height: 2px;
+    transform: translateY(-50%);
+}
+
+.crosshair::after {
+    left: 50%;
+    top: -20px;
+    bottom: -20px;
+    width: 2px;
+    transform: translateX(-50%);
+}
+
+@keyframes crosshairPulse {
+    0%, 100% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: translate(-50%, -50%) scale(1.1);
+        opacity: 0.8;
+    }
+}
+
+.gps-info {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 2rem;
+    background: linear-gradient(to top, rgba(11, 15, 18, 0.95), transparent);
+    text-align: center;
+    z-index: 20;
+}
+
+.scanning-text {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--theme-primary, #1BBE84);
+    letter-spacing: 0.15em;
+    margin-bottom: 1rem;
+    text-shadow: 0 0 10px var(--theme-glow, rgba(27, 190, 132, 0.6));
+    animation: scanningBlink 1.5s ease-in-out infinite;
+}
+
+@keyframes scanningBlink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+.coordinates {
+    font-family: 'Courier New', monospace;
+    font-size: 1.5rem;
+    color: var(--theme-accent, #E8C547);
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    text-shadow: 0 0 8px rgba(232, 197, 71, 0.5);
+}
+
+.status-text {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    letter-spacing: 0.05em;
+}
+
+/* Animación de zoom del mapa */
+.map-zooming #mapCanvas {
+    animation: mapZoom 3s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+@keyframes mapZoom {
+    0% {
+        transform: scale(0.1);
+        opacity: 0.5;
+    }
+    50% {
+        opacity: 1;
+    }
+    100% {
+        transform: scale(20);
+        opacity: 0.8;
+    }
+}
+
+/* ============================================
+   TEMAS POR BANDO
+   ============================================ */
+body.theme-india {
+    --theme-primary: var(--india-primary);
+    --theme-accent: var(--india-accent);
+    --theme-glow: var(--india-glow);
+}
+
+body.theme-pakistan {
+    --theme-primary: var(--pakistan-primary);
+    --theme-accent: var(--pakistan-accent);
+    --theme-glow: var(--pakistan-glow);
+}
+
+/* ============================================
+   HEADER
+   ============================================ */
+.header {
+    position: relative;
+    padding: 1.5rem;
+    background: var(--bg-panel);
+    border-bottom: 2px solid var(--theme-primary);
+    z-index: 10;
+}
+
+.header-content {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.team-flag {
+    width: 50px;
+    height: 35px;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
+}
+
+.team-name {
+    font-size: clamp(1.5rem, 5vw, 2rem);
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    color: var(--theme-primary);
+    text-transform: uppercase;
+}
+
+.scan-line {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--theme-accent), transparent);
+    animation: scanMove 3s ease-in-out infinite;
+}
+
+@keyframes scanMove {
+    0%, 100% { transform: translateX(-100%); }
+    50% { transform: translateX(100%); }
+}
+
+/* ============================================
+   RADAR
+   ============================================ */
+.radar-container {
+    display: flex;
+    justify-content: center;
+    padding: 2rem 1rem;
+    position: relative;
+    z-index: 2;
+}
+
+.radar {
+    width: 100%;
+    max-width: 200px;
+    height: auto;
+    color: var(--theme-primary);
+    filter: drop-shadow(0 0 10px var(--theme-glow));
+}
+
+#radarSweep {
+    animation: radarSweep 3s linear infinite;
+    transform-origin: 100px 100px;
+}
+
+@keyframes radarSweep {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* ============================================
+   MINI-JUEGO
+   ============================================ */
+.game-container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 1.5rem;
+    position: relative;
+    z-index: 2;
+}
+
+.game-title {
+    font-size: clamp(1.2rem, 4vw, 1.5rem);
+    font-weight: 700;
+    text-align: center;
+    color: var(--theme-accent);
+    letter-spacing: 0.1em;
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+}
+
+.game-instructions {
+    text-align: center;
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    margin-bottom: 2rem;
+}
+
+.wires-game {
+    position: relative;
+    display: grid;
+    grid-template-columns: 80px 1fr 80px;
+    gap: 0;
+    background: var(--bg-panel);
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    padding: 2rem 0.5rem;
+    min-height: 300px;
+}
+
+.pins {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 0;
+}
+
+.pin {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    border: 4px solid currentColor;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+    background: var(--bg-dark);
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    min-width: 60px;
+    min-height: 60px;
+}
+
+.pin:hover, .pin:focus {
+    transform: scale(1.1);
+    box-shadow: 0 0 15px currentColor;
+}
+
+.pin.selected {
+    box-shadow: 0 0 20px currentColor;
+    transform: scale(1.15);
+    animation: pulse 0.5s ease-in-out;
+}
+
+.pin.connected {
+    background: currentColor;
+    color: var(--bg-dark);
+    pointer-events: none;
+}
+
+.pin[data-color="red"] { color: #FF4444; }
+.pin[data-color="green"] { color: #00FF88; }
+.pin[data-color="blue"] { color: #4488FF; }
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1.15); }
+    50% { transform: scale(1.25); }
+}
+
+.connections {
+    position: absolute;
+    top: 0;
+    left: 80px;
+    width: calc(100% - 160px);
+    height: 100%;
+    pointer-events: none;
+}
+
+.game-status {
+    text-align: center;
+    margin-top: 1.5rem;
+    font-size: 1.1rem;
+    color: var(--theme-primary);
+    font-weight: 600;
+}
+
+/* ============================================
+   PANTALLA DE COOLDOWN
+   ============================================ */
+.cooldown-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background: var(--bg-dark);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 50;
+}
+
+.cooldown-content {
+    text-align: center;
+    padding: 2rem;
+    max-width: 400px;
+}
+
+.cooldown-icon {
+    width: 100px;
+    height: 100px;
+    color: var(--theme-primary);
+    margin-bottom: 2rem;
+    filter: drop-shadow(0 0 10px var(--theme-glow));
+}
+
+.cooldown-content h2 {
+    font-size: 1.8rem;
+    color: var(--theme-accent);
+    margin-bottom: 1rem;
+    letter-spacing: 0.05em;
+}
+
+.cooldown-message {
+    color: var(--text-secondary);
+    margin-bottom: 2rem;
+    font-size: 1rem;
+}
+
+.countdown {
+    font-size: 3rem;
+    font-weight: 700;
+    color: var(--theme-primary);
+    margin-bottom: 2rem;
+    font-variant-numeric: tabular-nums;
+    text-shadow: 0 0 20px var(--theme-glow);
+}
+
+.btn-secondary {
+    padding: 0.8rem 2rem;
+    background: var(--bg-panel);
+    border: 2px solid var(--theme-primary);
+    border-radius: 6px;
+    color: var(--text-primary);
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-secondary:hover {
+    background: var(--theme-primary);
+    color: var(--bg-dark);
+    box-shadow: 0 0 20px var(--theme-glow);
+}
+
+/* ============================================
+   OVERLAY DE ÉXITO
+   ============================================ */
+.success-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.95);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.success-content {
+    text-align: center;
+    padding: 2rem;
+    position: relative;
+}
+
+.success-pulse {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    background: var(--theme-primary);
+    opacity: 0;
+    animation: successPulse 1.5s ease-out;
+}
+
+@keyframes successPulse {
+    0% {
+        transform: translate(-50%, -50%) scale(0);
+        opacity: 0.8;
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(3);
+        opacity: 0;
+    }
+}
+
+.success-icon {
+    width: 120px;
+    height: 120px;
+    color: var(--success-color);
+    margin-bottom: 2rem;
+    filter: drop-shadow(0 0 20px var(--success-color));
+    animation: successBounce 0.6s ease-out;
+}
+
+@keyframes successBounce {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+}
+
+.success-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--success-color);
+    margin-bottom: 1rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+.success-message {
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+    margin-bottom: 2rem;
+}
+
+.progress-bar {
+    width: 100%;
+    max-width: 300px;
+    height: 4px;
+    background: var(--bg-panel);
+    border-radius: 2px;
+    overflow: hidden;
+    margin: 0 auto;
+}
+
+.progress-fill {
+    height: 100%;
+    background: var(--success-color);
+    width: 0;
+    animation: progressFill 2s ease-out forwards;
+    box-shadow: 0 0 10px var(--success-color);
+}
+
+@keyframes progressFill {
+    to { width: 100%; }
+}
+
+/* ============================================
+   EFECTO GLITCH
+   ============================================ */
+.glitch {
+    position: relative;
+    animation: glitch 3s infinite;
+}
+
+.glitch::before,
+.glitch::after {
+    content: attr(data-text);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+}
+
+.glitch::before {
+    animation: glitchTop 2s infinite;
+    clip-path: polygon(0 0, 100% 0, 100% 33%, 0 33%);
+    color: var(--theme-accent);
+}
+
+.glitch::after {
+    animation: glitchBottom 2.5s infinite;
+    clip-path: polygon(0 67%, 100% 67%, 100% 100%, 0 100%);
+    color: var(--theme-primary);
+}
+
+@keyframes glitchTop {
+    0%, 94%, 100% {
+        opacity: 0;
+        transform: translate(0);
+    }
+    95% {
+        opacity: 1;
+        transform: translate(-2px, -2px);
+    }
+    96% {
+        opacity: 1;
+        transform: translate(2px, 2px);
+    }
+}
+
+@keyframes glitchBottom {
+    0%, 96%, 100% {
+        opacity: 0;
+        transform: translate(0);
+    }
+    97% {
+        opacity: 1;
+        transform: translate(2px, 2px);
+    }
+    98% {
+        opacity: 1;
+        transform: translate(-2px, -2px);
+    }
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media (max-width: 600px) {
+    .wires-game {
+        grid-template-columns: 70px 1fr 70px;
+        padding: 2rem 0.5rem;
+        min-height: 350px;
+    }
+
+    .connections {
+        left: 70px;
+        width: calc(100% - 140px);
+    }
+
+    .pin {
+        width: 55px;
+        height: 55px;
+        font-size: 1.6rem;
+        border-width: 3px;
+    }
+
+    .success-title {
+        font-size: 2rem;
+    }
+
+    .countdown {
+        font-size: 2.5rem;
+    }
+    
+    .team-btn {
+        padding: 1.8rem 2rem;
+        font-size: 1.4rem;
+        min-height: 80px;
+    }
+    
+    .flag-icon {
+        width: 70px;
+        height: 47px;
+    }
+}
+
+/* ============================================
+   ACCESIBILIDAD
+   ============================================ */
+*:focus-visible {
+    outline: 2px solid var(--theme-accent);
+    outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* ============================================
+   LOADING STATE
+   ============================================ */
+.loading {
+    opacity: 0.5;
+    pointer-events: none;
+}

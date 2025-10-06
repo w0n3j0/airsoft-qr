@@ -1,262 +1,138 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
-  <title>Airsoft QR Scanner</title>
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
-
-    body {
-      background-image: url('https://getwallpapers.com/wallpaper/full/c/c/6/1374103-camouflage-desktop-wallpaper-2560x1600-hd.jpg');
-      background-size: cover;
-      background-position: center;
-      background-repeat: no-repeat;
-      font-family: 'Orbitron', monospace;
-      overflow: hidden;
-      text-align: center;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      margin: 0;
-      position: relative;
-      color: #00ff00;
-    }
-
-    /* Superposición semitransparente */
-    body::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0, 0, 0, 0.7); /* Ajusta la opacidad según sea necesario */
-      z-index: 1;
-    }
-
-    /* Animación de escaneo */
-    body::after {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-image: linear-gradient(
-        rgba(0, 255, 0, 0.1) 1px,
-        transparent 1px
-      );
-      background-size: 100% 50px;
-      animation: scan 5s linear infinite;
-      z-index: 2;
-    }
-
-    @keyframes scan {
-      0% {
-        background-position: 0 0;
-      }
-      100% {
-        background-position: 0 100vh;
-      }
-    }
-
-    #confidential, #countdown, #qrCodeDisplay {
-      position: relative;
-      z-index: 3;
-      text-shadow: 0 0 10px #00ff00, 0 0 20px #00ff00;
-    }
-
-    #confidential {
-      font-size: 30px; /* Aumentado */
-      margin-top: 20px;
-      white-space: pre-wrap;
-      max-width: 90%;
-      word-wrap: break-word;
-    }
-
-    #countdown {
-      font-size: 28px; /* Aumentado */
-      color: #ffffff;
-      margin-top: 20px;
-      text-shadow: 0 0 5px #ffffff;
-    }
-
-    #qrCodeDisplay {
-      font-size: 32px; /* Aumentado */
-      margin-top: 20px;
-    }
-
-    /* Animación de escritura */
-    .typing {
-      overflow: hidden;
-      border-right: .15em solid #00ff00;
-      white-space: nowrap;
-      margin: 0 auto;
-      letter-spacing: .1em; /* Reducido para mejorar en móviles */
-      animation:
-        typing 3.5s steps(40, end),
-        blink-caret .75s step-end infinite;
-      max-width: 90%; /* Para evitar desbordamiento en móviles */
-    }
-
-    @keyframes typing {
-      from { width: 0 }
-      to { width: 100% }
-    }
-
-    @keyframes blink-caret {
-      from, to { border-color: transparent }
-      50% { border-color: #00ff00; }
-    }
-
-    /* Ajustes para dispositivos móviles */
-    @media (max-width: 600px) {
-      #confidential {
-        font-size: 32px; /* Aumentado para móviles */
-      }
-
-      #countdown {
-        font-size: 28px; /* Aumentado para móviles */
-      }
-
-      #qrCodeDisplay {
-        font-size: 36px; /* Aumentado para móviles */
-      }
-
-      .typing {
-        letter-spacing: .05em; /* Ajuste para móviles */
-      }
-    }
-
-  </style>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/UAParser.js/0.7.28/ua-parser.min.js"></script>
-  <script>
-    function generateUUID() {
-      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-        var r = Math.random() * 16 | 0,
-          v = c == 'x' ? r : (r & 0x3 | 0x8);
-        return v.toString(16);
-      });
-    }
-
-    const confidentialMessages = [
-      "Accediendo al sistema central...",
-      "Plantando dispositivo explosivo...",
-      "Cuenta regresiva iniciada",
-      "Evacúa el área inmediatamente"
-    ];
-
-    function getDeviceInfo() {
-      const parser = new UAParser();
-      const result = parser.getResult();
-      const device = result.device.model || result.device.vendor || "Unknown Device";
-      const os = result.os.name + " " + (result.os.version || "Unknown Version");
-      const browser = result.browser.name + " " + result.browser.version;
-      let deviceUUID = localStorage.getItem('deviceUUID');
-      if (!deviceUUID) {
-        deviceUUID = generateUUID();
-        localStorage.setItem('deviceUUID', deviceUUID);
-      }
-      return {
-        device: deviceUUID,
-        os: os,
-        browser: browser
-      };
-    }
-
-    function typeWriter(element, text, speed, callback) {
-      let i = 0;
-      function typing() {
-        if (i < text.length) {
-          element.innerHTML += text.charAt(i);
-          i++;
-          setTimeout(typing, speed);
-        } else {
-          if (callback) callback();
-        }
-      }
-      typing();
-    }
-
-    function sendData(qrCode) {
-      const confidentialDiv = document.getElementById('confidential');
-      confidentialDiv.innerHTML = '';
-      confidentialDiv.classList.remove('typing');
-      let messageIndex = 0;
-
-      function displayNextMessage() {
-        if (messageIndex < confidentialMessages.length) {
-          confidentialDiv.innerHTML = '';
-          confidentialDiv.classList.add('typing');
-          typeWriter(confidentialDiv, confidentialMessages[messageIndex], 50, () => {
-            confidentialDiv.classList.remove('typing');
-            messageIndex++;
-            setTimeout(displayNextMessage, 1000);
-          });
-        } else {
-          if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(function(position) {
-              confidentialDiv.innerHTML = "Datos enviados.";
-              confidentialDiv.style.color = "lime";
-
-              var latitude = position.coords.latitude;
-              var longitude = position.coords.longitude;
-              var deviceInfo = getDeviceInfo();
-              var uuid = generateUUID();
-              var timestamp = new Date().toISOString();
-
-              var scriptUrl = "https://script.google.com/macros/s/AKfycbx0NUh8zywxC_wjBGc4cn5Z5UOxSTUWzliCRwfOwbaUJB2Qo-nB4p0nqqOgav0Jw98Q2Q/exec";
-              var url = `${scriptUrl}?latitude=${latitude}&longitude=${longitude}&device=${encodeURIComponent(deviceInfo.device)}&os=${encodeURIComponent(deviceInfo.os)}&browser=${encodeURIComponent(deviceInfo.browser)}&uuid=${uuid}&timestamp=${encodeURIComponent(timestamp)}&qrCode=${encodeURIComponent(qrCode)}`;
-
-              console.log(url);
-
-              setTimeout(() => {
-                window.location.href = url;
-              }, 2000);
-
-            }, function(error) {
-              alert(`Geolocation error: ${error.message}`);
-            });
-          } else {
-            alert("Geolocation is not supported by this browser.");
-          }
-        }
-      }
-
-      displayNextMessage();
-    }
-
-    document.addEventListener('DOMContentLoaded', (event) => {
-      const urlParams = new URLSearchParams(window.location.search);
-      const qrCode = urlParams.get('qrCode');
-
-      if (!qrCode) {
-        alert("QR Code not found in the URL.");
-        return;
-      }
-
-      const qrCodeDisplay = document.getElementById('qrCodeDisplay');
-      qrCodeDisplay.textContent = `Código: ${qrCode}`;
-
-      const countdownDiv = document.getElementById('countdown');
-      let countdown = 5;
-      countdownDiv.textContent = `Escaneando en ${countdown} segundos...`;
-
-      const countdownInterval = setInterval(() => {
-        countdown--;
-        countdownDiv.textContent = `Escaneando en ${countdown} segundos...`;
-        if (countdown <= 0) {
-          clearInterval(countdownInterval);
-          sendData(qrCode);
-        }
-      }, 1000);
-    });
-  </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="description" content="Sistema de captura de bases - Evento Airsoft India vs Pakistán">
+    <meta name="theme-color" content="#0B0F12">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="mobile-web-app-capable" content="yes">
+    <title>Captura de Base - Airsoft</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="manifest" href="manifest.json">
 </head>
-<body>
-  <div id="qrCodeDisplay"></div>
-  <div id="confidential">Preparando...</div>
-  <div id="countdown"></div>
+<body data-api="">
+    <!-- Selector de bando (cuando no hay ?team=) -->
+    <div id="teamSelector" class="selector hidden">
+        <div class="selector-container">
+            <h1 class="glitch" data-text="OPERACIÓN CAPTURA">OPERACIÓN CAPTURA</h1>
+            <p class="selector-subtitle">Selecciona tu bando</p>
+            <div class="team-buttons">
+                <button class="team-btn india" data-team="india">
+                    <svg class="flag-icon" viewBox="0 0 60 40">
+                        <rect width="60" height="13.33" fill="#FF9933"/>
+                        <rect y="13.33" width="60" height="13.33" fill="#FFFFFF"/>
+                        <rect y="26.67" width="60" height="13.33" fill="#138808"/>
+                        <circle cx="30" cy="20" r="5" fill="none" stroke="#000080" stroke-width="0.8"/>
+                    </svg>
+                    <span>Bando India</span>
+                </button>
+                <button class="team-btn pakistan" data-team="pakistan">
+                    <svg class="flag-icon" viewBox="0 0 60 40">
+                        <rect width="60" height="40" fill="#01411C"/>
+                        <rect width="15" height="40" fill="#FFFFFF"/>
+                        <circle cx="35" cy="20" r="6" fill="none" stroke="#FFFFFF" stroke-width="1.2"/>
+                        <path d="M 38 15 L 41 20 L 38 25 L 35 22 L 35 18 Z" fill="#FFFFFF"/>
+                    </svg>
+                    <span>Bando Pakistán</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pantalla de animación GPS -->
+    <div id="gpsAnimation" class="gps-animation hidden">
+        <div class="map-container">
+            <div class="map-overlay">
+                <div class="crosshair"></div>
+            </div>
+            <canvas id="mapCanvas"></canvas>
+            <div class="gps-info">
+                <div class="scanning-text">LOCALIZANDO POSICIÓN...</div>
+                <div class="coordinates" id="coordsDisplay">---, ---</div>
+                <div class="status-text" id="gpsStatus">Obteniendo GPS...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pantalla principal del bando -->
+    <main id="mainScreen" class="hidden">
+        <!-- Header con bandera y nombre -->
+        <header class="header">
+            <div class="header-content">
+                <svg id="teamFlag" class="team-flag" viewBox="0 0 60 40"></svg>
+                <h1 id="teamName" class="team-name">BANDO</h1>
+            </div>
+            <div class="scan-line"></div>
+        </header>
+
+        <!-- Radar animado -->
+        <div class="radar-container">
+            <svg class="radar" viewBox="0 0 200 200">
+                <defs>
+                    <linearGradient id="radarGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:currentColor;stop-opacity:0.3" />
+                        <stop offset="100%" style="stop-color:currentColor;stop-opacity:0" />
+                    </linearGradient>
+                </defs>
+                <circle cx="100" cy="100" r="90" fill="none" stroke="currentColor" stroke-width="0.5" opacity="0.3"/>
+                <circle cx="100" cy="100" r="60" fill="none" stroke="currentColor" stroke-width="0.5" opacity="0.3"/>
+                <circle cx="100" cy="100" r="30" fill="none" stroke="currentColor" stroke-width="0.5" opacity="0.3"/>
+                <line x1="100" y1="10" x2="100" y2="190" stroke="currentColor" stroke-width="0.5" opacity="0.2"/>
+                <line x1="10" y1="100" x2="190" y2="100" stroke="currentColor" stroke-width="0.5" opacity="0.2"/>
+                <path id="radarSweep" d="M 100 100 L 100 10 A 90 90 0 0 1 190 100 Z" fill="url(#radarGradient)" opacity="0.6"/>
+            </svg>
+        </div>
+
+        <!-- Contenedor del mini-juego -->
+        <div id="gameContainer" class="game-container">
+            <h2 class="game-title">DESACTIVAR SISTEMA DE SEGURIDAD</h2>
+            <p class="game-instructions">Conecta los cables correctamente</p>
+            
+            <div class="wires-game">
+                <div class="pins left-pins" id="leftPins"></div>
+                <svg class="connections" id="connections" viewBox="0 0 300 400" preserveAspectRatio="none"></svg>
+                <div class="pins right-pins" id="rightPins"></div>
+            </div>
+
+            <div class="game-status" id="gameStatus">
+                <span class="connections-count">Conectados: <span id="matchCount">0</span>/3</span>
+            </div>
+        </div>
+
+        <!-- Pantalla de cooldown -->
+        <div id="cooldownScreen" class="cooldown-screen hidden">
+            <div class="cooldown-content">
+                <svg class="cooldown-icon" viewBox="0 0 100 100">
+                    <circle cx="50" cy="50" r="45" fill="none" stroke="currentColor" stroke-width="3" opacity="0.3"/>
+                    <circle cx="50" cy="50" r="35" fill="none" stroke="currentColor" stroke-width="2" opacity="0.5"/>
+                    <path d="M 50 20 L 50 50 L 70 50" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+                </svg>
+                <h2>BASE EN ENFRIAMIENTO</h2>
+                <p class="cooldown-message">La base fue capturada recientemente</p>
+                <div class="countdown" id="countdown">--:--</div>
+                <button class="btn-secondary" onclick="window.location.href='index.html'">Volver</button>
+            </div>
+        </div>
+
+        <!-- Overlay de éxito -->
+        <div id="successOverlay" class="success-overlay hidden">
+            <div class="success-content">
+                <div class="success-pulse"></div>
+                <svg class="success-icon" viewBox="0 0 100 100">
+                    <circle cx="50" cy="50" r="45" fill="none" stroke="currentColor" stroke-width="3"/>
+                    <path d="M 30 50 L 45 65 L 70 35" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <h2 class="success-title glitch" data-text="BASE CAPTURADA">BASE CAPTURADA</h2>
+                <p class="success-message">Enviando datos al comando...</p>
+                <div class="progress-bar">
+                    <div class="progress-fill"></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="app.js"></script>
 </body>
 </html>

@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demo - Bandos Airsoft</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #0B0F12;
+            color: #E0E4E8;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: #1BBE84;
+            letter-spacing: 0.1em;
+        }
+        .subtitle {
+            text-align: center;
+            color: #8A9199;
+            margin-bottom: 3rem;
+            font-size: 1.1rem;
+        }
+        .demo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+        .demo-card {
+            background: #131A20;
+            padding: 2rem;
+            border-radius: 12px;
+            border: 2px solid;
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .demo-card:hover {
+            transform: translateY(-5px);
+        }
+        .india {
+            border-color: #1BBE84;
+        }
+        .india:hover {
+            box-shadow: 0 10px 30px rgba(27, 190, 132, 0.3);
+        }
+        .pakistan {
+            border-color: #0B7A4B;
+        }
+        .pakistan:hover {
+            box-shadow: 0 10px 30px rgba(11, 122, 75, 0.3);
+        }
+        .demo-card h2 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            letter-spacing: 0.05em;
+        }
+        .india h2 {
+            color: #1BBE84;
+        }
+        .pakistan h2 {
+            color: #0B7A4B;
+        }
+        .flag {
+            width: 120px;
+            height: 80px;
+            margin: 1rem auto;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.5));
+        }
+        .qr-info {
+            background: #0B0F12;
+            padding: 1rem;
+            border-radius: 6px;
+            margin: 1.5rem 0;
+            font-family: monospace;
+            font-size: 0.85rem;
+            word-break: break-all;
+            color: #8A9199;
+        }
+        .btn {
+            display: inline-block;
+            padding: 1rem 2rem;
+            margin: 0.5rem;
+            background: transparent;
+            border: 2px solid;
+            border-radius: 6px;
+            color: inherit;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+        }
+        .india .btn {
+            border-color: #1BBE84;
+            color: #1BBE84;
+        }
+        .india .btn:hover {
+            background: #1BBE84;
+            color: #0B0F12;
+        }
+        .pakistan .btn {
+            border-color: #0B7A4B;
+            color: #0B7A4B;
+        }
+        .pakistan .btn:hover {
+            background: #0B7A4B;
+            color: #E0E4E8;
+        }
+        .instructions {
+            background: #131A20;
+            padding: 2rem;
+            border-radius: 12px;
+            border: 2px solid #8A9199;
+            margin-top: 3rem;
+        }
+        .instructions h3 {
+            color: #E8C547;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+        .instructions ol {
+            margin-left: 1.5rem;
+            line-height: 1.8;
+        }
+        .instructions li {
+            margin-bottom: 0.5rem;
+        }
+        .instructions code {
+            background: #0B0F12;
+            padding: 2px 8px;
+            border-radius: 3px;
+            color: #1BBE84;
+            font-family: monospace;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid #8A9199;
+            color: #8A9199;
+        }
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.8rem;
+            }
+            .demo-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 SISTEMA DE CAPTURA DE BASES</h1>
+        <p class="subtitle">Evento Airsoft: India vs Pakistán</p>
+
+        <div class="demo-grid">
+            <!-- Bando India -->
+            <div class="demo-card india">
+                <h2>BANDO INDIA</h2>
+                <svg class="flag" viewBox="0 0 60 40">
+                    <rect width="60" height="13.33" fill="#FF9933"/>
+                    <rect y="13.33" width="60" height="13.33" fill="#FFFFFF"/>
+                    <rect y="26.67" width="60" height="13.33" fill="#138808"/>
+                    <circle cx="30" cy="20" r="5" fill="none" stroke="#000080" stroke-width="0.8"/>
+                </svg>
+                <p style="margin-bottom: 1rem;">Color primario: Verde azulado</p>
+                <div class="qr-info">
+                    <strong>URL:</strong><br>
+                    ?team=india
+                </div>
+                <a href="?team=india" class="btn">🎮 Jugar como India</a>
+            </div>
+
+            <!-- Bando Pakistán -->
+            <div class="demo-card pakistan">
+                <h2>BANDO PAKISTÁN</h2>
+                <svg class="flag" viewBox="0 0 60 40">
+                    <rect width="60" height="40" fill="#01411C"/>
+                    <rect width="15" height="40" fill="#FFFFFF"/>
+                    <circle cx="35" cy="20" r="6" fill="none" stroke="#FFFFFF" stroke-width="1.2"/>
+                    <path d="M 38 15 L 41 20 L 38 25 L 35 22 L 35 18 Z" fill="#FFFFFF"/>
+                </svg>
+                <p style="margin-bottom: 1rem;">Color primario: Verde oscuro</p>
+                <div class="qr-info">
+                    <strong>URL:</strong><br>
+                    ?team=pakistan
+                </div>
+                <a href="?team=pakistan" class="btn">🎮 Jugar como Pakistán</a>
+            </div>
+        </div>
+
+        <div class="instructions">
+            <h3>📋 Instrucciones de Uso</h3>
+            <ol>
+                <li><strong>Selecciona un bando</strong> usando los botones de arriba</li>
+                <li><strong>Completa el mini-juego</strong>: Conecta los 3 pares de cables arrastrando desde la izquierda hacia la derecha (mismo símbolo y color)</li>
+                <li><strong>Captura la base</strong>: Al completar correctamente, verás la animación de éxito</li>
+                <li><strong>Cooldown</strong>: Tras capturar, el dispositivo quedará bloqueado 30 minutos para ese bando</li>
+                <li><strong>Vuelve a jugar</strong>: Después del cooldown o con otro dispositivo</li>
+            </ol>
+
+            <h3 style="margin-top: 2rem;">🔧 Para Desarrolladores</h3>
+            <ul style="margin-left: 1.5rem; line-height: 1.8;">
+                <li>Configurar API: Edita <code>data-api=""</code> en <code>index.html</code></li>
+                <li>Test local: <code>npx http-server -p 8080 -c-1</code></li>
+                <li>Test API: Abre <code>test-api.html</code> para probar el endpoint</li>
+                <li>Documentación completa: Lee <code>README.md</code> y <code>SETUP.md</code></li>
+                <li>Ejemplo de backend: Revisa <code>BACKEND.md</code></li>
+            </ul>
+        </div>
+
+        <div class="footer">
+            <p>Sistema de Captura de Bases v1.0</p>
+            <p style="margin-top: 0.5rem;">Optimizado para móviles • Sin dependencias • PWA-ready</p>
+        </div>
+    </div>
+
+    <script>
+        // Detectar si ya hay un bando seleccionado
+        const urlParams = new URLSearchParams(window.location.search);
+        const team = urlParams.get('team');
+        
+        if (team === 'india' || team === 'pakistan') {
+            // Redirigir al juego
+            window.location.href = 'index.html' + window.location.search;
+        }
+    </script>
+</body>
+</html>

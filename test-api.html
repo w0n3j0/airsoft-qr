@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test API - Airsoft</title>
+    <style>
+        body {
+            font-family: monospace;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #0B0F12;
+            color: #E0E4E8;
+        }
+        .container {
+            background: #131A20;
+            padding: 30px;
+            border-radius: 8px;
+            border: 2px solid #1BBE84;
+        }
+        h1 {
+            color: #1BBE84;
+            text-align: center;
+        }
+        .form-group {
+            margin: 20px 0;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #8A9199;
+        }
+        input, select {
+            width: 100%;
+            padding: 10px;
+            background: #0B0F12;
+            border: 1px solid #1BBE84;
+            color: #E0E4E8;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+        button {
+            width: 100%;
+            padding: 15px;
+            background: #1BBE84;
+            border: none;
+            border-radius: 4px;
+            color: #0B0F12;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 20px;
+        }
+        button:hover {
+            background: #E8C547;
+        }
+        #result {
+            margin-top: 30px;
+            padding: 20px;
+            background: #0B0F12;
+            border-radius: 4px;
+            border: 1px solid #1BBE84;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            display: none;
+        }
+        .success {
+            border-color: #00FF88;
+            color: #00FF88;
+        }
+        .error {
+            border-color: #FF4444;
+            color: #FF4444;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Test API de Captura</h1>
+        
+        <div class="form-group">
+            <label>URL del Endpoint:</label>
+            <input type="text" id="apiUrl" value="http://localhost:3000/api/capture" placeholder="https://tu-api.com/api/capture">
+        </div>
+
+        <div class="form-group">
+            <label>Bando:</label>
+            <select id="team">
+                <option value="india">India</option>
+                <option value="pakistan">Pakistán</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Device ID (UUID):</label>
+            <input type="text" id="deviceId" readonly>
+        </div>
+
+        <button onclick="testCapture()">🚀 Enviar Test</button>
+
+        <div id="result"></div>
+    </div>
+
+    <script>
+        // Generar UUID de prueba
+        function generateUUID() {
+            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+                const r = Math.random() * 16 | 0;
+                const v = c === 'x' ? r : (r & 0x3 | 0x8);
+                return v.toString(16);
+            });
+        }
+
+        // Inicializar
+        document.getElementById('deviceId').value = generateUUID();
+
+        async function testCapture() {
+            const apiUrl = document.getElementById('apiUrl').value;
+            const team = document.getElementById('team').value;
+            const deviceId = document.getElementById('deviceId').value;
+            const resultDiv = document.getElementById('result');
+
+            const payload = {
+                team: team,
+                ts: new Date().toISOString(),
+                deviceId: deviceId,
+                userAgent: navigator.userAgent
+            };
+
+            resultDiv.style.display = 'block';
+            resultDiv.className = '';
+            resultDiv.textContent = '⏳ Enviando...\n\n' + JSON.stringify(payload, null, 2);
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    resultDiv.className = 'success';
+                    resultDiv.textContent = '✅ ÉXITO\n\n' +
+                        `Status: ${response.status} ${response.statusText}\n\n` +
+                        'Response:\n' +
+                        JSON.stringify(data, null, 2);
+                } else {
+                    resultDiv.className = 'error';
+                    resultDiv.textContent = '❌ ERROR\n\n' +
+                        `Status: ${response.status} ${response.statusText}\n\n` +
+                        'Response:\n' +
+                        JSON.stringify(data, null, 2);
+                }
+            } catch (error) {
+                resultDiv.className = 'error';
+                resultDiv.textContent = '❌ ERROR DE RED\n\n' + error.message + '\n\n' +
+                    'Verifica que:\n' +
+                    '1. El servidor esté corriendo\n' +
+                    '2. La URL sea correcta\n' +
+                    '3. CORS esté configurado\n' +
+                    '4. No haya firewall bloqueando';
+            }
+        }
+
+        // Regenerar UUID
+        document.getElementById('deviceId').addEventListener('click', function() {
+            this.value = generateUUID();
+        });
+    </script>
+</body>
+</html>

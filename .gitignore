@@ -1,0 +1,22 @@
+# Configuración sensible
+config.json
+
+# Archivos de sistema
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editores
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+npm-debug.log*
+
+# Otros
+node_modules/
+.env
