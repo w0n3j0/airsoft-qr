@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔍 Diagnóstico Completo del Sistema</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Courier New', monospace;
+            background: #0a0a0a;
+            color: #00ff00;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #00ffff;
+            text-shadow: 0 0 10px #00ffff;
+        }
+        .section {
+            background: #1a1a1a;
+            border: 2px solid #00ff00;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            position: relative;
+        }
+        .section h2 {
+            color: #ffff00;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .status {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 2px solid #333;
+        }
+        .status.ok { background: #00ff00; box-shadow: 0 0 10px #00ff00; }
+        .status.error { background: #ff0000; box-shadow: 0 0 10px #ff0000; }
+        .status.warning { background: #ff9900; box-shadow: 0 0 10px #ff9900; }
+        .status.pending { background: #666; animation: pulse 1s infinite; }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+        
+        .test-item {
+            padding: 10px;
+            margin: 5px 0;
+            background: #0d0d0d;
+            border-left: 4px solid #333;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .test-item.ok { border-left-color: #00ff00; }
+        .test-item.error { border-left-color: #ff0000; }
+        .test-item.warning { border-left-color: #ff9900; }
+        
+        .code-block {
+            background: #000;
+            border: 1px solid #333;
+            padding: 10px;
+            margin: 10px 0;
+            overflow-x: auto;
+            font-size: 12px;
+        }
+        
+        .btn {
+            background: #00ff00;
+            color: #000;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-weight: bold;
+            border-radius: 4px;
+            margin: 5px;
+            font-family: inherit;
+        }
+        .btn:hover { background: #00cc00; }
+        .btn:disabled { background: #666; cursor: not-allowed; }
+        
+        .btn-danger { background: #ff0000; color: #fff; }
+        .btn-danger:hover { background: #cc0000; }
+        
+        .btn-info { background: #00ffff; color: #000; }
+        .btn-info:hover { background: #00cccc; }
+        
+        .actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        #console {
+            background: #000;
+            border: 2px solid #00ff00;
+            padding: 15px;
+            max-height: 400px;
+            overflow-y: auto;
+            font-size: 12px;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+        
+        .timestamp { color: #666; }
+        .log-success { color: #00ff00; }
+        .log-error { color: #ff0000; }
+        .log-warning { color: #ff9900; }
+        .log-info { color: #00ffff; }
+        
+        .metric {
+            display: inline-block;
+            padding: 5px 10px;
+            background: #000;
+            border: 1px solid #00ff00;
+            margin: 5px;
+            border-radius: 3px;
+        }
+        
+        .metric-label {
+            color: #ffff00;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 DIAGNÓSTICO COMPLETO DEL SISTEMA AIRSOFT QR</h1>
+        
+        <!-- STATUS GENERAL -->
+        <div class="section">
+            <h2><span class="status pending" id="statusGeneral"></span> STATUS GENERAL</h2>
+            <div id="generalInfo">Inicializando diagnóstico...</div>
+        </div>
+        
+        <!-- CONFIGURACIÓN -->
+        <div class="section">
+            <h2><span class="status pending" id="statusConfig"></span> 1. CONFIGURACIÓN (config.json)</h2>
+            <div id="configTests"></div>
+            <div class="code-block" id="configData">Cargando...</div>
+        </div>
+        
+        <!-- ARCHIVOS CRÍTICOS -->
+        <div class="section">
+            <h2><span class="status pending" id="statusFiles"></span> 2. ARCHIVOS CRÍTICOS</h2>
+            <div id="fileTests"></div>
+        </div>
+        
+        <!-- CONECTIVIDAD -->
+        <div class="section">
+            <h2><span class="status pending" id="statusNetwork"></span> 3. CONECTIVIDAD</h2>
+            <div id="networkTests"></div>
+            <div class="actions">
+                <button class="btn btn-info" onclick="testPowerAutomate()">🧪 Test Power Automate</button>
+                <button class="btn btn-info" onclick="testCORS()">🌐 Test CORS</button>
+                <button class="btn btn-info" onclick="testLatency()">⚡ Test Latencia</button>
+            </div>
+        </div>
+        
+        <!-- FUNCIONALIDADES -->
+        <div class="section">
+            <h2><span class="status pending" id="statusFeatures"></span> 4. FUNCIONALIDADES</h2>
+            <div id="featureTests"></div>
+            <div class="actions">
+                <button class="btn" onclick="testGPS()">📍 Test GPS</button>
+                <button class="btn" onclick="testLocalStorage()">💾 Test LocalStorage</button>
+                <button class="btn" onclick="testDeviceID()">🔑 Test Device ID</button>
+                <button class="btn" onclick="testCooldown()">⏰ Test Cooldown</button>
+            </div>
+        </div>
+        
+        <!-- PRUEBAS DE INTEGRACIÓN -->
+        <div class="section">
+            <h2><span class="status pending" id="statusIntegration"></span> 5. PRUEBAS DE INTEGRACIÓN</h2>
+            <div id="integrationTests"></div>
+            <div class="actions">
+                <button class="btn" onclick="fullCaptureTest('india')">🇮🇳 Captura India Completa</button>
+                <button class="btn" onclick="fullCaptureTest('pakistan')">🇵🇰 Captura Pakistan Completa</button>
+                <button class="btn btn-danger" onclick="stressTest()">💥 Stress Test (10 capturas)</button>
+            </div>
+        </div>
+        
+        <!-- CONSOLA DE LOGS -->
+        <div class="section">
+            <h2>📋 CONSOLA DE LOGS</h2>
+            <div id="console"></div>
+            <div class="actions">
+                <button class="btn btn-info" onclick="clearConsole()">🧹 Limpiar</button>
+                <button class="btn btn-info" onclick="exportLogs()">💾 Exportar Logs</button>
+            </div>
+        </div>
+        
+        <!-- MÉTRICAS -->
+        <div class="section">
+            <h2>📊 MÉTRICAS</h2>
+            <div id="metrics">
+                <span class="metric"><span class="metric-label">Tests ejecutados:</span> <span id="metricTestsRun">0</span></span>
+                <span class="metric"><span class="metric-label">Tests exitosos:</span> <span id="metricTestsPassed">0</span></span>
+                <span class="metric"><span class="metric-label">Tests fallidos:</span> <span id="metricTestsFailed">0</span></span>
+                <span class="metric"><span class="metric-label">Tiempo total:</span> <span id="metricTime">0s</span></span>
+            </div>
+        </div>
+        
+        <!-- ACCIONES GLOBALES -->
+        <div class="section">
+            <h2>⚙️ ACCIONES GLOBALES</h2>
+            <div class="actions">
+                <button class="btn btn-info" onclick="runAllTests()">▶️ Ejecutar Todos los Tests</button>
+                <button class="btn btn-info" onclick="location.reload()">🔄 Reiniciar Diagnóstico</button>
+                <button class="btn" onclick="window.open('index.html?team=india', '_blank')">🚀 Abrir App (India)</button>
+                <button class="btn" onclick="window.open('test-capture.html', '_blank')">🧪 Abrir Test Manual</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============================
+        // SISTEMA DE LOGGING
+        // ============================
+        const logs = [];
+        let metrics = { run: 0, passed: 0, failed: 0, startTime: Date.now() };
+        
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = { timestamp, message, type };
+            logs.push(logEntry);
+            
+            const console = document.getElementById('console');
+            const line = document.createElement('div');
+            line.innerHTML = `<span class="timestamp">[${timestamp}]</span> <span class="log-${type}">${message}</span>`;
+            console.appendChild(line);
+            console.scrollTop = console.scrollHeight;
+        }
+        
+        function clearConsole() {
+            document.getElementById('console').innerHTML = '';
+            logs.length = 0;
+        }
+        
+        function exportLogs() {
+            const blob = new Blob([JSON.stringify(logs, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `diagnostico-${Date.now()}.json`;
+            a.click();
+            log('📥 Logs exportados', 'success');
+        }
+        
+        function updateMetrics() {
+            document.getElementById('metricTestsRun').textContent = metrics.run;
+            document.getElementById('metricTestsPassed').textContent = metrics.passed;
+            document.getElementById('metricTestsFailed').textContent = metrics.failed;
+            const elapsed = ((Date.now() - metrics.startTime) / 1000).toFixed(1);
+            document.getElementById('metricTime').textContent = elapsed + 's';
+        }
+        
+        // ============================
+        // SISTEMA DE TESTS
+        // ============================
+        function setStatus(elementId, status) {
+            const el = document.getElementById(elementId);
+            el.className = `status ${status}`;
+        }
+        
+        function addTestResult(containerId, testName, passed, details = '') {
+            const container = document.getElementById(containerId);
+            const item = document.createElement('div');
+            item.className = `test-item ${passed ? 'ok' : 'error'}`;
+            item.innerHTML = `
+                <span class="status ${passed ? 'ok' : 'error'}"></span>
+                <div>
+                    <strong>${testName}</strong>
+                    ${details ? `<br><small>${details}</small>` : ''}
+                </div>
+            `;
+            container.appendChild(item);
+            
+            metrics.run++;
+            if (passed) metrics.passed++;
+            else metrics.failed++;
+            updateMetrics();
+        }
+        
+        // ============================
+        // TESTS DE CONFIGURACIÓN
+        // ============================
+        let CONFIG = null;
+        
+        async function testConfiguration() {
+            log('🔍 Verificando configuración...', 'info');
+            const container = document.getElementById('configTests');
+            container.innerHTML = '';
+            
+            try {
+                const response = await fetch('config.json');
+                if (!response.ok) throw new Error('No se pudo cargar config.json');
+                
+                CONFIG = await response.json();
+                document.getElementById('configData').textContent = JSON.stringify(CONFIG, null, 2);
+                
+                // Test 1: Archivo existe
+                addTestResult('configTests', 'config.json existe y es válido', true);
+                log('✅ config.json cargado correctamente', 'success');
+                
+                // Test 2: apiUrl presente
+                const hasApiUrl = CONFIG.apiUrl && CONFIG.apiUrl.length > 0;
+                addTestResult('configTests', 'apiUrl configurada', hasApiUrl, 
+                    hasApiUrl ? CONFIG.apiUrl : 'apiUrl no encontrada o vacía');
+                
+                // Test 3: apiUrl válida
+                const isValidUrl = CONFIG.apiUrl && CONFIG.apiUrl.startsWith('https://');
+                addTestResult('configTests', 'apiUrl es HTTPS', isValidUrl);
+                
+                // Test 4: Cooldown configurado
+                const hasCooldown = typeof CONFIG.cooldownMinutes === 'number';
+                addTestResult('configTests', 'cooldownMinutes configurado', hasCooldown,
+                    hasCooldown ? `${CONFIG.cooldownMinutes} minutos` : 'No configurado');
+                
+                // Test 5: Ubicación del evento
+                const hasLocation = CONFIG.eventLocation && CONFIG.eventLocation.lat && CONFIG.eventLocation.lng;
+                addTestResult('configTests', 'eventLocation configurada', hasLocation);
+                
+                const allPassed = hasApiUrl && isValidUrl && hasCooldown && hasLocation;
+                setStatus('statusConfig', allPassed ? 'ok' : 'warning');
+                
+            } catch (error) {
+                log(`❌ Error cargando config: ${error.message}`, 'error');
+                addTestResult('configTests', 'Cargar config.json', false, error.message);
+                setStatus('statusConfig', 'error');
+                document.getElementById('configData').textContent = 'ERROR: ' + error.message;
+            }
+        }
+        
+        // ============================
+        // TESTS DE ARCHIVOS
+        // ============================
+        async function testFiles() {
+            log('🔍 Verificando archivos críticos...', 'info');
+            const container = document.getElementById('fileTests');
+            container.innerHTML = '';
+            
+            const files = [
+                'index.html',
+                'app.js',
+                'styles.css',
+                'manifest.json',
+                'config.json'
+            ];
+            
+            let allOk = true;
+            for (const file of files) {
+                try {
+                    const response = await fetch(file, { method: 'HEAD' });
+                    const exists = response.ok;
+                    addTestResult('fileTests', file, exists, exists ? 'Existe' : 'No encontrado');
+                    if (!exists) allOk = false;
+                } catch (error) {
+                    addTestResult('fileTests', file, false, 'Error al verificar');
+                    allOk = false;
+                }
+            }
+            
+            setStatus('statusFiles', allOk ? 'ok' : 'error');
+        }
+        
+        // ============================
+        // TESTS DE CONECTIVIDAD
+        // ============================
+        async function testNetwork() {
+            log('🔍 Verificando conectividad...', 'info');
+            const container = document.getElementById('networkTests');
+            container.innerHTML = '';
+            
+            // Test 1: Internet
+            try {
+                await fetch('https://www.google.com', { mode: 'no-cors' });
+                addTestResult('networkTests', 'Conexión a Internet', true);
+                log('✅ Conexión a Internet OK', 'success');
+            } catch {
+                addTestResult('networkTests', 'Conexión a Internet', false);
+                log('❌ Sin conexión a Internet', 'error');
+                setStatus('statusNetwork', 'error');
+                return;
+            }
+            
+            setStatus('statusNetwork', 'ok');
+        }
+        
+        async function testPowerAutomate() {
+            if (!CONFIG) {
+                log('❌ Config no cargada', 'error');
+                return;
+            }
+            
+            log('🧪 Testeando conexión a Power Automate...', 'info');
+            
+            const testPayload = {
+                team: 'india',
+                ts: new Date().toISOString(),
+                deviceId: 'diagnostic-test-' + Date.now(),
+                userAgent: 'DiagnosticTool/1.0',
+                location: CONFIG.eventLocation ? {
+                    lat: CONFIG.eventLocation.lat,
+                    lng: CONFIG.eventLocation.lng,
+                    accuracy: 10
+                } : null
+            };
+            
+            try {
+                const startTime = Date.now();
+                const response = await fetch(CONFIG.apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(testPayload)
+                });
+                const elapsed = Date.now() - startTime;
+                
+                const text = await response.text();
+                let data;
+                try { data = JSON.parse(text); } catch { data = text; }
+                
+                if (response.ok) {
+                    log(`✅ Power Automate respondió OK (${elapsed}ms)`, 'success');
+                    log(`Respuesta: ${JSON.stringify(data, null, 2)}`, 'info');
+                    addTestResult('networkTests', 'Conexión Power Automate', true, `${elapsed}ms`);
+                } else {
+                    log(`⚠️ Power Automate respondió ${response.status}`, 'warning');
+                    log(`Respuesta: ${JSON.stringify(data, null, 2)}`, 'warning');
+                    addTestResult('networkTests', 'Conexión Power Automate', false, 
+                        `HTTP ${response.status}: ${JSON.stringify(data)}`);
+                }
+            } catch (error) {
+                log(`❌ Error conectando a Power Automate: ${error.message}`, 'error');
+                addTestResult('networkTests', 'Conexión Power Automate', false, error.message);
+            }
+        }
+        
+        async function testCORS() {
+            if (!CONFIG) return;
+            
+            log('🌐 Testeando CORS...', 'info');
+            try {
+                const response = await fetch(CONFIG.apiUrl, {
+                    method: 'OPTIONS',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                log(`✅ Preflight OK`, 'success');
+            } catch (error) {
+                log(`⚠️ Preflight: ${error.message}`, 'warning');
+            }
+        }
+        
+        async function testLatency() {
+            if (!CONFIG) return;
+            
+            log('⚡ Midiendo latencia...', 'info');
+            const times = [];
+            
+            for (let i = 0; i < 3; i++) {
+                try {
+                    const start = Date.now();
+                    await fetch(CONFIG.apiUrl, { method: 'HEAD' });
+                    const elapsed = Date.now() - start;
+                    times.push(elapsed);
+                    log(`Intento ${i+1}: ${elapsed}ms`, 'info');
+                } catch (error) {
+                    log(`Intento ${i+1}: ERROR`, 'error');
+                }
+            }
+            
+            if (times.length > 0) {
+                const avg = (times.reduce((a, b) => a + b, 0) / times.length).toFixed(0);
+                log(`📊 Latencia promedio: ${avg}ms`, 'success');
+            }
+        }
+        
+        // ============================
+        // TESTS DE FUNCIONALIDADES
+        // ============================
+        async function testFeatures() {
+            log('🔍 Verificando funcionalidades...', 'info');
+            const container = document.getElementById('featureTests');
+            container.innerHTML = '';
+            
+            // Test LocalStorage
+            try {
+                localStorage.setItem('test', 'test');
+                localStorage.removeItem('test');
+                addTestResult('featureTests', 'LocalStorage', true);
+            } catch {
+                addTestResult('featureTests', 'LocalStorage', false);
+            }
+            
+            // Test Geolocation API
+            const hasGeo = 'geolocation' in navigator;
+            addTestResult('featureTests', 'Geolocation API', hasGeo);
+            
+            // Test Vibration API
+            const hasVibrate = 'vibrate' in navigator;
+            addTestResult('featureTests', 'Vibration API', hasVibrate);
+            
+            // Test Fetch API
+            const hasFetch = 'fetch' in window;
+            addTestResult('featureTests', 'Fetch API', hasFetch);
+            
+            setStatus('statusFeatures', 'ok');
+        }
+        
+        async function testGPS() {
+            log('📍 Solicitando ubicación GPS...', 'info');
+            
+            if (!('geolocation' in navigator)) {
+                log('❌ Geolocation API no disponible', 'error');
+                return;
+            }
+            
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    log(`✅ GPS obtenido: ${position.coords.latitude}, ${position.coords.longitude}`, 'success');
+                    log(`Precisión: ±${position.coords.accuracy}m`, 'info');
+                    addTestResult('featureTests', 'GPS Real', true, 
+                        `±${position.coords.accuracy.toFixed(0)}m`);
+                },
+                (error) => {
+                    log(`❌ Error GPS: ${error.message}`, 'error');
+                    addTestResult('featureTests', 'GPS Real', false, error.message);
+                },
+                { enableHighAccuracy: true, timeout: 10000 }
+            );
+        }
+        
+        function testLocalStorage() {
+            log('💾 Testeando LocalStorage...', 'info');
+            try {
+                const testData = { test: Date.now() };
+                localStorage.setItem('diagnostic-test', JSON.stringify(testData));
+                const retrieved = JSON.parse(localStorage.getItem('diagnostic-test'));
+                localStorage.removeItem('diagnostic-test');
+                
+                const success = retrieved.test === testData.test;
+                log(success ? '✅ LocalStorage funciona' : '❌ LocalStorage falla', 
+                    success ? 'success' : 'error');
+            } catch (error) {
+                log(`❌ Error LocalStorage: ${error.message}`, 'error');
+            }
+        }
+        
+        function testDeviceID() {
+            log('🔑 Testeando Device ID...', 'info');
+            
+            // Simular getOrCreateDeviceId
+            let id = localStorage.getItem('deviceId');
+            if (!id) {
+                id = 'test-' + Date.now();
+                localStorage.setItem('deviceId', id);
+                log(`✅ Device ID creado: ${id}`, 'success');
+            } else {
+                log(`✅ Device ID existente: ${id}`, 'success');
+            }
+        }
+        
+        function testCooldown() {
+            log('⏰ Testeando sistema de Cooldown...', 'info');
+            
+            const team = 'india';
+            const key = `captureCooldown:${team}`;
+            
+            // Simular captura
+            localStorage.setItem(key, Date.now().toString());
+            log(`✅ Cooldown activado para ${team}`, 'success');
+            
+            // Verificar cooldown
+            const timestamp = parseInt(localStorage.getItem(key), 10);
+            const elapsed = Date.now() - timestamp;
+            log(`⏱️ Tiempo transcurrido: ${(elapsed/1000).toFixed(1)}s`, 'info');
+            
+            // Limpiar
+            localStorage.removeItem(key);
+            log('🧹 Cooldown limpiado', 'info');
+        }
+        
+        // ============================
+        // TESTS DE INTEGRACIÓN
+        // ============================
+        async function fullCaptureTest(team) {
+            if (!CONFIG) {
+                log('❌ Config no cargada', 'error');
+                return;
+            }
+            
+            log(`🚀 Iniciando test de captura completa para ${team}...`, 'info');
+            
+            const payload = {
+                team: team,
+                ts: new Date().toISOString(),
+                deviceId: 'integration-test-' + Date.now(),
+                userAgent: navigator.userAgent,
+                location: CONFIG.eventLocation ? {
+                    lat: CONFIG.eventLocation.lat,
+                    lng: CONFIG.eventLocation.lng,
+                    accuracy: 10
+                } : null
+            };
+            
+            try {
+                const response = await fetch(CONFIG.apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                
+                const text = await response.text();
+                let data;
+                try { data = JSON.parse(text); } catch { data = text; }
+                
+                if (response.ok) {
+                    log(`✅ Captura ${team} exitosa`, 'success');
+                    log(`Respuesta: ${JSON.stringify(data, null, 2)}`, 'success');
+                    addTestResult('integrationTests', `Captura ${team}`, true);
+                } else {
+                    log(`⚠️ Captura ${team} falló (${response.status})`, 'warning');
+                    log(`Respuesta: ${JSON.stringify(data, null, 2)}`, 'warning');
+                    addTestResult('integrationTests', `Captura ${team}`, false, 
+                        `HTTP ${response.status}`);
+                }
+            } catch (error) {
+                log(`❌ Error en captura ${team}: ${error.message}`, 'error');
+                addTestResult('integrationTests', `Captura ${team}`, false, error.message);
+            }
+        }
+        
+        async function stressTest() {
+            if (!CONFIG) return;
+            
+            log('💥 Iniciando stress test (10 capturas)...', 'warning');
+            const promises = [];
+            
+            for (let i = 0; i < 10; i++) {
+                const team = i % 2 === 0 ? 'india' : 'pakistan';
+                const payload = {
+                    team: team,
+                    ts: new Date().toISOString(),
+                    deviceId: `stress-test-${i}-${Date.now()}`,
+                    userAgent: 'StressTest/1.0',
+                    location: null
+                };
+                
+                promises.push(
+                    fetch(CONFIG.apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    })
+                    .then(r => ({ ok: r.ok, status: r.status, index: i }))
+                    .catch(e => ({ ok: false, error: e.message, index: i }))
+                );
+            }
+            
+            const results = await Promise.all(promises);
+            const successful = results.filter(r => r.ok).length;
+            
+            log(`📊 Stress test completado: ${successful}/10 exitosos`, 
+                successful === 10 ? 'success' : 'warning');
+            
+            results.forEach(r => {
+                log(`  ${r.index + 1}. ${r.ok ? '✅' : '❌'} ${r.ok ? r.status : r.error}`, 
+                    r.ok ? 'success' : 'error');
+            });
+        }
+        
+        // ============================
+        // EJECUTAR TODOS LOS TESTS
+        // ============================
+        async function runAllTests() {
+            log('▶️ Ejecutando batería completa de tests...', 'info');
+            metrics = { run: 0, passed: 0, failed: 0, startTime: Date.now() };
+            
+            await testConfiguration();
+            await testFiles();
+            await testNetwork();
+            await testFeatures();
+            
+            log('✅ Batería de tests completada', 'success');
+            
+            const allOk = metrics.failed === 0;
+            setStatus('statusGeneral', allOk ? 'ok' : 'warning');
+            document.getElementById('generalInfo').innerHTML = 
+                allOk 
+                ? '✅ Todos los tests pasaron. El sistema está listo para usar.' 
+                : `⚠️ ${metrics.failed} test(s) fallaron. Revisa los detalles arriba.`;
+        }
+        
+        // ============================
+        // INICIALIZACIÓN
+        // ============================
+        document.addEventListener('DOMContentLoaded', () => {
+            log('🔍 Sistema de diagnóstico iniciado', 'info');
+            runAllTests();
+        });
+    </script>
+</body>
+</html>

@@ -57,8 +57,17 @@ document.addEventListener('DOMContentLoaded', async () => {
     
     if (team) {
         currentTeam = team;
-        // Mostrar animación GPS primero
-        showGPSAnimation(team);
+        
+        // VERIFICAR COOLDOWN PRIMERO - Si está en cooldown, saltar animación
+        const cooldown = isOnCooldown(team);
+        if (cooldown.active) {
+            // Saltar directamente al juego (que mostrará la pantalla de cooldown)
+            document.body.className = `theme-${team}`;
+            initGame(team);
+        } else {
+            // Si no está en cooldown, mostrar animación GPS
+            showGPSAnimation(team);
+        }
     } else {
         showTeamSelector();
     }
