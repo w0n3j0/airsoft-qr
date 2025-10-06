@@ -12,6 +12,9 @@ const EVENT_LOCATION = {
     zoom: 17 // Nivel de zoom para el mapa
 };
 
+// Configuración cargada desde config.json
+let CONFIG = null;
+
 let currentTeam = null;
 let deviceId = null;
 let selectedPin = null;
@@ -30,7 +33,25 @@ const wireData = [
 
 let userLocation = null;
 
-document.addEventListener('DOMContentLoaded', () => {
+// Cargar configuración desde config.json
+async function loadConfig() {
+    try {
+        const response = await fetch('config.json');
+        if (response.ok) {
+            CONFIG = await response.json();
+            console.log('✅ Configuración cargada:', CONFIG);
+        } else {
+            console.warn('⚠️ No se pudo cargar config.json, usando valores por defecto');
+        }
+    } catch (error) {
+        console.warn('⚠️ Error cargando config.json:', error);
+    }
+}
+
+document.addEventListener('DOMContentLoaded', async () => {
+    // Cargar configuración primero
+    await loadConfig();
+    
     deviceId = getOrCreateDeviceId();
     const team = getTeamFromURL();
     
@@ -684,11 +705,17 @@ function captureSuccess() {
 // ============================================
 
 function getApiUrl() {
+    // 1. Prioridad: data-api en body
     const bodyApiUrl = document.body.dataset.api;
     if (bodyApiUrl) return bodyApiUrl;
     
-    // Intentar cargar desde config.json (si existe)
-    // Para simplicidad, usar un placeholder por defecto
+    // 2. Segunda prioridad: config.json cargado
+    if (CONFIG && CONFIG.apiUrl) {
+        return CONFIG.apiUrl;
+    }
+    
+    // 3. Fallback: placeholder (mostrará error)
+    console.error('❌ No se encontró URL de API. Verifica config.json');
     return 'https://example.com/api/capture';
 }
 
@@ -699,9 +726,9 @@ async function sendCapture() {
         deviceId: deviceId,
         userAgent: navigator.userAgent,
         location: userLocation ? {
-            lat: userLocation.lat,
-            lng: userLocation.lng,
-            accuracy: userLocation.accuracy
+            lat: parseFloat(userLocation.lat.toFixed(5)),      // SharePoint acepta máximo 5 decimales
+            lng: parseFloat(userLocation.lng.toFixed(5)),      // SharePoint acepta máximo 5 decimales
+            accuracy: Math.round(userLocation.accuracy)        // Redondear a metros enteros
         } : null
     };
     

@@ -1,0 +1,11 @@
+{
+  "team": "india",
+  "ts": "2025-10-06T15:30:45.123Z",
+  "deviceId": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+  "userAgent": "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1",
+  "location": {
+    "lat": -32.83114,
+    "lng": -60.70558,
+    "accuracy": 10
+  }
+}

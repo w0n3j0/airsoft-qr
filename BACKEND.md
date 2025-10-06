@@ -1,6 +1,8 @@
 # 📡 Ejemplo de Backend API
 
-Este documento explica cómo implementar el endpoint de captura en tu servidor.
+Este documento explica cómo implementar el endpoint de captura con **servidor tradicional** (Node.js, Python, PHP).
+
+> **💡 ¿Usas Microsoft 365?** Si prefieres usar **Power Automate y SharePoint**, ve a [`BACKEND_POWERAUTOMATE.md`](./BACKEND_POWERAUTOMATE.md) para una solución sin servidores.
 
 ## Endpoint Requerido
 

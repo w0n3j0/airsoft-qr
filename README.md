@@ -1,6 +1,26 @@
 # 🎯 Sistema de Captura de Bases - Airsoft
 
-Sistema web estático para eventos de Airsoft con temática **India vs Pakistán**. Los jugadores escanean códigos QR para acceder a un mini-juego que, al completarse, captura la base y envía los datos al sistema de puntuación.
+Sistema web estático para eventos de Airsoft con temática **India vs Pakistán**. Los ju- **Satelital**: Requiere API key de Mapbox o Google Maps
+
+## 🔧 Configuración del Backend
+
+### 📋 Opciones de Implementación
+
+1. **🔷 Power Automate + SharePoint** (Recomendado para Microsoft 365)
+   - 📘 **Guía paso a paso:** [`BACKEND_POWERAUTOMATE.md`](./BACKEND_POWERAUTOMATE.md)
+   - 📸 **Tutorial visual:** [`POWERAUTOMATE_GUIA_VISUAL.md`](./POWERAUTOMATE_GUIA_VISUAL.md) ← **¡Nuevo!**
+   - ✅ Sin servidores, fácil implementación
+   - ✅ Integración nativa con Teams y Power BI
+   - ✅ Lista de SharePoint para almacenar capturas
+   - ✅ Coordenadas redondeadas a 5 decimales (límite de SharePoint)
+
+2. **🖥️ Servidor Tradicional** (Node.js, Python, PHP)
+   - 📘 Ver guía completa: [`BACKEND.md`](./BACKEND.md)
+   - Ejemplos de código incluidos
+
+### 📤 Payload Enviado
+
+El sitio envía un POST con el siguiente payload:es escanean códigos QR para acceder a un mini-juego que, al completarse, captura la base y envía los datos al sistema de puntuación.
 
 ## 🚀 Características
 
@@ -144,12 +164,14 @@ El sitio envía un POST con el siguiente payload:
   "deviceId": "a1b2c3d4-e5f6-...",
   "userAgent": "Mozilla/5.0...",
   "location": {
-    "lat": -32.8311426,
-    "lng": -60.7055789,
-    "accuracy": 10
+    "lat": -32.83114,      // 5 decimales (límite SharePoint)
+    "lng": -60.70558,      // 5 decimales (límite SharePoint)
+    "accuracy": 10         // Metros enteros
   }
 }
 ```
+
+> **📍 Nota sobre precisión GPS:** Las coordenadas se redondean automáticamente a **5 decimales** (~1.1m de precisión) para compatibilidad con SharePoint. Esto es suficiente para eventos de Airsoft.
 
 ### Endpoint Requerido
 
@@ -157,6 +179,7 @@ El sitio envía un POST con el siguiente payload:
 - **Método**: `POST`
 - **Content-Type**: `application/json`
 - **Respuesta esperada**: HTTP 200-299 para éxito
+- **Backend recomendado**: Ver `BACKEND_POWERAUTOMATE.md` para implementación con Microsoft 365
 
 ### Validación del Servidor (Recomendado)
 

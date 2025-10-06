@@ -4,22 +4,25 @@
 
 ```
 f:\GitHub\QR\
-├── 📄 index.html              (3.8 KB) - Página principal con selector y juego
-├── 🎨 styles.css              (8.2 KB) - Estilos HUD militar por bando
-├── ⚙️ app.js                  (9.1 KB) - Lógica completa del juego
-├── 📱 manifest.json           (0.4 KB) - PWA manifest
-├── 🔧 config.example.json     (0.1 KB) - Ejemplo de configuración API
-├── 📚 README.md               (8.5 KB) - Documentación completa
-├── 🚀 SETUP.md                (2.1 KB) - Guía rápida de configuración  
-├── 🖥️ BACKEND.md              (9.8 KB) - Ejemplos de backend (Node.js/Python/PHP)
-├── ⚡ OPTIMIZATIONS.md        (7.2 KB) - Mejoras opcionales avanzadas
-├── 🧪 test-api.html           (3.9 KB) - Herramienta de testing de API
-├── 🎮 demo.html               (5.1 KB) - Página de demostración
-├── 🙈 .gitignore              (0.2 KB) - Archivos a ignorar
+├── 📄 index.html                    (4.2 KB) - Página principal con GPS y juego
+├── 🎨 styles.css                    (10.5 KB) - Estilos HUD militar + animaciones GPS
+├── ⚙️ app.js                        (14.8 KB) - Lógica del juego + GPS + mapa
+├── 📱 manifest.json                 (0.4 KB) - PWA manifest
+├── 🔧 config.example.json           (0.1 KB) - Ejemplo de configuración API
+├── 📚 README.md                     (10.2 KB) - Documentación completa
+├── 🚀 SETUP.md                      (2.1 KB) - Guía rápida de configuración  
+├── 🖥️ BACKEND.md                    (10.1 KB) - Ejemplos backend tradicional
+├── 🔷 BACKEND_POWERAUTOMATE.md      (18.5 KB) - Guía Power Automate + SharePoint
+├── 📱 MOBILE.md                     (9.8 KB) - Características móviles completas
+├── 📍 LOCATION.md                   (8.2 KB) - Configuración de coordenadas
+├── ⚡ OPTIMIZATIONS.md              (7.2 KB) - Mejoras opcionales avanzadas
+├── 🧪 test-api.html                 (3.9 KB) - Herramienta de testing de API
+├── 🎮 demo.html                     (5.1 KB) - Página de demostración
+├── 🙈 .gitignore                    (0.2 KB) - Archivos a ignorar
 └── 📁 assets/
-    └── README.md              (0.5 KB) - Guía para íconos PWA
+    └── README.md                    (0.5 KB) - Guía para íconos PWA
 
-TOTAL: ~58 KB (sin imágenes)
+TOTAL: ~105 KB (sin imágenes)
 ```
 
 ## ✨ Características Implementadas
