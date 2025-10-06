@@ -1,0 +1,14 @@
+{
+  "apiUrl": "https://defaulta7cad06884854149bb950f323bdfa8.9e.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/dbfd1137e73d47c0ae8b70059482af6d/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=Gofxf3xOYqJtWV6n3PcLLEr0TuoxrwMf5bsWYdP8lYA",
+  "cooldownMinutes": 30,
+  "eventLocation": {
+    "lat": -32.8311426,
+    "lng": -60.7055789,
+    "name": "Rosario, Argentina"
+  },
+  "powerAutomateConfig": {
+    "retryAttempts": 3,
+    "retryDelay": 5000,
+    "timeout": 30000
+  }
+}

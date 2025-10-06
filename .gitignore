@@ -1,5 +1,5 @@
 # Configuración sensible
-config.json
+# config.json - Comentado: La URL de Power Automate ya tiene firma de seguridad integrada
 
 # Archivos de sistema
 .DS_Store
