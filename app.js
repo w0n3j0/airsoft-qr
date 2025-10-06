@@ -5,6 +5,13 @@
 const COOLDOWN_DURATION = 30 * 60 * 1000; // 30 minutos en milisegundos
 const RETRY_INTERVAL = 15000; // 15 segundos para reintentos
 
+// Coordenadas fijas del evento (Rosario, Argentina)
+const EVENT_LOCATION = {
+    lat: -32.8311426,
+    lng: -60.7055789,
+    zoom: 17 // Nivel de zoom para el mapa
+};
+
 let currentTeam = null;
 let deviceId = null;
 let selectedPin = null;
@@ -89,12 +96,15 @@ function showGPSAnimation(team) {
     
     gpsScreen.classList.remove('hidden');
     
-    // Iniciar canvas de mapa
+    // Mostrar coordenadas del evento desde el inicio
+    coordsDisplay.textContent = `${EVENT_LOCATION.lat.toFixed(6)}, ${EVENT_LOCATION.lng.toFixed(6)}`;
+    
+    // Iniciar canvas de mapa con ubicación del evento
     initMapCanvas();
     
-    // Obtener ubicación GPS
+    // Obtener ubicación GPS del usuario para validación
     if ('geolocation' in navigator) {
-        statusText.textContent = 'Obteniendo GPS...';
+        statusText.textContent = 'Localizando jugador...';
         
         navigator.geolocation.getCurrentPosition(
             (position) => {
@@ -104,13 +114,17 @@ function showGPSAnimation(team) {
                     accuracy: position.coords.accuracy
                 };
                 
-                // Mostrar coordenadas
-                coordsDisplay.textContent = `${userLocation.lat.toFixed(6)}, ${userLocation.lng.toFixed(6)}`;
-                statusText.textContent = `Precisión: ±${Math.round(userLocation.accuracy)}m`;
+                // Calcular distancia al evento
+                const distance = calculateDistance(
+                    userLocation.lat, userLocation.lng,
+                    EVENT_LOCATION.lat, EVENT_LOCATION.lng
+                );
                 
-                // Animar zoom del mapa
+                statusText.textContent = `Distancia: ${Math.round(distance)}m | ±${Math.round(userLocation.accuracy)}m`;
+                
+                // Animar zoom del mapa hacia el evento
                 setTimeout(() => {
-                    statusText.textContent = 'UBICACIÓN CONFIRMADA';
+                    statusText.textContent = 'OBJETIVO LOCALIZADO';
                     animateMapZoom(() => {
                         // Después de la animación, iniciar juego
                         setTimeout(() => {
@@ -122,14 +136,18 @@ function showGPSAnimation(team) {
             },
             (error) => {
                 console.warn('Error GPS:', error);
-                statusText.textContent = 'GPS no disponible - Continuando...';
-                coordsDisplay.textContent = 'Ubicación no detectada';
+                statusText.textContent = 'Posición del jugador desconocida';
                 
-                // Continuar sin GPS después de 2 segundos
+                // Continuar con animación del evento
                 setTimeout(() => {
-                    gpsScreen.classList.add('hidden');
-                    initGame(team);
-                }, 2000);
+                    statusText.textContent = 'OBJETIVO LOCALIZADO';
+                    animateMapZoom(() => {
+                        setTimeout(() => {
+                            gpsScreen.classList.add('hidden');
+                            initGame(team);
+                        }, 500);
+                    });
+                }, 1500);
             },
             {
                 enableHighAccuracy: true,
@@ -138,11 +156,15 @@ function showGPSAnimation(team) {
             }
         );
     } else {
-        statusText.textContent = 'GPS no soportado';
+        statusText.textContent = 'OBJETIVO LOCALIZADO';
         setTimeout(() => {
-            gpsScreen.classList.add('hidden');
-            initGame(team);
-        }, 2000);
+            animateMapZoom(() => {
+                setTimeout(() => {
+                    gpsScreen.classList.add('hidden');
+                    initGame(team);
+                }, 500);
+            });
+        }, 1500);
     }
 }
 
@@ -154,8 +176,85 @@ function initMapCanvas() {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
     
-    // Dibujar mapa estilo táctico
-    drawTacticalMap(ctx, canvas.width, canvas.height);
+    // Cargar mapa real de fondo desde OpenStreetMap
+    loadMapBackground(ctx, canvas.width, canvas.height);
+}
+
+// Cargar mapa real de OpenStreetMap como fondo
+function loadMapBackground(ctx, width, height) {
+    // Calcular tile del mapa para las coordenadas del evento
+    const zoom = EVENT_LOCATION.zoom;
+    const lat = EVENT_LOCATION.lat;
+    const lng = EVENT_LOCATION.lng;
+    
+    // Convertir lat/lng a coordenadas de tile
+    const x = Math.floor((lng + 180) / 360 * Math.pow(2, zoom));
+    const y = Math.floor((1 - Math.log(Math.tan(lat * Math.PI / 180) + 1 / Math.cos(lat * Math.PI / 180)) / Math.PI) / 2 * Math.pow(2, zoom));
+    
+    // Crear imagen de fondo
+    const mapImage = new Image();
+    mapImage.crossOrigin = 'anonymous';
+    
+    // Usar tiles de OpenStreetMap (satelital: satellite-v9, calles: streets-v11)
+    // Vamos a cargar un tile de 3x3 para cubrir mejor el área
+    const tileUrls = [];
+    for (let dy = -1; dy <= 1; dy++) {
+        for (let dx = -1; dx <= 1; dx++) {
+            tileUrls.push(`https://tile.openstreetmap.org/${zoom}/${x + dx}/${y + dy}.png`);
+        }
+    }
+    
+    // Primero dibujar el mapa táctico de fondo
+    drawTacticalMap(ctx, width, height);
+    
+    // Cargar y dibujar el primer tile principal
+    const mainTile = new Image();
+    mainTile.crossOrigin = 'anonymous';
+    mainTile.onload = () => {
+        // Dibujar el mapa real con transparencia sobre el fondo táctico
+        ctx.globalAlpha = 0.4;
+        
+        // Calcular posición para centrar el tile
+        const tileSize = 256;
+        const scale = Math.min(width, height) / tileSize;
+        const offsetX = (width - tileSize * scale * 3) / 2;
+        const offsetY = (height - tileSize * scale * 3) / 2;
+        
+        // Dibujar grid de 3x3 tiles
+        let loadedTiles = 0;
+        for (let dy = -1; dy <= 1; dy++) {
+            for (let dx = -1; dx <= 1; dx++) {
+                const tileImg = new Image();
+                tileImg.crossOrigin = 'anonymous';
+                tileImg.onload = () => {
+                    const posX = offsetX + (dx + 1) * tileSize * scale;
+                    const posY = offsetY + (dy + 1) * tileSize * scale;
+                    ctx.drawImage(tileImg, posX, posY, tileSize * scale, tileSize * scale);
+                    
+                    loadedTiles++;
+                    if (loadedTiles === 1) {
+                        // Después de cargar el primer tile, dibujar overlay táctico
+                        ctx.globalAlpha = 1.0;
+                        drawTacticalOverlay(ctx, width, height);
+                    }
+                };
+                tileImg.onerror = () => {
+                    console.warn('Error cargando tile del mapa');
+                    // Si falla, solo usar el mapa táctico
+                    ctx.globalAlpha = 1.0;
+                    drawTacticalOverlay(ctx, width, height);
+                };
+                tileImg.src = `https://tile.openstreetmap.org/${zoom}/${x + dx}/${y + dy}.png`;
+            }
+        }
+    };
+    
+    mainTile.onerror = () => {
+        console.warn('Error cargando mapa de fondo, usando solo overlay táctico');
+        drawTacticalOverlay(ctx, width, height);
+    };
+    
+    mainTile.src = `https://tile.openstreetmap.org/${zoom}/${x}/${y}.png`;
 }
 
 function drawTacticalMap(ctx, width, height) {
@@ -192,12 +291,14 @@ function drawTacticalMap(ctx, width, height) {
         ctx.lineTo(i + height, height);
         ctx.stroke();
     }
-    
+}
+
+function drawTacticalOverlay(ctx, width, height) {
     // Círculos concéntricos en el centro
     const centerX = width / 2;
     const centerY = height / 2;
     
-    ctx.strokeStyle = 'rgba(232, 197, 71, 0.2)';
+    ctx.strokeStyle = 'rgba(232, 197, 71, 0.3)';
     ctx.lineWidth = 2;
     
     for (let r = 50; r < Math.max(width, height); r += 100) {
@@ -207,13 +308,20 @@ function drawTacticalMap(ctx, width, height) {
     }
     
     // Punto central (ubicación objetivo)
-    ctx.fillStyle = 'rgba(232, 197, 71, 0.6)';
+    ctx.fillStyle = 'rgba(232, 197, 71, 0.8)';
     ctx.shadowBlur = 20;
-    ctx.shadowColor = 'rgba(232, 197, 71, 0.8)';
+    ctx.shadowColor = 'rgba(232, 197, 71, 1.0)';
     ctx.beginPath();
-    ctx.arc(centerX, centerY, 8, 0, Math.PI * 2);
+    ctx.arc(centerX, centerY, 12, 0, Math.PI * 2);
     ctx.fill();
     ctx.shadowBlur = 0;
+    
+    // Anillo exterior del punto
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.8)';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, 18, 0, Math.PI * 2);
+    ctx.stroke();
     
     // Líneas de radar giratorias
     animateRadarLines(ctx, centerX, centerY);
@@ -254,6 +362,26 @@ function animateMapZoom(callback) {
         container.classList.remove('map-zooming');
         if (callback) callback();
     }, 3000);
+}
+
+// ============================================
+// UTILIDADES GPS
+// ============================================
+
+// Calcular distancia entre dos coordenadas GPS (fórmula de Haversine)
+function calculateDistance(lat1, lon1, lat2, lon2) {
+    const R = 6371e3; // Radio de la Tierra en metros
+    const φ1 = lat1 * Math.PI / 180;
+    const φ2 = lat2 * Math.PI / 180;
+    const Δφ = (lat2 - lat1) * Math.PI / 180;
+    const Δλ = (lon2 - lon1) * Math.PI / 180;
+
+    const a = Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+              Math.cos(φ1) * Math.cos(φ2) *
+              Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+    return R * c; // Distancia en metros
 }
 
 // ============================================

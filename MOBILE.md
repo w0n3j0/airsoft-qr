@@ -8,17 +8,20 @@ Este sistema está diseñado **exclusivamente para dispositivos móviles** con l
 
 ### Al Escanear el QR
 
-1. **Pantalla de Localización**: Aparece un mapa táctico estilo HUD militar
-2. **Obtención GPS**: El sistema solicita la ubicación del dispositivo
-3. **Visualización en Tiempo Real**: 
-   - Mapa con cuadrícula táctica
+1. **Pantalla de Localización**: Aparece un mapa táctico estilo HUD militar con mapa real de fondo
+2. **Coordenadas del Evento**: Se muestra la ubicación fija del evento (Rosario, Argentina)
+3. **Obtención GPS del Jugador**: El sistema solicita la ubicación del dispositivo
+4. **Visualización en Tiempo Real**: 
+   - Mapa real de OpenStreetMap de fondo (40% opacidad)
+   - Cuadrícula táctica superpuesta
    - Círculos concéntricos animados
    - Líneas de radar giratorias
-   - Retícula central pulsante
-   - Coordenadas GPS en pantalla
+   - Retícula central pulsante en el objetivo
+   - Coordenadas del evento: **-32.8311426, -60.7055789**
 
-4. **Animación de Zoom**: Una vez obtenida la ubicación:
-   - El mapa hace zoom espectacular hacia el punto
+5. **Cálculo de Distancia**: Muestra distancia del jugador al objetivo en metros
+6. **Animación de Zoom**: 
+   - El mapa hace zoom espectacular hacia el punto objetivo
    - Efecto cinematográfico de 3 segundos
    - Transición suave al mini-juego
 
@@ -27,14 +30,16 @@ Este sistema está diseñado **exclusivamente para dispositivos móviles** con l
 ```json
 {
   "location": {
-    "lat": -34.603722,
-    "lng": -58.381592,
-    "accuracy": 10
+    "lat": -32.8311426,     // Ubicación del jugador (GPS)
+    "lng": -60.7055789,     // O coordenadas del evento si GPS falla
+    "accuracy": 10          // Precisión en metros
   }
 }
 ```
 
-- **Latitud y Longitud**: Posición exacta del jugador
+- **Coordenadas del Evento**: Fijas en el código (-32.8311426, -60.7055789)
+- **Ubicación del Jugador**: Obtenida por GPS (opcional)
+- **Distancia calculada**: Entre jugador y objetivo
 - **Precisión**: En metros (típicamente 5-50m)
 - **Enviado al servidor**: Junto con los datos de captura
 

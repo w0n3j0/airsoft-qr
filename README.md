@@ -5,14 +5,17 @@ Sistema web estático para eventos de Airsoft con temática **India vs Pakistán
 ## 🚀 Características
 
 - **🎯 100% Optimizado para Móvil**: Diseñado exclusivamente para celulares con controles táctiles grandes
-- **📍 Animación GPS Espectacular**: Mapa táctico con zoom hacia la ubicación del jugador al escanear QR
+- **📍 Animación GPS Espectacular**: Mapa táctico con zoom hacia las coordenadas del evento al escanear QR
+- **🗺️ Mapa Real de Fondo**: Integración con OpenStreetMap mostrando la ubicación exacta del evento
+- **📍 Coordenadas Fijas**: Rosario, Argentina (-32.8311426, -60.7055789)
+- **📏 Validación de Distancia**: Calcula distancia del jugador al objetivo
 - **🎮 Mini-juego Táctil**: Conectar cables en menos de 10 segundos con áreas táctiles optimizadas
 - **⏱️ Sistema de Cooldown**: Bloqueo de 30 minutos por dispositivo tras captura exitosa
 - **🔄 Reintentos Automáticos**: Cola de eventos con reintentos en caso de fallos de red
 - **🎨 Temática HUD Militar**: Animaciones de radar, mapa táctico y efectos visuales por bando
-- **📦 Sin Dependencias**: Vanilla JS, ligero (< 70KB)
+- **📦 Sin Dependencias**: Vanilla JS, ligero (< 80KB)
 - **📱 PWA-Ready**: Instalable en pantalla principal del móvil
-- **🌍 Geolocalización**: Captura y envía ubicación GPS precisa de cada captura
+- **🌍 Geolocalización**: Captura y envía ubicación GPS precisa de cada jugador
 
 ## 📁 Estructura del Proyecto
 
@@ -101,7 +104,36 @@ https://TU-USUARIO.github.io/airsoft-qr/?team=pakistan
 - [QRCode Monkey](https://www.qrcode-monkey.com/)
 - Comando CLI: `qrencode -o qr-india.png "URL"`
 
-## 🔧 Configuración del Backend
+## �️ Configuración de Ubicación
+
+### Cambiar Coordenadas del Evento
+
+Para modificar la ubicación del evento, edita en `app.js`:
+
+```javascript
+// Coordenadas fijas del evento (Rosario, Argentina)
+const EVENT_LOCATION = {
+    lat: -32.8311426,  // Tu latitud
+    lng: -60.7055789,  // Tu longitud
+    zoom: 17           // Nivel de zoom (15-18 recomendado)
+};
+```
+
+### Obtener Coordenadas
+
+1. Abre [Google Maps](https://maps.google.com)
+2. Click derecho en la ubicación deseada
+3. Click en las coordenadas para copiarlas
+4. Reemplaza en `EVENT_LOCATION`
+
+### Mapa de Fondo
+
+El sistema usa tiles de **OpenStreetMap** gratuitos. Si quieres cambiar el estilo:
+
+- **Por defecto**: `tile.openstreetmap.org` (calles)
+- **Satelital**: Requiere API key de Mapbox o Google Maps
+
+## �🔧 Configuración del Backend
 
 El sitio envía un POST con el siguiente payload:
 
@@ -110,7 +142,12 @@ El sitio envía un POST con el siguiente payload:
   "team": "india",
   "ts": "2025-10-06T12:34:56.789Z",
   "deviceId": "a1b2c3d4-e5f6-...",
-  "userAgent": "Mozilla/5.0..."
+  "userAgent": "Mozilla/5.0...",
+  "location": {
+    "lat": -32.8311426,
+    "lng": -60.7055789,
+    "accuracy": 10
+  }
 }
 ```
 
