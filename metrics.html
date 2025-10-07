@@ -375,6 +375,110 @@
             margin-bottom: 10px;
         }
 
+        /* Missiles Section */
+        .missiles-section {
+            margin-bottom: 30px;
+        }
+
+        .missiles-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .missile-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            padding: 30px;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .missile-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 56, 56, 0.1) 0%, transparent 70%);
+            animation: pulse 3s ease-in-out infinite;
+        }
+
+        .missile-card.deactivated::before {
+            background: radial-gradient(circle, rgba(0, 255, 136, 0.1) 0%, transparent 70%);
+        }
+
+        .missile-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 30px rgba(255, 56, 56, 0.3);
+        }
+
+        .missile-card.deactivated:hover {
+            box-shadow: 0 8px 30px rgba(0, 255, 136, 0.3);
+        }
+
+        .missile-icon-small {
+            font-size: 48px;
+            margin-bottom: 15px;
+            animation: rocketFloat 2s ease-in-out infinite;
+        }
+
+        @keyframes rocketFloat {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .missile-label {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .missile-status-badge {
+            display: inline-block;
+            padding: 8px 20px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        .missile-status-badge.armed {
+            background: #FF3838;
+            color: white;
+            animation: missileAlert 1.5s ease-in-out infinite;
+        }
+
+        .missile-status-badge.deactivated {
+            background: #00FF88;
+            color: #0B0F12;
+        }
+
+        @keyframes missileAlert {
+            0%, 100% { 
+                box-shadow: 0 0 10px rgba(255, 56, 56, 0.5);
+                transform: scale(1);
+            }
+            50% { 
+                box-shadow: 0 0 20px rgba(255, 56, 56, 0.8);
+                transform: scale(1.05);
+            }
+        }
+
+        .missile-time {
+            font-size: 12px;
+            opacity: 0.7;
+            margin-top: 10px;
+            min-height: 20px;
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             .scoreboard {
@@ -383,6 +487,10 @@
 
             .stats-grid {
                 grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            }
+
+            .missiles-grid {
+                grid-template-columns: 1fr;
             }
 
             table {
@@ -454,6 +562,37 @@
             </div>
         </div>
 
+        <!-- Missiles Section -->
+        <div class="missiles-section">
+            <h2 class="section-title">🚀 Estado de Misiles</h2>
+            <div class="missiles-grid" id="missilesGrid">
+                <div class="missile-card" data-missile="1">
+                    <div class="missile-icon-small">🚀</div>
+                    <div class="missile-label">MISIL 1</div>
+                    <div class="missile-status-badge armed" id="missileStatus1">
+                        🔴 ARMADO
+                    </div>
+                    <div class="missile-time" id="missileTime1">-</div>
+                </div>
+                <div class="missile-card" data-missile="2">
+                    <div class="missile-icon-small">🚀</div>
+                    <div class="missile-label">MISIL 2</div>
+                    <div class="missile-status-badge armed" id="missileStatus2">
+                        🔴 ARMADO
+                    </div>
+                    <div class="missile-time" id="missileTime2">-</div>
+                </div>
+                <div class="missile-card" data-missile="3">
+                    <div class="missile-icon-small">🚀</div>
+                    <div class="missile-label">MISIL 3</div>
+                    <div class="missile-status-badge armed" id="missileStatus3">
+                        🔴 ARMADO
+                    </div>
+                    <div class="missile-time" id="missileTime3">-</div>
+                </div>
+            </div>
+        </div>
+
         <!-- Captures Table -->
         <div class="captures-section">
             <h2 class="section-title">📋 Historial de Capturas</h2>
@@ -483,10 +622,27 @@
     </div>
 
     <script>
-        // Endpoint de Power Automate
+        // Endpoints de Power Automate
         const METRICS_ENDPOINT = 'https://defaulta7cad06884854149bb950f323bdfa8.9e.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/44b62dd352dd4a10b67a432a43d749f8/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=RLzAKS0H52XVoCre2T_sVZ8uycqe3eVekBB9j4_CU44';
+        
+        let MISSILES_ENDPOINT = null; // Se cargará desde config.json
 
         let captures = [];
+        let missiles = {};
+
+        // Cargar configuración
+        async function loadConfig() {
+            try {
+                const response = await fetch('config.json');
+                if (response.ok) {
+                    const config = await response.json();
+                    MISSILES_ENDPOINT = config.missileMetricsUrl || config.missileApiUrl;
+                    console.log('✅ Config cargada, Missiles Endpoint:', MISSILES_ENDPOINT);
+                }
+            } catch (error) {
+                console.warn('⚠️ Error cargando config.json:', error);
+            }
+        }
 
         // Formatear fecha
         function formatDate(isoString) {
@@ -532,6 +688,94 @@
             return `<span class="precision-badge precision-poor">${distance}m ✗</span>`;
         }
 
+        // Cargar datos de misiles
+        async function loadMissiles() {
+            if (!MISSILES_ENDPOINT) {
+                console.warn('⚠️ Missiles endpoint no configurado');
+                return;
+            }
+
+            try {
+                const response = await fetch(MISSILES_ENDPOINT, {
+                    method: 'GET'
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+
+                const data = await response.json();
+                console.log('Respuesta de misiles:', data);
+
+                // Manejar respuesta con statusCode y body
+                let missileData;
+                if (data.body && data.body.value) {
+                    missileData = data.body.value;
+                } else if (data.value) {
+                    missileData = data.value;
+                } else {
+                    console.error('Formato de respuesta de misiles desconocido');
+                    return;
+                }
+
+                // Procesar datos de misiles
+                if (Array.isArray(missileData)) {
+                    missileData.forEach(missile => {
+                        const missileNum = missile.Title; // Número del misil como string ("1", "2", "3")
+                        const status = missile.field_1; // Estado: "Armado" o "Desactivado"
+                        const timestamp = missile.field_3 || missile.Modified; // field_3 es timestamp de desactivación
+                        
+                        missiles[missileNum] = {
+                            status: status,
+                            timestamp: timestamp,
+                            deviceId: missile.field_2 || null,
+                            location: {
+                                lat: missile.field_4 || 0,
+                                lng: missile.field_5 || 0,
+                                accuracy: missile.field_6 || 0
+                            }
+                        };
+                    });
+                }
+
+                console.log('✅ Misiles procesados:', missiles);
+                renderMissiles();
+
+            } catch (error) {
+                console.error('Error loading missiles:', error);
+            }
+        }
+
+        // Renderizar estado de misiles
+        function renderMissiles() {
+            console.log('🎨 Renderizando misiles:', missiles);
+            
+            for (let i = 1; i <= 3; i++) {
+                const card = document.querySelector(`.missile-card[data-missile="${i}"]`);
+                const statusBadge = document.getElementById(`missileStatus${i}`);
+                const timeElement = document.getElementById(`missileTime${i}`);
+                
+                // Convertir i a string para buscar en el objeto
+                const missileData = missiles[i.toString()];
+                
+                console.log(`Misil ${i}:`, missileData);
+                
+                if (missileData && missileData.status === 'Desactivado') {
+                    card.classList.add('deactivated');
+                    statusBadge.className = 'missile-status-badge deactivated';
+                    statusBadge.textContent = '🟢 DESACTIVADO';
+                    timeElement.textContent = `Desactivado ${formatDate(missileData.timestamp)}`;
+                } else {
+                    card.classList.remove('deactivated');
+                    statusBadge.className = 'missile-status-badge armed';
+                    statusBadge.textContent = '🔴 ARMADO';
+                    timeElement.textContent = 'Esperando desactivación...';
+                }
+            }
+            
+            console.log('✅ Renderizado completo');
+        }
+
         // Cargar datos
         async function loadMetrics() {
             const loadingOverlay = document.getElementById('loadingOverlay');
@@ -543,15 +787,17 @@
                 refreshBtn.classList.add('loading');
                 errorMessage.classList.remove('active');
 
-                const response = await fetch(METRICS_ENDPOINT, {
-                    method: 'GET'
-                });
+                // Cargar capturas y misiles en paralelo
+                const [capturesResponse] = await Promise.all([
+                    fetch(METRICS_ENDPOINT, { method: 'GET' }),
+                    loadMissiles()
+                ]);
 
-                if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                if (!capturesResponse.ok) {
+                    throw new Error(`HTTP ${capturesResponse.status}: ${capturesResponse.statusText}`);
                 }
 
-                const data = await response.json();
+                const data = await capturesResponse.json();
                 console.log('Respuesta del servidor:', data);
                 
                 // Manejar diferentes formatos de respuesta
@@ -669,8 +915,11 @@
         // Event listeners
         document.getElementById('refreshBtn').addEventListener('click', loadMetrics);
 
-        // Cargar al iniciar
-        loadMetrics();
+        // Cargar configuración y datos al iniciar
+        (async function init() {
+            await loadConfig();
+            await loadMetrics();
+        })();
     </script>
 </body>
 </html>

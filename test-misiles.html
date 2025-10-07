@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🧪 Test de Misiles - Airsoft QR</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(135deg, #0B0F12 0%, #1a1f24 100%);
+            color: #E8F5E9;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #FF3838;
+            text-shadow: 0 0 20px rgba(255, 56, 56, 0.5);
+        }
+
+        .test-section {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid #1B2A1F;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+
+        .test-section h2 {
+            color: #00FF88;
+            margin-bottom: 15px;
+            font-size: 20px;
+        }
+
+        .test-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .test-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid #1B2A1F;
+            border-radius: 8px;
+            padding: 20px;
+        }
+
+        .test-card h3 {
+            color: #FFD700;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            margin: 5px 0;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Courier New', monospace;
+        }
+
+        .btn-test {
+            background: linear-gradient(135deg, #138808, #0B7A4B);
+            color: white;
+        }
+
+        .btn-test:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(19, 136, 8, 0.4);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #FF3838, #FF8C00);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(255, 56, 56, 0.4);
+        }
+
+        .btn-info {
+            background: linear-gradient(135deg, #0088FF, #00D4FF);
+            color: white;
+        }
+
+        .btn-info:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 136, 255, 0.4);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        .result {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 6px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .result.active {
+            display: block;
+        }
+
+        .result.success {
+            background: rgba(0, 255, 136, 0.1);
+            border: 1px solid #00FF88;
+            color: #00FF88;
+        }
+
+        .result.error {
+            background: rgba(255, 56, 56, 0.1);
+            border: 1px solid #FF3838;
+            color: #FF3838;
+        }
+
+        .result.info {
+            background: rgba(0, 136, 255, 0.1);
+            border: 1px solid #0088FF;
+            color: #0088FF;
+        }
+
+        .result pre {
+            margin-top: 10px;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 4px;
+            overflow-x: auto;
+            font-size: 12px;
+        }
+
+        .config-info {
+            background: rgba(255, 215, 0, 0.1);
+            border: 1px solid #FFD700;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .config-info h3 {
+            color: #FFD700;
+            margin-bottom: 10px;
+        }
+
+        .config-info code {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 12px;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+
+        .status-badge.loaded {
+            background: #00FF88;
+            color: #0B0F12;
+        }
+
+        .status-badge.error {
+            background: #FF3838;
+            color: white;
+        }
+
+        .loader {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 10px auto;
+        }
+
+        .loader.active {
+            display: block;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .quick-links {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .quick-links a {
+            display: block;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid #1B2A1F;
+            border-radius: 6px;
+            text-align: center;
+            text-decoration: none;
+            color: #00D4FF;
+            transition: all 0.3s ease;
+        }
+
+        .quick-links a:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Test del Sistema de Misiles</h1>
+
+        <div class="config-info">
+            <h3>📋 Estado de Configuración <span class="status-badge" id="configStatus">Cargando...</span></h3>
+            <p><strong>Captura de Bases:</strong> <code id="captureUrl">-</code></p>
+            <p><strong>Misiles POST:</strong> <code id="missilePostUrl">-</code></p>
+            <p><strong>Misiles GET:</strong> <code id="missileGetUrl">-</code></p>
+        </div>
+
+        <!-- Test 1: Configuración -->
+        <div class="test-section">
+            <h2>1️⃣ Verificar Configuración</h2>
+            <div class="test-grid">
+                <div class="test-card">
+                    <h3>Config.json</h3>
+                    <button class="btn-info" onclick="testConfig()">🔍 Verificar Config</button>
+                    <div class="result" id="result-config"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Test 2: Misiles GET -->
+        <div class="test-section">
+            <h2>2️⃣ Consultar Estado de Misiles (GET)</h2>
+            <div class="test-grid">
+                <div class="test-card">
+                    <h3>Obtener Estado</h3>
+                    <button class="btn-test" onclick="testMissilesGet()">📊 GET Estado Misiles</button>
+                    <div class="loader" id="loader-get"></div>
+                    <div class="result" id="result-get"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Test 3: Misiles POST -->
+        <div class="test-section">
+            <h2>3️⃣ Desactivar Misiles (POST)</h2>
+            <div class="test-grid">
+                <div class="test-card">
+                    <h3>🚀 Misil 1</h3>
+                    <button class="btn-danger" onclick="testMissilePost('1')">⚡ Desactivar Misil 1</button>
+                    <div class="loader" id="loader-post-1"></div>
+                    <div class="result" id="result-post-1"></div>
+                </div>
+                <div class="test-card">
+                    <h3>🚀 Misil 2</h3>
+                    <button class="btn-danger" onclick="testMissilePost('2')">⚡ Desactivar Misil 2</button>
+                    <div class="loader" id="loader-post-2"></div>
+                    <div class="result" id="result-post-2"></div>
+                </div>
+                <div class="test-card">
+                    <h3>🚀 Misil 3</h3>
+                    <button class="btn-danger" onclick="testMissilePost('3')">⚡ Desactivar Misil 3</button>
+                    <div class="loader" id="loader-post-3"></div>
+                    <div class="result" id="result-post-3"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Test 4: Links Rápidos -->
+        <div class="test-section">
+            <h2>4️⃣ Accesos Rápidos</h2>
+            <div class="quick-links">
+                <a href="misil.html?missile=1" target="_blank">🚀 Misil 1 (Página Real)</a>
+                <a href="misil.html?missile=2" target="_blank">🚀 Misil 2 (Página Real)</a>
+                <a href="misil.html?missile=3" target="_blank">🚀 Misil 3 (Página Real)</a>
+                <a href="metrics.html" target="_blank">📊 Métricas</a>
+                <a href="index.html?team=india" target="_blank">🇮🇳 Captura India</a>
+                <a href="index.html?team=pakistan" target="_blank">🇵🇰 Captura Pakistan</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let CONFIG = null;
+
+        // Cargar configuración
+        async function loadConfig() {
+            try {
+                const response = await fetch('config.json');
+                CONFIG = await response.json();
+                
+                document.getElementById('captureUrl').textContent = CONFIG.apiUrl.substring(0, 60) + '...';
+                document.getElementById('missilePostUrl').textContent = CONFIG.missileApiUrl.substring(0, 60) + '...';
+                document.getElementById('missileGetUrl').textContent = CONFIG.missileMetricsUrl.substring(0, 60) + '...';
+                
+                document.getElementById('configStatus').textContent = 'Cargada ✓';
+                document.getElementById('configStatus').className = 'status-badge loaded';
+                
+                return true;
+            } catch (error) {
+                console.error('Error cargando config:', error);
+                document.getElementById('configStatus').textContent = 'Error ✗';
+                document.getElementById('configStatus').className = 'status-badge error';
+                return false;
+            }
+        }
+
+        // Test 1: Verificar Config
+        function testConfig() {
+            const result = document.getElementById('result-config');
+            
+            if (!CONFIG) {
+                showResult('result-config', 'error', '❌ Config no cargado');
+                return;
+            }
+
+            const checks = [
+                { name: 'apiUrl', value: CONFIG.apiUrl },
+                { name: 'missileApiUrl', value: CONFIG.missileApiUrl },
+                { name: 'missileMetricsUrl', value: CONFIG.missileMetricsUrl },
+                { name: 'cooldownMinutes', value: CONFIG.cooldownMinutes },
+                { name: 'eventLocation', value: CONFIG.eventLocation }
+            ];
+
+            const allValid = checks.every(check => check.value);
+
+            if (allValid) {
+                showResult('result-config', 'success', 
+                    '✅ Todas las configuraciones están presentes',
+                    JSON.stringify(CONFIG, null, 2)
+                );
+            } else {
+                const missing = checks.filter(check => !check.value).map(c => c.name);
+                showResult('result-config', 'error', 
+                    `❌ Faltan configuraciones: ${missing.join(', ')}`
+                );
+            }
+        }
+
+        // Test 2: GET Estado Misiles
+        async function testMissilesGet() {
+            if (!CONFIG) {
+                showResult('result-get', 'error', '❌ Config no cargado');
+                return;
+            }
+
+            showLoader('loader-get', true);
+            showResult('result-get', 'info', '⏳ Consultando estado de misiles...');
+
+            try {
+                const response = await fetch(CONFIG.missileMetricsUrl, {
+                    method: 'GET'
+                });
+
+                showLoader('loader-get', false);
+
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log('Respuesta GET misiles:', data);
+                    
+                    let message = '✅ Estado obtenido correctamente\n\n';
+                    
+                    // Manejar respuesta con statusCode y body
+                    let missileData;
+                    if (data.body && data.body.value) {
+                        missileData = data.body.value;
+                    } else if (data.value) {
+                        missileData = data.value;
+                    } else {
+                        missileData = [];
+                    }
+                    
+                    if (Array.isArray(missileData) && missileData.length > 0) {
+                        missileData.forEach((missile) => {
+                            const num = missile.Title; // "1", "2", "3"
+                            const estado = missile.field_1; // "Armado" o "Desactivado"
+                            const modified = new Date(missile.Modified).toLocaleString('es-AR');
+                            message += `Misil ${num}: ${estado} (Modificado: ${modified})\n`;
+                        });
+                    } else {
+                        message += 'No se encontraron misiles\n';
+                    }
+
+                    showResult('result-get', 'success', message, JSON.stringify(data, null, 2));
+                } else {
+                    const errorText = await response.text();
+                    showResult('result-get', 'error', 
+                        `❌ Error ${response.status}: ${response.statusText}`,
+                        errorText
+                    );
+                }
+            } catch (error) {
+                showLoader('loader-get', false);
+                showResult('result-get', 'error', 
+                    `❌ Error de conexión: ${error.message}`
+                );
+            }
+        }
+
+        // Test 3: POST Desactivar Misil
+        async function testMissilePost(missileId) {
+            if (!CONFIG) {
+                showResult(`result-post-${missileId}`, 'error', '❌ Config no cargado');
+                return;
+            }
+
+            showLoader(`loader-post-${missileId}`, true);
+            showResult(`result-post-${missileId}`, 'info', '⏳ Desactivando misil...');
+
+            const payload = {
+                missile: missileId,
+                ts: new Date().toISOString(),
+                deviceId: 'test-device-' + Math.random().toString(36).substr(2, 9),
+                userAgent: navigator.userAgent,
+                location: {
+                    lat: -32.83114,
+                    lng: -60.70558,
+                    accuracy: 10
+                }
+            };
+
+            try {
+                const response = await fetch(CONFIG.missileApiUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                showLoader(`loader-post-${missileId}`, false);
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showResult(`result-post-${missileId}`, 'success', 
+                        `✅ Misil ${missileId} desactivado correctamente`,
+                        JSON.stringify(data, null, 2)
+                    );
+                } else if (response.status === 409) {
+                    showResult(`result-post-${missileId}`, 'info', 
+                        `ℹ️ Misil ${missileId} ya estaba desactivado`,
+                        JSON.stringify(data, null, 2)
+                    );
+                } else {
+                    showResult(`result-post-${missileId}`, 'error', 
+                        `❌ Error ${response.status}: ${data.error || response.statusText}`,
+                        JSON.stringify(data, null, 2)
+                    );
+                }
+            } catch (error) {
+                showLoader(`loader-post-${missileId}`, false);
+                showResult(`result-post-${missileId}`, 'error', 
+                    `❌ Error de conexión: ${error.message}`
+                );
+            }
+        }
+
+        // Helpers
+        function showResult(elementId, type, message, details = null) {
+            const result = document.getElementById(elementId);
+            result.className = `result active ${type}`;
+            
+            let html = `<strong>${message}</strong>`;
+            if (details) {
+                html += `<pre>${details}</pre>`;
+            }
+            
+            result.innerHTML = html;
+        }
+
+        function showLoader(elementId, show) {
+            const loader = document.getElementById(elementId);
+            if (show) {
+                loader.classList.add('active');
+            } else {
+                loader.classList.remove('active');
+            }
+        }
+
+        // Cargar config al inicio
+        window.addEventListener('DOMContentLoaded', loadConfig);
+    </script>
+</body>
+</html>

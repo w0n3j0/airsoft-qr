@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🚀 Desactivación de Misil - Airsoft QR</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --missile-red: #FF3838;
+            --missile-orange: #FF8C00;
+            --missile-green: #00FF88;
+            --missile-glow: rgba(255, 56, 56, 0.6);
+            --bg-dark: #0B0F12;
+            --text-light: #E8F5E9;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(135deg, #0B0F12 0%, #1a1f24 100%);
+            color: var(--text-light);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            overflow: hidden;
+        }
+
+        .missile-container {
+            text-align: center;
+            max-width: 500px;
+            width: 100%;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Animación de alerta */
+        .alert-pulse {
+            animation: alertPulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes alertPulse {
+            0%, 100% { 
+                box-shadow: 0 0 30px var(--missile-glow),
+                           inset 0 0 20px rgba(255, 56, 56, 0.2);
+            }
+            50% { 
+                box-shadow: 0 0 60px var(--missile-glow),
+                           inset 0 0 40px rgba(255, 56, 56, 0.4);
+            }
+        }
+
+        /* Icono de misil */
+        .missile-icon {
+            font-size: 120px;
+            margin-bottom: 20px;
+            text-shadow: 0 0 30px var(--missile-red);
+            animation: rocketShake 0.5s ease-in-out infinite;
+        }
+
+        @keyframes rocketShake {
+            0%, 100% { transform: rotate(-2deg); }
+            50% { transform: rotate(2deg); }
+        }
+
+        /* Título */
+        .missile-title {
+            font-size: clamp(24px, 6vw, 42px);
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 10px;
+            color: var(--missile-red);
+            text-shadow: 0 0 20px var(--missile-glow);
+        }
+
+        .missile-subtitle {
+            font-size: clamp(16px, 4vw, 24px);
+            margin-bottom: 30px;
+            opacity: 0.8;
+        }
+
+        /* Panel de información */
+        .info-panel {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid var(--missile-red);
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .info-panel::before {
+            content: '⚠️ PELIGRO ⚠️';
+            position: absolute;
+            top: -1px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--missile-red);
+            color: white;
+            padding: 5px 20px;
+            font-size: 12px;
+            font-weight: bold;
+            letter-spacing: 2px;
+        }
+
+        .missile-id {
+            font-size: 64px;
+            font-weight: bold;
+            color: var(--missile-red);
+            margin: 20px 0;
+            text-shadow: 0 0 30px var(--missile-glow);
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 10px 30px;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-top: 10px;
+        }
+
+        .status-badge.armed {
+            background: var(--missile-red);
+            color: white;
+            animation: pulse 1s ease-in-out infinite;
+        }
+
+        .status-badge.deactivated {
+            background: var(--missile-green);
+            color: #0B0F12;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        /* Botón de desactivación */
+        .deactivate-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            padding: 20px 50px;
+            font-size: 24px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            background: linear-gradient(135deg, var(--missile-red), var(--missile-orange));
+            border: 3px solid white;
+            border-radius: 12px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 30px rgba(255, 56, 56, 0.5);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .deactivate-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 40px rgba(255, 56, 56, 0.7);
+        }
+
+        .deactivate-btn:active {
+            transform: translateY(-1px);
+        }
+
+        .deactivate-btn::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                45deg,
+                transparent,
+                rgba(255, 255, 255, 0.3),
+                transparent
+            );
+            transform: rotate(45deg);
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+        }
+
+        .deactivate-btn.disabled {
+            background: #555;
+            cursor: not-allowed;
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        .deactivate-btn .spinner {
+            display: none;
+            width: 24px;
+            height: 24px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        .deactivate-btn.loading .spinner {
+            display: block;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Pantalla de éxito */
+        .success-screen {
+            display: none;
+            text-align: center;
+            animation: successZoom 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .success-screen.active {
+            display: block;
+        }
+
+        @keyframes successZoom {
+            from { transform: scale(0); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .success-icon {
+            font-size: 150px;
+            color: var(--missile-green);
+            text-shadow: 0 0 50px var(--missile-green);
+            margin-bottom: 20px;
+            animation: successBounce 0.6s ease-in-out;
+        }
+
+        @keyframes successBounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+
+        .success-title {
+            font-size: 36px;
+            color: var(--missile-green);
+            text-shadow: 0 0 20px rgba(0, 255, 136, 0.5);
+            margin-bottom: 20px;
+        }
+
+        .success-message {
+            font-size: 18px;
+            opacity: 0.8;
+            margin-bottom: 10px;
+        }
+
+        .timestamp {
+            font-size: 14px;
+            opacity: 0.6;
+            margin-top: 20px;
+        }
+
+        /* Error Message */
+        .error-message {
+            background: rgba(255, 56, 56, 0.1);
+            border: 2px solid var(--missile-red);
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .error-message.active {
+            display: block;
+            animation: shake 0.5s ease-in-out;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        .error-message h3 {
+            color: var(--missile-red);
+            margin-bottom: 10px;
+        }
+
+        /* Contador regresivo */
+        .countdown-timer {
+            font-size: 48px;
+            font-weight: bold;
+            color: var(--missile-red);
+            text-shadow: 0 0 20px var(--missile-glow);
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .missile-icon {
+                font-size: 80px;
+            }
+
+            .info-panel {
+                padding: 25px 15px;
+            }
+
+            .deactivate-btn {
+                padding: 15px 30px;
+                font-size: 18px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="missile-container">
+        <!-- Pantalla de estado del misil -->
+        <div id="missileStatus">
+            <div class="missile-icon">🚀</div>
+            <h1 class="missile-title" id="missileTitle">MISIL DETECTADO</h1>
+            <p class="missile-subtitle">Objetivo Secundario</p>
+
+            <div class="info-panel alert-pulse">
+                <div class="missile-id" id="missileNumber">-</div>
+                <div class="status-badge armed" id="statusBadge">🔴 ARMADO</div>
+                <div class="countdown-timer" id="countdownTimer" style="display: none;">--:--</div>
+            </div>
+
+            <button class="deactivate-btn" id="deactivateBtn">
+                <span class="spinner"></span>
+                <span class="btn-text">⚡ DESACTIVAR AHORA</span>
+            </button>
+
+            <div class="error-message" id="errorMessage">
+                <h3>⚠️ Error</h3>
+                <p id="errorText"></p>
+            </div>
+        </div>
+
+        <!-- Pantalla de éxito -->
+        <div class="success-screen" id="successScreen">
+            <div class="success-icon">✅</div>
+            <h2 class="success-title">MISIL DESACTIVADO</h2>
+            <p class="success-message">El misil ha sido neutralizado con éxito</p>
+            <p class="success-message" id="deactivationMessage">-</p>
+            <p class="timestamp" id="timestampDisplay">-</p>
+        </div>
+    </div>
+
+    <script>
+        // ============================================
+        // CONFIGURACIÓN
+        // ============================================
+        
+        let CONFIG = null;
+        let currentMissile = null;
+        let deviceId = null;
+
+        // Cargar configuración desde config.json
+        async function loadConfig() {
+            try {
+                const response = await fetch('config.json');
+                if (response.ok) {
+                    CONFIG = await response.json();
+                    console.log('✅ Configuración cargada:', CONFIG);
+                } else {
+                    console.warn('⚠️ No se pudo cargar config.json');
+                }
+            } catch (error) {
+                console.warn('⚠️ Error cargando config.json:', error);
+            }
+        }
+
+        // ============================================
+        // INICIALIZACIÓN
+        // ============================================
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            await loadConfig();
+            deviceId = getOrCreateDeviceId();
+            
+            const missileId = getMissileFromURL();
+            
+            if (missileId && (missileId === '1' || missileId === '2' || missileId === '3')) {
+                currentMissile = missileId;
+                await checkMissileStatus();
+            } else {
+                showError('URL inválida. Use ?missile=1, ?missile=2 o ?missile=3');
+            }
+
+            // Event listener para botón de desactivación
+            document.getElementById('deactivateBtn').addEventListener('click', deactivateMissile);
+        });
+
+        // ============================================
+        // UTILIDADES
+        // ============================================
+
+        function getOrCreateDeviceId() {
+            let id = localStorage.getItem('deviceId');
+            if (!id) {
+                id = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+                    const r = Math.random() * 16 | 0;
+                    const v = c === 'x' ? r : (r & 0x3 | 0x8);
+                    return v.toString(16);
+                });
+                localStorage.setItem('deviceId', id);
+            }
+            return id;
+        }
+
+        function getMissileFromURL() {
+            const params = new URLSearchParams(window.location.search);
+            return params.get('missile');
+        }
+
+        function getApiUrl() {
+            if (CONFIG && CONFIG.missileApiUrl) {
+                return CONFIG.missileApiUrl;
+            }
+            console.error('❌ No se encontró missileApiUrl en config.json');
+            return null;
+        }
+
+        function formatDate(isoString) {
+            const date = new Date(isoString);
+            return date.toLocaleString('es-AR', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+        }
+
+        function vibrate(pattern) {
+            if ('vibrate' in navigator) {
+                navigator.vibrate(pattern);
+            }
+        }
+
+        // ============================================
+        // VERIFICAR ESTADO DEL MISIL
+        // ============================================
+
+        async function checkMissileStatus() {
+            document.getElementById('missileNumber').textContent = `MISIL ${currentMissile}`;
+            
+            const apiUrl = getApiUrl();
+            if (!apiUrl) {
+                showError('API no configurada. Verifica config.json');
+                return;
+            }
+
+            try {
+                // Consultar estado del misil (GET devuelve todos los misiles)
+                const response = await fetch(apiUrl, {
+                    method: 'GET'
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+
+                const data = await response.json();
+                console.log('Estado de misiles:', data);
+                
+                // Manejar respuesta con statusCode y body
+                let missileData;
+                if (data.body && data.body.value) {
+                    missileData = data.body.value;
+                } else if (data.value) {
+                    missileData = data.value;
+                } else {
+                    console.warn('Formato de respuesta desconocido');
+                    return;
+                }
+
+                // Buscar el misil actual en el array
+                const missile = missileData.find(m => m.Title === currentMissile.toString());
+                
+                if (missile && missile.field_1 === 'Desactivado') {
+                    showAlreadyDeactivated(missile.Modified, missile.Editor.DisplayName);
+                }
+                
+            } catch (error) {
+                console.warn('⚠️ Error verificando estado:', error);
+                // Continuar de todas formas (modo offline)
+            }
+        }
+
+        // ============================================
+        // DESACTIVAR MISIL
+        // ============================================
+
+        async function deactivateMissile() {
+            const btn = document.getElementById('deactivateBtn');
+            const errorMessage = document.getElementById('errorMessage');
+            
+            btn.classList.add('loading');
+            errorMessage.classList.remove('active');
+            vibrate(50);
+
+            // Obtener geolocalización
+            let userLocation = null;
+            if ('geolocation' in navigator) {
+                try {
+                    const position = await new Promise((resolve, reject) => {
+                        navigator.geolocation.getCurrentPosition(resolve, reject, {
+                            enableHighAccuracy: true,
+                            timeout: 10000,
+                            maximumAge: 0
+                        });
+                    });
+                    
+                    userLocation = {
+                        lat: parseFloat(position.coords.latitude.toFixed(5)),
+                        lng: parseFloat(position.coords.longitude.toFixed(5)),
+                        accuracy: Math.round(position.coords.accuracy)
+                    };
+                } catch (error) {
+                    console.warn('⚠️ Error GPS:', error);
+                }
+            }
+
+            const payload = {
+                missile: currentMissile,
+                ts: new Date().toISOString(),
+                deviceId: deviceId,
+                userAgent: navigator.userAgent,
+                location: userLocation
+            };
+
+            const apiUrl = getApiUrl();
+            
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                if (response.ok) {
+                    console.log('✅ Misil desactivado con éxito');
+                    vibrate([100, 50, 100]);
+                    showSuccess(payload.ts);
+                } else {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || `HTTP ${response.status}`);
+                }
+            } catch (error) {
+                console.error('❌ Error al desactivar:', error);
+                btn.classList.remove('loading');
+                showError(error.message || 'Error de conexión. Intenta nuevamente.');
+                vibrate([50, 50, 50]);
+            }
+        }
+
+        // ============================================
+        // PANTALLAS
+        // ============================================
+
+        function showSuccess(timestamp) {
+            document.getElementById('missileStatus').style.display = 'none';
+            document.getElementById('successScreen').classList.add('active');
+            document.getElementById('deactivationMessage').textContent = `Misil ${currentMissile} neutralizado`;
+            document.getElementById('timestampDisplay').textContent = formatDate(timestamp);
+        }
+
+        function showAlreadyDeactivated(timestamp, deviceId) {
+            document.getElementById('statusBadge').className = 'status-badge deactivated';
+            document.getElementById('statusBadge').textContent = '🟢 DESACTIVADO';
+            document.getElementById('deactivateBtn').classList.add('disabled');
+            document.getElementById('deactivateBtn').querySelector('.btn-text').textContent = 'YA DESACTIVADO';
+            
+            showError(`Este misil fue desactivado el ${formatDate(timestamp)}`);
+        }
+
+        function showError(message) {
+            document.getElementById('errorText').textContent = message;
+            document.getElementById('errorMessage').classList.add('active');
+        }
+    </script>
+</body>
+</html>

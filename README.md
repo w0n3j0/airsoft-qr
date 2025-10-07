@@ -30,11 +30,26 @@ Sistema web completo para eventos de Airsoft con captura de bases mediante QR, m
 - **URL:** `https://w0n3j0.github.io/airsoft-qr/metrics.html`
 - **Características:**
   - 🏆 Scoreboard India vs Pakistan
-  - 📈 Estadísticas en tiempo real
+  - � **Panel de Estado de Misiles** (Objetivos Secundarios)
+  - �📈 Estadísticas en tiempo real
   - 📋 Historial completo de capturas
   - 🔄 Auto-refresh cada 30 segundos
   - 📱 Responsive para móviles y tablets
 - **Guía completa:** [`METRICS_GUIDE.md`](./METRICS_GUIDE.md)
+
+## 🚀 Sistema de Misiles (Objetivos Secundarios)
+
+**Nuevo:** Sistema independiente de 3 misiles que pueden ser desactivados durante el evento.
+
+- **URL:** `https://w0n3j0.github.io/airsoft-qr/misil.html?missile=X` (donde X = 1, 2 o 3)
+- **Características:**
+  - 🎯 3 misiles independientes
+  - 🔴 Estado: Armado / 🟢 Desactivado
+  - ⚡ Desactivación instantánea (una sola vez)
+  - 📍 Captura GPS de la ubicación
+  - 📊 Visualización en tiempo real en métricas
+  - 🎨 Diseño temático militar con animaciones
+- **Guía de configuración:** [`MISILES_BACKEND.md`](./MISILES_BACKEND.md)
 
 ### 📋 Opciones de Implementación
 
