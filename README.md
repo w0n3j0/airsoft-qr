@@ -1,307 +1,627 @@
-# 🎯 Sistema de Captura de Bases - Airsoft
+# 🎯 Airsoft QR - Sistema de Captura de Bases# 🎯 Sistema de Captura de Bases - Airsoft
 
-Sistema web estático para eventos de Airsoft con temática **India vs Pakistán**. Los ju- **Satelital**: Requiere API key de Mapbox o Google Maps
 
-## 🔧 Configuración del Backend
 
-### 📋 Opciones de Implementación
+Sistema web completo para eventos de Airsoft con captura de bases mediante QR, mini-juego interactivo, GPS tracking y cooldown automático.Sistema web estático para eventos de Airsoft con temática **India vs Pakistán**. Los ju- **Satelital**: Requiere API key de Mapbox o Google Maps
 
-1. **🔷 Power Automate + SharePoint** (Recomendado para Microsoft 365)
-   - 📘 **Guía paso a paso:** [`BACKEND_POWERAUTOMATE.md`](./BACKEND_POWERAUTOMATE.md)
-   - 📸 **Tutorial visual:** [`POWERAUTOMATE_GUIA_VISUAL.md`](./POWERAUTOMATE_GUIA_VISUAL.md) ← **¡Nuevo!**
-   - ✅ Sin servidores, fácil implementación
-   - ✅ Integración nativa con Teams y Power BI
-   - ✅ Lista de SharePoint para almacenar capturas
-   - ✅ Coordenadas redondeadas a 5 decimales (límite de SharePoint)
 
-2. **🖥️ Servidor Tradicional** (Node.js, Python, PHP)
+
+**Demo en Vivo:** https://w0n3j0.github.io/airsoft-qr/## 🔧 Configuración del Backend
+
+
+
+## 🚀 Características Principales### 📋 Opciones de Implementación
+
+
+
+- ✅ **Lectura de QR** para activar captura de base1. **🔷 Power Automate + SharePoint** (Recomendado para Microsoft 365)
+
+- ✅ **Mini-juego interactivo** (conectar cables) para confirmar captura     - 📘 **Guía paso a paso:** [`BACKEND_POWERAUTOMATE.md`](./BACKEND_POWERAUTOMATE.md)
+
+- ✅ **GPS tracking** con animación de mapa táctica centrada   - 📸 **Tutorial visual:** [`POWERAUTOMATE_GUIA_VISUAL.md`](./POWERAUTOMATE_GUIA_VISUAL.md) ← **¡Nuevo!**
+
+- ✅ **Cooldown de 30 minutos** por equipo/dispositivo   - ✅ Sin servidores, fácil implementación
+
+- ✅ **Integración con Power Automate** y SharePoint   - ✅ Integración nativa con Teams y Power BI
+
+- ✅ **Responsive design** optimizado para móviles   - ✅ Lista de SharePoint para almacenar capturas
+
+- ✅ **PWA-Ready** - Funciona offline y se puede instalar   - ✅ Coordenadas redondeadas a 5 decimales (límite de SharePoint)
+
+- ✅ **Sin infraestructura** - Deploy en GitHub Pages
+
+- ✅ **100% Frontend** - Sin servidores que mantener2. **🖥️ Servidor Tradicional** (Node.js, Python, PHP)
+
    - 📘 Ver guía completa: [`BACKEND.md`](./BACKEND.md)
-   - Ejemplos de código incluidos
 
-### 📤 Payload Enviado
+## 🎮 Cómo Funciona   - Ejemplos de código incluidos
 
-El sitio envía un POST con el siguiente payload:es escanean códigos QR para acceder a un mini-juego que, al completarse, captura la base y envía los datos al sistema de puntuación.
 
-## 🚀 Características
+
+1. **Jugador escanea QR** del equipo contrario### 📤 Payload Enviado
+
+2. **Animación GPS** muestra ubicación del objetivo (textos centrados)
+
+3. **Mini-juego** - Conectar 3 cables correctamente (líneas precisas)El sitio envía un POST con el siguiente payload:es escanean códigos QR para acceder a un mini-juego que, al completarse, captura la base y envía los datos al sistema de puntuación.
+
+4. **Captura exitosa** - Se envía a Power Automate
+
+5. **Cooldown activado** - 30 minutos hasta próxima captura## 🚀 Características
+
+6. **Datos guardados** en SharePoint
 
 - **🎯 100% Optimizado para Móvil**: Diseñado exclusivamente para celulares con controles táctiles grandes
-- **📍 Animación GPS Espectacular**: Mapa táctico con zoom hacia las coordenadas del evento al escanear QR
+
+## 📦 Instalación Rápida- **📍 Animación GPS Espectacular**: Mapa táctico con zoom hacia las coordenadas del evento al escanear QR
+
 - **🗺️ Mapa Real de Fondo**: Integración con OpenStreetMap mostrando la ubicación exacta del evento
-- **📍 Coordenadas Fijas**: Rosario, Argentina (-32.8311426, -60.7055789)
+
+### 1. Clonar y Configurar- **📍 Coordenadas Fijas**: Rosario, Argentina (-32.8311426, -60.7055789)
+
 - **📏 Validación de Distancia**: Calcula distancia del jugador al objetivo
-- **🎮 Mini-juego Táctil**: Conectar cables en menos de 10 segundos con áreas táctiles optimizadas
-- **⏱️ Sistema de Cooldown**: Bloqueo de 30 minutos por dispositivo tras captura exitosa
-- **🔄 Reintentos Automáticos**: Cola de eventos con reintentos en caso de fallos de red
-- **🎨 Temática HUD Militar**: Animaciones de radar, mapa táctico y efectos visuales por bando
+
+```bash- **🎮 Mini-juego Táctil**: Conectar cables en menos de 10 segundos con áreas táctiles optimizadas
+
+git clone https://github.com/w0n3j0/airsoft-qr.git- **⏱️ Sistema de Cooldown**: Bloqueo de 30 minutos por dispositivo tras captura exitosa
+
+cd airsoft-qr- **🔄 Reintentos Automáticos**: Cola de eventos con reintentos en caso de fallos de red
+
+```- **🎨 Temática HUD Militar**: Animaciones de radar, mapa táctico y efectos visuales por bando
+
 - **📦 Sin Dependencias**: Vanilla JS, ligero (< 80KB)
-- **📱 PWA-Ready**: Instalable en pantalla principal del móvil
+
+### 2. Configurar `config.json`- **📱 PWA-Ready**: Instalable en pantalla principal del móvil
+
 - **🌍 Geolocalización**: Captura y envía ubicación GPS precisa de cada jugador
 
-## 📁 Estructura del Proyecto
+```json
+
+{## 📁 Estructura del Proyecto
+
+  "apiUrl": "TU_URL_DE_POWER_AUTOMATE_AQUI",
+
+  "cooldownMinutes": 30,```
+
+  "eventLocation": {airsoft-qr/
+
+    "lat": -32.8311426,├── index.html              # Página principal
+
+    "lng": -60.7055789,├── styles.css              # Estilos y animaciones
+
+    "name": "Rosario, Argentina"├── app.js                  # Lógica del juego y API
+
+  }├── manifest.json           # Manifest PWA
+
+}├── config.example.json     # Ejemplo de configuración de API
+
+```└── README.md              # Este archivo
 
 ```
-airsoft-qr/
-├── index.html              # Página principal
-├── styles.css              # Estilos y animaciones
-├── app.js                  # Lógica del juego y API
-├── manifest.json           # Manifest PWA
-├── config.example.json     # Ejemplo de configuración de API
-└── README.md              # Este archivo
-```
+
+### 3. Probar Localmente
 
 ## 🎮 Cómo Funciona
 
-### Flujo del Usuario
+```bash
+
+npx http-server -p 8080 -c-1 --cors### Flujo del Usuario
+
+```
 
 1. **Escanear QR**: El usuario escanea uno de los dos códigos QR (India o Pakistán)
-2. **Acceder al juego**: Se carga la página con el tema del bando correspondiente
+
+Abrir: http://localhost:8080/?team=india2. **Acceder al juego**: Se carga la página con el tema del bando correspondiente
+
 3. **Mini-juego**: Conectar 3 pares de cables arrastrando desde los pines izquierdos a los derechos
-4. **Captura exitosa**: Al completar, aparece animación de "BASE CAPTURADA"
+
+### 4. Deploy a GitHub Pages4. **Captura exitosa**: Al completar, aparece animación de "BASE CAPTURADA"
+
 5. **Envío de datos**: POST al servidor con información de captura
-6. **Cooldown**: El dispositivo queda bloqueado 30 minutos para ese bando
 
-### URLs por Bando
+```bash6. **Cooldown**: El dispositivo queda bloqueado 30 minutos para ese bando
 
-- **India**: `https://tu-usuario.github.io/airsoft-qr/?team=india`
+git add .
+
+git commit -m "Configure app"### URLs por Bando
+
+git push origin main
+
+```- **India**: `https://tu-usuario.github.io/airsoft-qr/?team=india`
+
 - **Pakistán**: `https://tu-usuario.github.io/airsoft-qr/?team=pakistan`
+
+Activar en: **Settings → Pages → Source: main**
 
 ## 📦 Despliegue en GitHub Pages
 
+## 🔧 Power Automate Backend
+
 ### 1. Configurar el Repositorio
 
+### Crear Lista en SharePoint
+
 ```bash
-# Si aún no tienes el repo iniciado
-git init
-git add .
-git commit -m "Sistema de captura de bases completo"
-git branch -M main
-git remote add origin https://github.com/TU-USUARIO/airsoft-qr.git
-git push -u origin main
+
+Columnas necesarias:# Si aún no tienes el repo iniciado
+
+- **Equipo** (Choice): India, Pakistangit init
+
+- **DeviceID** (Text)git add .
+
+- **Timestamp** (Date/Time)git commit -m "Sistema de captura de bases completo"
+
+- **Latitud** (Number, 5 decimales)git branch -M main
+
+- **Longitud** (Number, 5 decimales)git remote add origin https://github.com/TU-USUARIO/airsoft-qr.git
+
+- **Estado** (Choice): Activa, Cooldown, Expiradagit push -u origin main
+
 ```
+
+### Crear Flow en Power Automate
 
 ### 2. Activar GitHub Pages
 
-1. Ve a tu repositorio en GitHub
-2. Settings → Pages
-3. En **Source**, selecciona `main` branch y carpeta `/ (root)`
-4. Haz clic en **Save**
-5. En unos minutos estará disponible en: `https://TU-USUARIO.github.io/NOMBRE-REPO/`
+1. **Trigger:** "Cuando se recibe una solicitud HTTP"
 
-### 3. Configurar la API
+2. **Esquema JSON:**1. Ve a tu repositorio en GitHub
 
-#### Opción A: En el HTML directamente
+```json2. Settings → Pages
 
-Edita `index.html` y añade la URL en el atributo `data-api`:
+{3. En **Source**, selecciona `main` branch y carpeta `/ (root)`
 
-```html
-<body data-api="https://tu-servidor.com/api/capture">
-```
+  "type": "object",4. Haz clic en **Save**
 
-#### Opción B: Con archivo config.json
+  "properties": {5. En unos minutos estará disponible en: `https://TU-USUARIO.github.io/NOMBRE-REPO/`
 
-1. Copia `config.example.json` a `config.json`
-2. Edita el `apiUrl` con tu endpoint real
+    "team": {"type": "string"},
+
+    "ts": {"type": "string"},### 3. Configurar la API
+
+    "deviceId": {"type": "string"},
+
+    "userAgent": {"type": "string"},#### Opción A: En el HTML directamente
+
+    "location": {
+
+      "type": "object",Edita `index.html` y añade la URL en el atributo `data-api`:
+
+      "properties": {
+
+        "lat": {"type": "number"},```html
+
+        "lng": {"type": "number"},<body data-api="https://tu-servidor.com/api/capture">
+
+        "accuracy": {"type": "number"}```
+
+      }
+
+    }#### Opción B: Con archivo config.json
+
+  }
+
+}1. Copia `config.example.json` a `config.json`
+
+```2. Edita el `apiUrl` con tu endpoint real
+
 3. Modifica `app.js` para cargar la configuración (opcional, ya incluido básicamente)
 
-**Nota**: Si usas `config.json`, asegúrate de añadirlo al `.gitignore` si contiene información sensible.
+3. **Validar cooldown** consultando SharePoint con `field_2` y `field_1`
+
+4. **Guardar captura** si cooldown expiró**Nota**: Si usas `config.json`, asegúrate de añadirlo al `.gitignore` si contiene información sensible.
+
+5. **Copiar URL** del endpoint y ponerla en `config.json`
 
 ## 🎨 Generar Códigos QR
 
+### ⚠️ IMPORTANTE: SharePoint Field Mapping
+
 Usa cualquier generador de QR con las siguientes URLs:
 
+SharePoint usa nombres internos en consultas:
+
 ### Para el Bando India
-```
-https://TU-USUARIO.github.io/airsoft-qr/?team=india
+
+| Display Name | Internal Name | En GET items | En CREATE item |```
+
+|--------------|---------------|--------------|----------------|https://TU-USUARIO.github.io/airsoft-qr/?team=india
+
+| Equipo       | field_1       | ✅ field_1   | ✅ Equipo     |```
+
+| DeviceID     | field_2       | ✅ field_2   | ✅ DeviceID   |
+
+| Timestamp    | field_3       | ✅ field_3   | ✅ Timestamp  |### Para el Bando Pakistán
+
+| Latitud      | field_5       | ✅ field_5   | ✅ Latitud    |```
+
+| Longitud     | field_6       | ✅ field_6   | ✅ Longitud   |https://TU-USUARIO.github.io/airsoft-qr/?team=pakistan
+
 ```
 
-### Para el Bando Pakistán
-```
-https://TU-USUARIO.github.io/airsoft-qr/?team=pakistan
-```
+**En Power Automate:**
 
-**Recomendaciones de generadores QR**:
-- [QR Code Generator](https://www.qr-code-generator.com/)
-- [QRCode Monkey](https://www.qrcode-monkey.com/)
+- Filter Query: `field_2 eq '@{variables('varDeviceID')}' and field_1 eq '@{variables('varEquipo')}'`**Recomendaciones de generadores QR**:
+
+- Order By: `field_3 desc`- [QR Code Generator](https://www.qr-code-generator.com/)
+
+- UltimaCaptura: `first(body('Obtener_elementos')?['value'])?['field_3']`- [QRCode Monkey](https://www.qrcode-monkey.com/)
+
 - Comando CLI: `qrencode -o qr-india.png "URL"`
+
+## 🧪 Herramientas de Testing
 
 ## �️ Configuración de Ubicación
 
-### Cambiar Coordenadas del Evento
+### Diagnóstico Completo
 
-Para modificar la ubicación del evento, edita en `app.js`:
+```### Cambiar Coordenadas del Evento
 
-```javascript
-// Coordenadas fijas del evento (Rosario, Argentina)
-const EVENT_LOCATION = {
+http://localhost:8080/diagnostico.html
+
+```Para modificar la ubicación del evento, edita en `app.js`:
+
+- Verifica config.json cargado
+
+- Testea conectividad a Power Automate```javascript
+
+- Prueba GPS, LocalStorage, Device ID// Coordenadas fijas del evento (Rosario, Argentina)
+
+- Tests de integración end-to-endconst EVENT_LOCATION = {
+
     lat: -32.8311426,  // Tu latitud
-    lng: -60.7055789,  // Tu longitud
-    zoom: 17           // Nivel de zoom (15-18 recomendado)
-};
-```
 
-### Obtener Coordenadas
+### Test Manual    lng: -60.7055789,  // Tu longitud
+
+```    zoom: 17           // Nivel de zoom (15-18 recomendado)
+
+http://localhost:8080/test-capture.html};
+
+``````
+
+- Envía capturas de prueba
+
+- Simula escenarios de cooldown### Obtener Coordenadas
+
+- Verifica respuestas en tiempo real
 
 1. Abre [Google Maps](https://maps.google.com)
-2. Click derecho en la ubicación deseada
+
+## 📊 Estructura del Proyecto2. Click derecho en la ubicación deseada
+
 3. Click en las coordenadas para copiarlas
-4. Reemplaza en `EVENT_LOCATION`
 
-### Mapa de Fondo
+```4. Reemplaza en `EVENT_LOCATION`
 
-El sistema usa tiles de **OpenStreetMap** gratuitos. Si quieres cambiar el estilo:
+airsoft-qr/
 
-- **Por defecto**: `tile.openstreetmap.org` (calles)
-- **Satelital**: Requiere API key de Mapbox o Google Maps
+├── index.html              # App principal### Mapa de Fondo
 
-## �🔧 Configuración del Backend
+├── app.js                  # Lógica de la aplicación
+
+├── styles.css              # Estilos y animacionesEl sistema usa tiles de **OpenStreetMap** gratuitos. Si quieres cambiar el estilo:
+
+├── config.json             # Configuración (URL de API)
+
+├── manifest.json           # PWA manifest- **Por defecto**: `tile.openstreetmap.org` (calles)
+
+├── diagnostico.html        # Herramienta de testing- **Satelital**: Requiere API key de Mapbox o Google Maps
+
+├── test-capture.html       # Tests manuales
+
+└── README.md               # Esta documentación## �🔧 Configuración del Backend
+
+```
 
 El sitio envía un POST con el siguiente payload:
 
+## 🎨 Personalización
+
 ```json
-{
+
+### Cambiar Ubicación del Evento{
+
   "team": "india",
-  "ts": "2025-10-06T12:34:56.789Z",
-  "deviceId": "a1b2c3d4-e5f6-...",
-  "userAgent": "Mozilla/5.0...",
-  "location": {
-    "lat": -32.83114,      // 5 decimales (límite SharePoint)
-    "lng": -60.70558,      // 5 decimales (límite SharePoint)
-    "accuracy": 10         // Metros enteros
-  }
+
+```javascript  "ts": "2025-10-06T12:34:56.789Z",
+
+// En config.json  "deviceId": "a1b2c3d4-e5f6-...",
+
+"eventLocation": {  "userAgent": "Mozilla/5.0...",
+
+  "lat": TU_LATITUD,  "location": {
+
+  "lng": TU_LONGITUD,    "lat": -32.83114,      // 5 decimales (límite SharePoint)
+
+  "name": "Tu Ciudad"    "lng": -60.70558,      // 5 decimales (límite SharePoint)
+
+}    "accuracy": 10         // Metros enteros
+
+```  }
+
 }
+
+### Cambiar Tiempo de Cooldown```
+
+
+
+```javascript> **📍 Nota sobre precisión GPS:** Las coordenadas se redondean automáticamente a **5 decimales** (~1.1m de precisión) para compatibilidad con SharePoint. Esto es suficiente para eventos de Airsoft.
+
+// En config.json
+
+"cooldownMinutes": 30  // Cambiar según necesites### Endpoint Requerido
+
 ```
-
-> **📍 Nota sobre precisión GPS:** Las coordenadas se redondean automáticamente a **5 decimales** (~1.1m de precisión) para compatibilidad con SharePoint. Esto es suficiente para eventos de Airsoft.
-
-### Endpoint Requerido
 
 - **URL**: Configurable (ver sección anterior)
-- **Método**: `POST`
+
+### Cambiar Colores de Equipos- **Método**: `POST`
+
 - **Content-Type**: `application/json`
-- **Respuesta esperada**: HTTP 200-299 para éxito
-- **Backend recomendado**: Ver `BACKEND_POWERAUTOMATE.md` para implementación con Microsoft 365
 
-### Validación del Servidor (Recomendado)
+```css- **Respuesta esperada**: HTTP 200-299 para éxito
 
-El cooldown del lado cliente es básico. Para mayor seguridad:
+/* En styles.css */- **Backend recomendado**: Ver `BACKEND_POWERAUTOMATE.md` para implementación con Microsoft 365
 
-1. **Validar `deviceId`** y/o IP en el servidor
-2. **Rechazar capturas duplicadas** dentro de los 30 minutos
+:root {
+
+    --india-primary: #1BBE84;### Validación del Servidor (Recomendado)
+
+    --india-accent: #E8C547;
+
+    --pakistan-primary: #0B7A4B;El cooldown del lado cliente es básico. Para mayor seguridad:
+
+    --pakistan-accent: #C2B280;
+
+}1. **Validar `deviceId`** y/o IP en el servidor
+
+```2. **Rechazar capturas duplicadas** dentro de los 30 minutos
+
 3. **Rate limiting** por IP/dispositivo
-4. **Verificar timestamp** para evitar manipulación de hora local
 
-## 🧪 Pruebas Locales
+## 🐛 Troubleshooting4. **Verificar timestamp** para evitar manipulación de hora local
 
-### Opción 1: Con Python
 
-```bash
-python -m http.server 8000
-# Abre: http://localhost:8000/?team=india
-```
 
-### Opción 2: Con Node.js (http-server)
+### Config.json no carga en GitHub Pages## 🧪 Pruebas Locales
 
-```bash
+
+
+**Causa:** Estaba en `.gitignore`### Opción 1: Con Python
+
+
+
+**Solución:**```bash
+
+```bashpython -m http.server 8000
+
+git add config.json# Abre: http://localhost:8000/?team=india
+
+git commit -m "Add config for GitHub Pages"```
+
+git push origin main
+
+```### Opción 2: Con Node.js (http-server)
+
+
+
+### Power Automate no recibe datos```bash
+
 npx http-server -p 8000 -c-1
-# Abre: http://localhost:8000/?team=pakistan
-```
 
-### Opción 3: Con la extensión Live Server de VS Code
+**Verificar:**# Abre: http://localhost:8000/?team=pakistan
+
+1. URL no expiró (regenerar en Flow si es necesario)```
+
+2. Flow está activado
+
+3. SharePoint tiene permisos correctos### Opción 3: Con la extensión Live Server de VS Code
+
+4. Usar `diagnostico.html` para testear
 
 1. Instala "Live Server" desde el marketplace
-2. Click derecho en `index.html` → "Open with Live Server"
+
+### Líneas del juego no coinciden con pins2. Click derecho en `index.html` → "Open with Live Server"
+
 3. Añade `?team=india` o `?team=pakistan` a la URL
+
+**Solución:** Ya está corregido. El SVG ahora ajusta dinámicamente su `viewBox` al tamaño del contenedor.
 
 ## 🎯 Criterios de Aceptación
 
+### Textos GPS no se ven bien
+
 - ✅ Carga correcta con `?team=india` o `?team=pakistan`
-- ✅ Mini-juego completable en < 10 segundos
+
+**Solución:** Ya está corregido. Los textos ahora están centrados en pantalla con mejor contraste.- ✅ Mini-juego completable en < 10 segundos
+
 - ✅ Animación de "BASE CAPTURADA" al finalizar
-- ✅ Cooldown de 30 minutos activo tras captura
+
+### Animación GPS se repite después de captura- ✅ Cooldown de 30 minutos activo tras captura
+
 - ✅ POST enviado a API configurada
-- ✅ Reintentos automáticos en caso de fallo de red
+
+**Solución:** Ya está corregido. El sistema verifica el cooldown antes de mostrar la animación.- ✅ Reintentos automáticos en caso de fallo de red
+
 - ✅ Contador regresivo visible durante cooldown
-- ✅ Persistencia del cooldown tras recargar página
+
+## 📱 Uso en Evento Real- ✅ Persistencia del cooldown tras recargar página
+
 - ✅ Ligero y funcional en móviles con 4G
+
+### Preparación
 
 ## 🎨 Personalización
 
-### Cambiar Duración del Cooldown
+1. Imprimir QR codes:
+
+   - India: `https://w0n3j0.github.io/airsoft-qr/?team=india`### Cambiar Duración del Cooldown
+
+   - Pakistan: `https://w0n3j0.github.io/airsoft-qr/?team=pakistan`
 
 En `app.js`, línea 7:
 
+2. Colocar QR en bases del equipo contrario
+
 ```javascript
-const COOLDOWN_DURATION = 30 * 60 * 1000; // Cambiar según necesites
+
+3. Todos conectados a WiFi o datos móvilesconst COOLDOWN_DURATION = 30 * 60 * 1000; // Cambiar según necesites
+
 ```
+
+4. Verificar GPS funciona en el área
 
 ### Modificar Colores
 
+### Durante el Evento
+
 En `styles.css`, variables CSS al inicio:
 
-```css
-:root {
-    --india-primary: #1BBE84;
-    --pakistan-primary: #0B7A4B;
+- Jugadores escanean QR
+
+- Completan mini-juego```css
+
+- Sistema valida y guarda:root {
+
+- Cooldown se activa automáticamente    --india-primary: #1BBE84;
+
+- Monitorear en SharePoint en tiempo real    --pakistan-primary: #0B7A4B;
+
     /* ... más variables ... */
-}
+
+## 🔐 Seguridad}
+
 ```
+
+La URL de Power Automate incluye un token `sig=` que actúa como autenticación. Es seguro porque:
 
 ### Ajustar Dificultad del Juego
 
-En `app.js`, modificar el array `wireData` para añadir más cables:
+1. Solo acepta POST con esquema específico
 
-```javascript
+2. El token puede regenerarse en cualquier momentoEn `app.js`, modificar el array `wireData` para añadir más cables:
+
+3. Power Automate valida cada request
+
+4. El cooldown previene abuse```javascript
+
 const wireData = [
-    { id: 'a', symbol: '▲', color: 'red' },
-    { id: 'b', symbol: '●', color: 'green' },
-    { id: 'c', symbol: '◆', color: 'blue' },
-    { id: 'd', symbol: '■', color: 'yellow' } // Cuarto cable
+
+Para regenerar el token:    { id: 'a', symbol: '▲', color: 'red' },
+
+1. Edita el Flow en Power Automate    { id: 'b', symbol: '●', color: 'green' },
+
+2. Guarda (aunque no cambies nada)    { id: 'c', symbol: '◆', color: 'blue' },
+
+3. Nueva URL con nuevo `sig=`    { id: 'd', symbol: '■', color: 'yellow' } // Cuarto cable
+
 ];
-```
 
-## 🐛 Troubleshooting
+## 📊 Comandos de Consola Útiles```
 
-### El juego no envía datos
 
-1. Verifica que `data-api` esté configurado en `<body>`
-2. Abre la consola del navegador (F12) y busca errores
+
+```javascript## 🐛 Troubleshooting
+
+// Ver configuración
+
+console.log(CONFIG)### El juego no envía datos
+
+
+
+// Ver Device ID1. Verifica que `data-api` esté configurado en `<body>`
+
+localStorage.getItem('deviceId')2. Abre la consola del navegador (F12) y busca errores
+
 3. Revisa que el servidor acepte CORS si está en dominio diferente
 
-### Cooldown no funciona
+// Verificar cooldown
 
-- Verifica que `localStorage` esté habilitado en el navegador
-- Prueba en modo incógnito para descartar conflictos
+localStorage.getItem('captureCooldown:india')### Cooldown no funciona
 
-### Animaciones no se ven
 
-- El usuario puede tener `prefers-reduced-motion` activo
-- Verifica compatibilidad del navegador con CSS animations
 
-## 📱 Compatibilidad
+// Limpiar cooldown para probar- Verifica que `localStorage` esté habilitado en el navegador
 
-- **Navegadores**: Chrome 90+, Safari 14+, Firefox 88+, Edge 90+
-- **Dispositivos**: iOS 14+, Android 9+
-- **Funciones opcionales**:
-  - Vibración: Requiere soporte de `navigator.vibrate` (Android principalmente)
-  - Service Worker: No implementado (opcional para futuras versiones)
+localStorage.removeItem('captureCooldown:india')- Prueba en modo incógnito para descartar conflictos
 
-## 🔒 Seguridad
 
-⚠️ **Importante**: Este es un sistema del lado cliente. La validación real debe hacerse en el servidor:
 
-- No confiar en el `deviceId` (puede ser manipulado)
-- Validar timestamps en el servidor
-- Implementar rate limiting
-- Considerar geolocalización si es crítico
+// Limpiar todo### Animaciones no se ven
 
-## 📄 Licencia
+localStorage.clear()
 
-Este proyecto es de código abierto. Úsalo y modifícalo libremente para tus eventos de Airsoft.
+location.reload()- El usuario puede tener `prefers-reduced-motion` activo
+
+```- Verifica compatibilidad del navegador con CSS animations
+
+
+
+## 🚀 Changelog Reciente## 📱 Compatibilidad
+
+
+
+### v1.3.0 (2025-10-06)- **Navegadores**: Chrome 90+, Safari 14+, Firefox 88+, Edge 90+
+
+- ✅ Fix: Líneas del mini-juego ahora coinciden perfectamente con pins- **Dispositivos**: iOS 14+, Android 9+
+
+- ✅ Fix: Textos GPS centrados en pantalla para mejor visibilidad- **Funciones opcionales**:
+
+- ✅ Fix: config.json ahora se sube a GitHub Pages  - Vibración: Requiere soporte de `navigator.vibrate` (Android principalmente)
+
+- ✅ Fix: Animación GPS no se repite si hay cooldown activo  - Service Worker: No implementado (opcional para futuras versiones)
+
+- ✅ Mejora: SVG con viewBox dinámico
+
+- ✅ Docs: Consolidación en un solo README## 🔒 Seguridad
+
+
+
+## 🎯 Stack Tecnológico⚠️ **Importante**: Este es un sistema del lado cliente. La validación real debe hacerse en el servidor:
+
+
+
+**Frontend:**- No confiar en el `deviceId` (puede ser manipulado)
+
+- HTML5, CSS3, Vanilla JavaScript- Validar timestamps en el servidor
+
+- Canvas API, SVG, Geolocation API- Implementar rate limiting
+
+- LocalStorage, PWA-ready- Considerar geolocalización si es crítico
+
+
+
+**Backend (Serverless):**## 📄 Licencia
+
+- Microsoft Power Automate
+
+- SharePoint ListsEste proyecto es de código abierto. Úsalo y modifícalo libremente para tus eventos de Airsoft.
+
+- GitHub Pages (hosting)
 
 ## 🤝 Contribuciones
 
+## 📄 Licencia
+
 ¿Mejoras o sugerencias? Siéntete libre de abrir un issue o pull request.
+
+MIT License - Libre para usar y modificar
 
 ---
 
+## 👤 Autor
+
 **¡Buena suerte en tu evento de Airsoft! 🎯🔫**
+
+**w0n3j0**
+- GitHub: [@w0n3j0](https://github.com/w0n3j0)
+- Proyecto: [airsoft-qr](https://github.com/w0n3j0/airsoft-qr)
+
+---
+
+**¿Preguntas?** Abre un [issue](https://github.com/w0n3j0/airsoft-qr/issues)
+
+**¿Te gustó?** Dale una ⭐ en GitHub
+
+---
+
+**Última actualización:** 6 de octubre de 2025

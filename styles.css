@@ -261,15 +261,18 @@ body::before {
 
 .gps-info {
     position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    padding: clamp(1rem, 4vw, 2rem);
-    background: linear-gradient(to top, rgba(11, 15, 18, 0.95), transparent);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: clamp(1.5rem, 5vw, 3rem);
+    background: rgba(11, 15, 18, 0.92);
     text-align: center;
     z-index: 20;
-    max-width: 100vw;
+    max-width: 90vw;
     box-sizing: border-box;
+    border-radius: 12px;
+    border: 2px solid var(--theme-primary, #1BBE84);
+    box-shadow: 0 0 30px var(--theme-glow, rgba(27, 190, 132, 0.4));
 }
 
 .scanning-text {
@@ -522,6 +525,8 @@ body.theme-pakistan {
     position: absolute;
     top: 0;
     left: 0;
+    right: 0;
+    bottom: 0;
     width: 100%;
     height: 100%;
     pointer-events: none;

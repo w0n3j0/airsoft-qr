@@ -720,10 +720,15 @@ function drawConnection(leftPin, rightPin) {
     const svg = document.getElementById('connections');
     const gameContainer = document.querySelector('.wires-game');
     
+    // Actualizar viewBox del SVG para que coincida con el contenedor
+    const containerRect = gameContainer.getBoundingClientRect();
+    svg.setAttribute('viewBox', `0 0 ${containerRect.width} ${containerRect.height}`);
+    svg.setAttribute('width', containerRect.width);
+    svg.setAttribute('height', containerRect.height);
+    
     // Obtener las posiciones de los pins
     const leftRect = leftPin.getBoundingClientRect();
     const rightRect = rightPin.getBoundingClientRect();
-    const containerRect = gameContainer.getBoundingClientRect();
     
     // Calcular coordenadas relativas al contenedor del juego
     const x1 = leftRect.left + leftRect.width / 2 - containerRect.left;
@@ -753,9 +758,10 @@ function drawConnection(leftPin, rightPin) {
     connections.push(line);
     
     // Animar la aparición de la línea
+    const distance = Math.sqrt((x2-x1)**2 + (y2-y1)**2);
     line.animate([
-        { opacity: 0, strokeDasharray: `0 ${Math.sqrt((x2-x1)**2 + (y2-y1)**2)}` },
-        { opacity: 1, strokeDasharray: `${Math.sqrt((x2-x1)**2 + (y2-y1)**2)} 0` }
+        { opacity: 0, strokeDasharray: `0 ${distance}` },
+        { opacity: 1, strokeDasharray: `${distance} 0` }
     ], {
         duration: 400,
         easing: 'cubic-bezier(0.4, 0, 0.2, 1)',
