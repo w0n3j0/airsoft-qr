@@ -10,27 +10,43 @@ Sistema web completo para eventos de Airsoft con captura de bases mediante QR, m
 
 
 
-## 🚀 Características Principales### 📋 Opciones de Implementación
+## 🚀 Características Principales
 
-
-
-- ✅ **Lectura de QR** para activar captura de base1. **🔷 Power Automate + SharePoint** (Recomendado para Microsoft 365)
-
-- ✅ **Mini-juego interactivo** (conectar cables) para confirmar captura     - 📘 **Guía paso a paso:** [`BACKEND_POWERAUTOMATE.md`](./BACKEND_POWERAUTOMATE.md)
-
-- ✅ **GPS tracking** con animación de mapa táctica centrada   - 📸 **Tutorial visual:** [`POWERAUTOMATE_GUIA_VISUAL.md`](./POWERAUTOMATE_GUIA_VISUAL.md) ← **¡Nuevo!**
-
-- ✅ **Cooldown de 60 minutos (1 hora)** por equipo/dispositivo   - ✅ Sin servidores, fácil implementación
-
-- ✅ **Integración con Power Automate** y SharePoint   - ✅ Integración nativa con Teams y Power BI
-
-- ✅ **Responsive design** optimizado para móviles   - ✅ Lista de SharePoint para almacenar capturas
-
-- ✅ **PWA-Ready** - Funciona offline y se puede instalar   - ✅ Coordenadas redondeadas a 5 decimales (límite de SharePoint)
-
+- ✅ **Lectura de QR** para activar captura de base
+- ✅ **Mini-juego interactivo** (conectar cables) para confirmar captura
+- ✅ **GPS tracking** con animación de mapa táctica centrada
+- ✅ **Cooldown de 60 minutos (1 hora)** por equipo/dispositivo
+- ✅ **� Página de métricas en tiempo real** - [metrics.html](./metrics.html)
+- ✅ **Integración con Power Automate** y SharePoint
+- ✅ **Responsive design** optimizado para móviles
+- ✅ **PWA-Ready** - Funciona offline y se puede instalar
 - ✅ **Sin infraestructura** - Deploy en GitHub Pages
+- ✅ **100% Frontend** - Sin servidores que mantener
 
-- ✅ **100% Frontend** - Sin servidores que mantener2. **🖥️ Servidor Tradicional** (Node.js, Python, PHP)
+## 📊 Página de Métricas
+
+**Nueva funcionalidad:** Panel de control en tiempo real para monitorear el evento.
+
+- **URL:** `https://w0n3j0.github.io/airsoft-qr/metrics.html`
+- **Características:**
+  - 🏆 Scoreboard India vs Pakistan
+  - 📈 Estadísticas en tiempo real
+  - 📋 Historial completo de capturas
+  - 🔄 Auto-refresh cada 30 segundos
+  - 📱 Responsive para móviles y tablets
+- **Guía completa:** [`METRICS_GUIDE.md`](./METRICS_GUIDE.md)
+
+### 📋 Opciones de Implementación
+
+1. **🔷 Power Automate + SharePoint** (Recomendado para Microsoft 365)
+     - 📘 **Guía paso a paso:** [`BACKEND_POWERAUTOMATE.md`](./BACKEND_POWERAUTOMATE.md)
+   - 📸 **Tutorial visual:** [`POWERAUTOMATE_GUIA_VISUAL.md`](./POWERAUTOMATE_GUIA_VISUAL.md) ← **¡Nuevo!**
+   - ✅ Sin servidores, fácil implementación
+   - ✅ Integración nativa con Teams y Power BI
+   - ✅ Lista de SharePoint para almacenar capturas
+   - ✅ Coordenadas redondeadas a 5 decimales (límite de SharePoint)
+
+2. **🖥️ Servidor Tradicional** (Node.js, Python, PHP)
 
    - 📘 Ver guía completa: [`BACKEND.md`](./BACKEND.md)
 
