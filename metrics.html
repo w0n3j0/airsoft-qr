@@ -606,7 +606,7 @@
                             <th>Device ID</th>
                             <th>Precisión GPS</th>
                             <th>Dist. HQ</th>
-                            <th>Estado</th>
+                            <th>Confianza</th>
                         </tr>
                     </thead>
                     <tbody id="capturesTable">
@@ -686,6 +686,84 @@
             if (distance <= 500) return `<span class="precision-badge precision-fair">${distance}m ⚠️</span>`;
             // Rojo: >500m (inválido)
             return `<span class="precision-badge precision-poor">${distance}m ✗</span>`;
+        }
+
+        // Calcular confianza basada en precisión GPS y distancia al HQ
+        function calculateConfidence(gpsAccuracy, hqDistance) {
+            // Si no hay datos, confianza 0
+            if (!gpsAccuracy || gpsAccuracy === 0 || !hqDistance || hqDistance === 0) {
+                return {
+                    score: 0,
+                    label: 'Sin datos',
+                    class: 'precision-poor'
+                };
+            }
+
+            let confidenceScore = 100;
+
+            // Factor 1: Precisión GPS (peso 40%)
+            // Mejor precisión = mayor confianza
+            if (gpsAccuracy <= 10) {
+                confidenceScore -= 0; // Excelente: 0 penalización
+            } else if (gpsAccuracy <= 20) {
+                confidenceScore -= 5; // Muy buena: -5%
+            } else if (gpsAccuracy <= 50) {
+                confidenceScore -= 15; // Buena: -15%
+            } else if (gpsAccuracy <= 100) {
+                confidenceScore -= 25; // Regular: -25%
+            } else {
+                confidenceScore -= 40; // Mala: -40%
+            }
+
+            // Factor 2: Distancia al HQ (peso 60%)
+            // Menor distancia = mayor confianza
+            if (hqDistance <= 50) {
+                confidenceScore -= 0; // Excelente: dentro del radio esperado
+            } else if (hqDistance <= 100) {
+                confidenceScore -= 10; // Muy buena: dentro del rango aceptable
+            } else if (hqDistance <= 200) {
+                confidenceScore -= 25; // Sospechosa: fuera del rango óptimo
+            } else if (hqDistance <= 500) {
+                confidenceScore -= 45; // Dudosa: muy lejos
+            } else {
+                confidenceScore -= 60; // Inválida: demasiado lejos
+            }
+
+            // Asegurar que el score esté entre 0 y 100
+            confidenceScore = Math.max(0, Math.min(100, confidenceScore));
+
+            // Determinar label y clase CSS
+            let label, cssClass;
+            if (confidenceScore >= 85) {
+                label = 'Muy Alta';
+                cssClass = 'precision-excellent';
+            } else if (confidenceScore >= 70) {
+                label = 'Alta';
+                cssClass = 'precision-good';
+            } else if (confidenceScore >= 50) {
+                label = 'Media';
+                cssClass = 'precision-fair';
+            } else if (confidenceScore >= 30) {
+                label = 'Baja';
+                cssClass = 'precision-poor';
+            } else {
+                label = 'Muy Baja';
+                cssClass = 'precision-poor';
+            }
+
+            return {
+                score: Math.round(confidenceScore),
+                label: label,
+                class: cssClass
+            };
+        }
+
+        // Obtener badge de confianza
+        function getConfidenceBadge(gpsAccuracy, hqDistance) {
+            const confidence = calculateConfidence(gpsAccuracy, hqDistance);
+            return `<span class="precision-badge ${confidence.class}" title="GPS: ${gpsAccuracy}m, Distancia HQ: ${hqDistance}m">
+                ${confidence.score}% - ${confidence.label}
+            </span>`;
         }
 
         // Cargar datos de misiles
@@ -889,7 +967,6 @@
                 const timestamp = formatDate(capture.field_3);
                 const precision = capture.field_7;
                 const distanceHQ = capture.field_8; // Distancia al HQ
-                const estado = capture.field_10?.[0]?.Value || 'Activa';
 
                 return `
                     <tr>
@@ -899,7 +976,7 @@
                         <td title="${deviceId}">${shortDeviceId}</td>
                         <td>${getPrecisionBadge(precision)}</td>
                         <td>${getHQDistanceBadge(distanceHQ)}</td>
-                        <td>${estado}</td>
+                        <td>${getConfidenceBadge(precision, distanceHQ)}</td>
                     </tr>
                 `;
             }).join('');
