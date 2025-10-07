@@ -186,6 +186,7 @@ fetch('https://tu-flow.logic.azure.com/...', {
 | `location.lat` | Latitud | Number (5 decimals) |
 | `location.lng` | Longitud | Number (5 decimals) |
 | `location.accuracy` | Precision | Number (0 decimals) |
+| `hqValidation.distanceMeters` | DistanciaHQ | Number (0 decimals) |
 
 ### Ejemplo de Item en SharePoint
 

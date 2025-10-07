@@ -5,7 +5,24 @@
 const COOLDOWN_DURATION = 60 * 60 * 1000; // 60 minutos (1 hora) en milisegundos
 const RETRY_INTERVAL = 15000; // 15 segundos para reintentos
 
-// Coordenadas fijas del evento (Rosario, Argentina)
+// Coordenadas de los HQ de cada equipo
+const HQ_LOCATIONS = {
+    india: {
+        lat: -32.83175,
+        lng: -60.70847,
+        name: "HQ Indio"
+    },
+    pakistan: {
+        lat: -32.83208,
+        lng: -60.70394,
+        name: "HQ Pakistaní"
+    }
+};
+
+// Radio de validación en metros (distancia máxima permitida del HQ)
+const HQ_VALIDATION_RADIUS = 100; // 100 metros
+
+// Coordenadas fijas del evento (Rosario, Argentina) - punto central
 const EVENT_LOCATION = {
     lat: -32.8311426,
     lng: -60.7055789,
@@ -823,6 +840,30 @@ function getApiUrl() {
 }
 
 async function sendCapture() {
+    // Calcular distancia al HQ del equipo
+    let distanceToHQ = null;
+    let hqValidation = null;
+    
+    if (userLocation && HQ_LOCATIONS[currentTeam]) {
+        const hq = HQ_LOCATIONS[currentTeam];
+        distanceToHQ = calculateDistance(
+            userLocation.lat, 
+            userLocation.lng, 
+            hq.lat, 
+            hq.lng
+        );
+        
+        // Validar si está dentro del radio permitido
+        hqValidation = {
+            distanceMeters: Math.round(distanceToHQ),
+            isValid: distanceToHQ <= HQ_VALIDATION_RADIUS,
+            hqName: hq.name,
+            maxRadius: HQ_VALIDATION_RADIUS
+        };
+        
+        console.log(`📍 Distancia al ${hq.name}: ${Math.round(distanceToHQ)}m (${hqValidation.isValid ? 'VÁLIDO' : 'FUERA DE RANGO'})`);
+    }
+    
     const payload = {
         team: currentTeam,
         ts: new Date().toISOString(),
@@ -832,7 +873,8 @@ async function sendCapture() {
             lat: parseFloat(userLocation.lat.toFixed(5)),      // SharePoint acepta máximo 5 decimales
             lng: parseFloat(userLocation.lng.toFixed(5)),      // SharePoint acepta máximo 5 decimales
             accuracy: Math.round(userLocation.accuracy)        // Redondear a metros enteros
-        } : null
+        } : null,
+        hqValidation: hqValidation  // Agregar validación del HQ
     };
     
     const apiUrl = getApiUrl();
