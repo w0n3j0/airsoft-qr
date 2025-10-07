@@ -20,7 +20,7 @@ Sistema web completo para eventos de Airsoft con captura de bases mediante QR, m
 
 - ✅ **GPS tracking** con animación de mapa táctica centrada   - 📸 **Tutorial visual:** [`POWERAUTOMATE_GUIA_VISUAL.md`](./POWERAUTOMATE_GUIA_VISUAL.md) ← **¡Nuevo!**
 
-- ✅ **Cooldown de 30 minutos** por equipo/dispositivo   - ✅ Sin servidores, fácil implementación
+- ✅ **Cooldown de 60 minutos (1 hora)** por equipo/dispositivo   - ✅ Sin servidores, fácil implementación
 
 - ✅ **Integración con Power Automate** y SharePoint   - ✅ Integración nativa con Teams y Power BI
 
@@ -46,7 +46,7 @@ Sistema web completo para eventos de Airsoft con captura de bases mediante QR, m
 
 4. **Captura exitosa** - Se envía a Power Automate
 
-5. **Cooldown activado** - 30 minutos hasta próxima captura## 🚀 Características
+5. **Cooldown activado** - 60 minutos hasta próxima captura## 🚀 Características
 
 6. **Datos guardados** en SharePoint
 
@@ -62,7 +62,7 @@ Sistema web completo para eventos de Airsoft con captura de bases mediante QR, m
 
 ```bash- **🎮 Mini-juego Táctil**: Conectar cables en menos de 10 segundos con áreas táctiles optimizadas
 
-git clone https://github.com/w0n3j0/airsoft-qr.git- **⏱️ Sistema de Cooldown**: Bloqueo de 30 minutos por dispositivo tras captura exitosa
+git clone https://github.com/w0n3j0/airsoft-qr.git- **⏱️ Sistema de Cooldown**: Bloqueo de 60 minutos (1 hora) por dispositivo tras captura exitosa
 
 cd airsoft-qr- **🔄 Reintentos Automáticos**: Cola de eventos con reintentos en caso de fallos de red
 
@@ -80,7 +80,7 @@ cd airsoft-qr- **🔄 Reintentos Automáticos**: Cola de eventos con reintentos 
 
   "apiUrl": "TU_URL_DE_POWER_AUTOMATE_AQUI",
 
-  "cooldownMinutes": 30,```
+  "cooldownMinutes": 60,```
 
   "eventLocation": {airsoft-qr/
 
@@ -118,7 +118,7 @@ Abrir: http://localhost:8080/?team=india2. **Acceder al juego**: Se carga la pá
 
 5. **Envío de datos**: POST al servidor con información de captura
 
-```bash6. **Cooldown**: El dispositivo queda bloqueado 30 minutos para ese bando
+```bash6. **Cooldown**: El dispositivo queda bloqueado 60 minutos para ese bando
 
 git add .
 
@@ -348,7 +348,7 @@ El sitio envía un POST con el siguiente payload:
 
 // En config.json
 
-"cooldownMinutes": 30  // Cambiar según necesites### Endpoint Requerido
+"cooldownMinutes": 60  // Cambiar según necesites (60 = 1 hora)### Endpoint Requerido
 
 ```
 
@@ -374,7 +374,7 @@ El sitio envía un POST con el siguiente payload:
 
 }1. **Validar `deviceId`** y/o IP en el servidor
 
-```2. **Rechazar capturas duplicadas** dentro de los 30 minutos
+```2. **Rechazar capturas duplicadas** dentro de los 60 minutos
 
 3. **Rate limiting** por IP/dispositivo
 
@@ -436,7 +436,7 @@ npx http-server -p 8000 -c-1
 
 - ✅ Animación de "BASE CAPTURADA" al finalizar
 
-### Animación GPS se repite después de captura- ✅ Cooldown de 30 minutos activo tras captura
+### Animación GPS se repite después de captura- ✅ Cooldown de 60 minutos (1 hora) activo tras captura
 
 - ✅ POST enviado a API configurada
 

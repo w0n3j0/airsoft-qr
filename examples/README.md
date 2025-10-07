@@ -209,7 +209,7 @@ Estado: Activa
 - ✅ Accuracy redondeado a entero
 
 ### En el Backend (Power Automate)
-- ✅ Verificar cooldown (30 min)
+- ✅ Verificar cooldown (60 min)
 - ✅ Validar formato de timestamp
 - ✅ Verificar que team sea válido
 - ✅ Opcional: Validar distancia al evento (<100m)

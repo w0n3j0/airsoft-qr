@@ -2,7 +2,7 @@
 // CONFIGURACIÓN Y CONSTANTES
 // ============================================
 
-const COOLDOWN_DURATION = 30 * 60 * 1000; // 30 minutos en milisegundos
+const COOLDOWN_DURATION = 60 * 60 * 1000; // 60 minutos (1 hora) en milisegundos
 const RETRY_INTERVAL = 15000; // 15 segundos para reintentos
 
 // Coordenadas fijas del evento (Rosario, Argentina)
