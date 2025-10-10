@@ -3,6 +3,8 @@
   "missileApiUrl": "https://defaulta7cad06884854149bb950f323bdfa8.9e.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/a3328e55292744a99e5c8495a51462ba/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=iqYPZp8BOTRLU6_2daDJYB7-3cCgj0Z1Olad9ZF0jgQ",
   "missileLaunchUrl": "https://defaulta7cad06884854149bb950f323bdfa8.9e.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/a3328e55292744a99e5c8495a51462ba/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=iqYPZp8BOTRLU6_2daDJYB7-3cCgj0Z1Olad9ZF0jgQ",
   "missileMetricsUrl": "https://defaulta7cad06884854149bb950f323bdfa8.9e.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/0dbdbe9a8b304470a572c99f54566b72/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=MBpo3_UDyyHUaFzxHPYejZXr6-bKyNoHjfgwelLzELc",
+  "cargoApiUrl": "TU_URL_DE_POWER_AUTOMATE_CARGO_POST_AQUI",
+  "cargoMetricsUrl": "TU_URL_DE_POWER_AUTOMATE_CARGO_GET_AQUI",
   "cooldownMinutes": 30,
   "eventLocation": {
     "lat": -32.8311426,

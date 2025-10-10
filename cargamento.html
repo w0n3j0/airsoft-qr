@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📦 Capturar Cargamento - Airsoft QR</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Fondo animado */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255, 165, 0, 0.03) 2px, rgba(255, 165, 0, 0.03) 4px),
+                repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(255, 165, 0, 0.03) 2px, rgba(255, 165, 0, 0.03) 4px);
+            animation: gridMove 20s linear infinite;
+            pointer-events: none;
+        }
+
+        @keyframes gridMove {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 50px); }
+        }
+
+        .container {
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Icono del cargamento */
+        .cargo-icon {
+            font-size: 120px;
+            margin-bottom: 20px;
+            animation: cargoFloat 3s ease-in-out infinite;
+            filter: drop-shadow(0 0 30px rgba(255, 165, 0, 0.6));
+        }
+
+        @keyframes cargoFloat {
+            0%, 100% { 
+                transform: translateY(0px) rotate(0deg);
+            }
+            50% { 
+                transform: translateY(-20px) rotate(5deg);
+            }
+        }
+
+        /* Título */
+        .title {
+            font-size: clamp(28px, 6vw, 42px);
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            text-shadow: 0 0 20px rgba(255, 165, 0, 0.8);
+            animation: titlePulse 2s ease-in-out infinite;
+        }
+
+        @keyframes titlePulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+
+        .cargo-number {
+            font-size: clamp(48px, 10vw, 72px);
+            font-weight: bold;
+            color: #FFA500;
+            text-shadow: 0 0 30px rgba(255, 165, 0, 0.8);
+            margin: 20px 0;
+        }
+
+        /* Estado */
+        .status-container {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 165, 0, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 30px 0;
+            backdrop-filter: blur(10px);
+        }
+
+        .status-label {
+            font-size: 14px;
+            opacity: 0.7;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin: 10px 0;
+        }
+
+        .status-badge.en-posesion {
+            background: #FFA500;
+            color: #1a1a2e;
+            animation: possessionPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes possessionPulse {
+            0%, 100% { 
+                box-shadow: 0 0 20px rgba(255, 165, 0, 0.5);
+                transform: scale(1);
+            }
+            50% { 
+                box-shadow: 0 0 30px rgba(255, 165, 0, 0.8);
+                transform: scale(1.05);
+            }
+        }
+
+        .status-badge.capturado {
+            background: #00C851;
+            color: white;
+        }
+
+        /* Botón capturar */
+        .capture-btn {
+            background: linear-gradient(135deg, #FFA500, #FF8C00);
+            border: none;
+            padding: 20px 50px;
+            font-size: 20px;
+            font-weight: bold;
+            color: white;
+            border-radius: 12px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 30px rgba(255, 165, 0, 0.4);
+            margin-top: 20px;
+        }
+
+        .capture-btn:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 40px rgba(255, 165, 0, 0.6);
+        }
+
+        .capture-btn:active:not(:disabled) {
+            transform: translateY(-1px);
+        }
+
+        .capture-btn:disabled {
+            background: #666;
+            cursor: not-allowed;
+            opacity: 0.5;
+        }
+
+        /* Mensaje de éxito */
+        .success-message {
+            display: none;
+            background: rgba(0, 200, 81, 0.2);
+            border: 2px solid #00C851;
+            border-radius: 12px;
+            padding: 30px;
+            margin-top: 20px;
+            animation: successFadeIn 0.5s ease-out;
+        }
+
+        .success-message.active {
+            display: block;
+        }
+
+        @keyframes successFadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .success-icon {
+            font-size: 64px;
+            margin-bottom: 15px;
+        }
+
+        .success-text {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        /* Error */
+        .error-message {
+            display: none;
+            background: rgba(255, 59, 48, 0.2);
+            border: 2px solid #FF3B30;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .error-message.active {
+            display: block;
+            animation: shake 0.5s ease-in-out;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        /* Loading */
+        .loading {
+            display: none;
+            margin-top: 20px;
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(255, 165, 0, 0.3);
+            border-top-color: #FFA500;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Info */
+        .info-box {
+            background: rgba(255, 255, 255, 0.05);
+            border-left: 4px solid #FFA500;
+            padding: 15px;
+            margin-top: 20px;
+            text-align: left;
+            border-radius: 4px;
+        }
+
+        .info-box p {
+            margin: 5px 0;
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .cargo-icon {
+                font-size: 80px;
+            }
+
+            .capture-btn {
+                padding: 15px 40px;
+                font-size: 18px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="cargo-icon">📦</div>
+        <h1 class="title">Cargamento</h1>
+        <div class="cargo-number" id="cargoNumber">?</div>
+
+        <div class="status-container">
+            <div class="status-label">Estado Actual</div>
+            <div class="status-badge en-posesion" id="statusBadge">
+                🔶 EN POSESIÓN
+            </div>
+            <p id="statusTime" style="font-size: 14px; margin-top: 10px; opacity: 0.7;">Verificando...</p>
+        </div>
+
+        <button class="capture-btn" id="captureBtn" disabled>
+            📦 CAPTURAR CARGAMENTO
+        </button>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p style="margin-top: 15px;">Procesando...</p>
+        </div>
+
+        <div class="success-message" id="successMessage">
+            <div class="success-icon">✅</div>
+            <div class="success-text">¡CARGAMENTO CAPTURADO!</div>
+            <p>Has capturado exitosamente este cargamento</p>
+        </div>
+
+        <div class="error-message" id="errorMessage">
+            <strong>⚠️ Error</strong>
+            <p id="errorText"></p>
+        </div>
+
+        <div class="info-box">
+            <p><strong>📍 Ubicación:</strong> <span id="location">Obteniendo GPS...</span></p>
+            <p><strong>📱 Device ID:</strong> <span id="deviceId">-</span></p>
+        </div>
+    </div>
+
+    <script>
+        // Obtener parámetros de URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const cargoNum = urlParams.get('cargo') || '1';
+        
+        // Endpoints (se cargarán desde config.json)
+        let CARGO_API_URL = null;
+        let CARGO_METRICS_URL = null;
+
+        // Estado
+        let deviceId = null;
+        let userLocation = null;
+        let currentStatus = 'En posesión';
+
+        // Elementos DOM
+        const cargoNumber = document.getElementById('cargoNumber');
+        const statusBadge = document.getElementById('statusBadge');
+        const statusTime = document.getElementById('statusTime');
+        const captureBtn = document.getElementById('captureBtn');
+        const loading = document.getElementById('loading');
+        const successMessage = document.getElementById('successMessage');
+        const errorMessage = document.getElementById('errorMessage');
+        const errorText = document.getElementById('errorText');
+        const locationDisplay = document.getElementById('location');
+        const deviceIdDisplay = document.getElementById('deviceId');
+
+        // Inicializar
+        async function init() {
+            cargoNumber.textContent = cargoNum;
+            
+            // Cargar configuración
+            await loadConfig();
+            
+            // Generar Device ID
+            deviceId = generateDeviceId();
+            deviceIdDisplay.textContent = deviceId.substring(0, 20) + '...';
+            
+            // Obtener ubicación
+            getLocation();
+            
+            // Verificar estado actual
+            await checkCargoStatus();
+        }
+
+        // Cargar config.json
+        async function loadConfig() {
+            try {
+                const response = await fetch('config.json');
+                if (response.ok) {
+                    const config = await response.json();
+                    CARGO_API_URL = config.cargoApiUrl;
+                    CARGO_METRICS_URL = config.cargoMetricsUrl;
+                    console.log('✅ Config cargada');
+                }
+            } catch (error) {
+                console.error('Error cargando config:', error);
+            }
+        }
+
+        // Generar Device ID único
+        function generateDeviceId() {
+            let id = localStorage.getItem('deviceId');
+            if (!id) {
+                id = 'device-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+                localStorage.setItem('deviceId', id);
+            }
+            return id;
+        }
+
+        // Obtener ubicación GPS
+        function getLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        userLocation = {
+                            lat: parseFloat(position.coords.latitude.toFixed(5)),
+                            lng: parseFloat(position.coords.longitude.toFixed(5)),
+                            accuracy: Math.round(position.coords.accuracy)
+                        };
+                        locationDisplay.textContent = `${userLocation.lat}, ${userLocation.lng} (±${userLocation.accuracy}m)`;
+                    },
+                    (error) => {
+                        console.error('Error GPS:', error);
+                        locationDisplay.textContent = 'No disponible';
+                        userLocation = { lat: 0, lng: 0, accuracy: 0 };
+                    }
+                );
+            } else {
+                locationDisplay.textContent = 'GPS no soportado';
+                userLocation = { lat: 0, lng: 0, accuracy: 0 };
+            }
+        }
+
+        // Verificar estado actual del cargamento
+        async function checkCargoStatus() {
+            if (!CARGO_METRICS_URL) {
+                console.warn('Cargo Metrics URL no configurada');
+                captureBtn.disabled = false;
+                statusTime.textContent = 'Estado desconocido';
+                return;
+            }
+
+            try {
+                const response = await fetch(CARGO_METRICS_URL, { method: 'GET' });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+
+                const data = await response.json();
+                console.log('Estado del cargamento:', data);
+
+                // Buscar este cargamento específico
+                let cargoData;
+                if (data.value && Array.isArray(data.value)) {
+                    cargoData = data.value.find(c => c.Title === cargoNum);
+                } else if (data.body && data.body.value) {
+                    cargoData = data.body.value.find(c => c.Title === cargoNum);
+                }
+
+                if (cargoData) {
+                    currentStatus = cargoData.field_1 || 'En posesión';
+                    updateStatusDisplay(currentStatus, cargoData.field_3 || cargoData.Modified);
+                } else {
+                    statusTime.textContent = 'Cargamento no encontrado';
+                    captureBtn.disabled = false;
+                }
+
+            } catch (error) {
+                console.error('Error verificando estado:', error);
+                statusTime.textContent = 'Error al verificar estado';
+                captureBtn.disabled = false;
+            }
+        }
+
+        // Actualizar visualización del estado
+        function updateStatusDisplay(status, timestamp) {
+            currentStatus = status;
+            
+            if (status === 'Capturado') {
+                statusBadge.className = 'status-badge capturado';
+                statusBadge.innerHTML = '✅ CAPTURADO';
+                statusTime.textContent = `Capturado ${formatDate(timestamp)}`;
+                captureBtn.disabled = true;
+                captureBtn.textContent = '✅ YA CAPTURADO';
+            } else {
+                statusBadge.className = 'status-badge en-posesion';
+                statusBadge.innerHTML = '🔶 EN POSESIÓN';
+                statusTime.textContent = 'Disponible para capturar';
+                captureBtn.disabled = false;
+            }
+        }
+
+        // Formatear fecha
+        function formatDate(isoString) {
+            const date = new Date(isoString);
+            const now = new Date();
+            const diff = now - date;
+            const minutes = Math.floor(diff / 60000);
+            const hours = Math.floor(diff / 3600000);
+            
+            if (minutes < 1) return 'ahora mismo';
+            if (minutes < 60) return `hace ${minutes}m`;
+            if (hours < 24) return `hace ${hours}h`;
+            
+            return date.toLocaleDateString('es-AR', {
+                day: '2-digit',
+                month: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        // Capturar cargamento
+        async function captureCargo() {
+            if (!CARGO_API_URL) {
+                showError('URL de API no configurada. Revisa config.json');
+                return;
+            }
+
+            if (currentStatus === 'Capturado') {
+                showError('Este cargamento ya fue capturado');
+                return;
+            }
+
+            if (!userLocation) {
+                showError('Esperando ubicación GPS...');
+                return;
+            }
+
+            // Mostrar loading
+            captureBtn.disabled = true;
+            loading.classList.add('active');
+            errorMessage.classList.remove('active');
+            successMessage.classList.remove('active');
+
+            try {
+                const payload = {
+                    cargo: cargoNum,
+                    action: 'capture',
+                    ts: new Date().toISOString(),
+                    deviceId: deviceId,
+                    userAgent: navigator.userAgent,
+                    location: userLocation
+                };
+
+                console.log('Enviando captura:', payload);
+
+                const response = await fetch(CARGO_API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await response.json();
+                console.log('Respuesta:', result);
+
+                if (response.ok && result.success) {
+                    // Éxito
+                    successMessage.classList.add('active');
+                    updateStatusDisplay('Capturado', payload.ts);
+                    
+                    // Vibrar si está disponible
+                    if (navigator.vibrate) {
+                        navigator.vibrate([200, 100, 200]);
+                    }
+                } else {
+                    throw new Error(result.error || 'Error al capturar cargamento');
+                }
+
+            } catch (error) {
+                console.error('Error:', error);
+                showError(error.message || 'Error de conexión. Intenta nuevamente.');
+                captureBtn.disabled = false;
+            } finally {
+                loading.classList.remove('active');
+            }
+        }
+
+        // Mostrar error
+        function showError(message) {
+            errorText.textContent = message;
+            errorMessage.classList.add('active');
+            setTimeout(() => {
+                errorMessage.classList.remove('active');
+            }, 5000);
+        }
+
+        // Event listeners
+        captureBtn.addEventListener('click', captureCargo);
+
+        // Inicializar al cargar
+        init();
+    </script>
+</body>
+</html>

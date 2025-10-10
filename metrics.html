@@ -380,6 +380,110 @@
             margin-bottom: 30px;
         }
 
+        /* Cargo Section */
+        .cargo-section {
+            margin-bottom: 30px;
+        }
+
+        .cargo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .cargo-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            padding: 30px;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cargo-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 165, 0, 0.1) 0%, transparent 70%);
+            animation: pulse 3s ease-in-out infinite;
+        }
+
+        .cargo-card.captured::before {
+            background: radial-gradient(circle, rgba(0, 200, 81, 0.1) 0%, transparent 70%);
+        }
+
+        .cargo-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 30px rgba(255, 165, 0, 0.3);
+        }
+
+        .cargo-card.captured:hover {
+            box-shadow: 0 8px 30px rgba(0, 200, 81, 0.3);
+        }
+
+        .cargo-icon-small {
+            font-size: 48px;
+            margin-bottom: 15px;
+            animation: cargoFloat 2s ease-in-out infinite;
+        }
+
+        @keyframes cargoFloat {
+            0%, 100% { transform: translateY(0px) rotate(-5deg); }
+            50% { transform: translateY(-10px) rotate(5deg); }
+        }
+
+        .cargo-label {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .cargo-status-badge {
+            display: inline-block;
+            padding: 8px 20px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        .cargo-status-badge.possession {
+            background: #FFA500;
+            color: #0B0F12;
+            animation: cargoAlert 1.5s ease-in-out infinite;
+        }
+
+        .cargo-status-badge.captured {
+            background: #00C851;
+            color: white;
+        }
+
+        @keyframes cargoAlert {
+            0%, 100% { 
+                box-shadow: 0 0 10px rgba(255, 165, 0, 0.5);
+                transform: scale(1);
+            }
+            50% { 
+                box-shadow: 0 0 20px rgba(255, 165, 0, 0.8);
+                transform: scale(1.05);
+            }
+        }
+
+        .cargo-time {
+            font-size: 12px;
+            opacity: 0.7;
+            margin-top: 10px;
+            min-height: 20px;
+        }
+
         .missiles-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -618,6 +722,37 @@
             </div>
         </div>
 
+        <!-- Cargo Section -->
+        <div class="cargo-section">
+            <h2 class="section-title">📦 Estado de Cargamentos</h2>
+            <div class="cargo-grid" id="cargoGrid">
+                <div class="cargo-card" data-cargo="1">
+                    <div class="cargo-icon-small">📦</div>
+                    <div class="cargo-label">CARGAMENTO 1</div>
+                    <div class="cargo-status-badge possession" id="cargoStatus1">
+                        🔶 EN POSESIÓN
+                    </div>
+                    <div class="cargo-time" id="cargoTime1">-</div>
+                </div>
+                <div class="cargo-card" data-cargo="2">
+                    <div class="cargo-icon-small">📦</div>
+                    <div class="cargo-label">CARGAMENTO 2</div>
+                    <div class="cargo-status-badge possession" id="cargoStatus2">
+                        🔶 EN POSESIÓN
+                    </div>
+                    <div class="cargo-time" id="cargoTime2">-</div>
+                </div>
+                <div class="cargo-card" data-cargo="3">
+                    <div class="cargo-icon-small">📦</div>
+                    <div class="cargo-label">CARGAMENTO 3</div>
+                    <div class="cargo-status-badge possession" id="cargoStatus3">
+                        🔶 EN POSESIÓN
+                    </div>
+                    <div class="cargo-time" id="cargoTime3">-</div>
+                </div>
+            </div>
+        </div>
+
         <!-- Captures Table -->
         <div class="captures-section">
             <h2 class="section-title">📋 Historial de Capturas</h2>
@@ -651,9 +786,11 @@
         const METRICS_ENDPOINT = 'https://defaulta7cad06884854149bb950f323bdfa8.9e.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/44b62dd352dd4a10b67a432a43d749f8/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=RLzAKS0H52XVoCre2T_sVZ8uycqe3eVekBB9j4_CU44';
         
         let MISSILES_ENDPOINT = null; // Se cargará desde config.json
+        let CARGO_ENDPOINT = null; // Se cargará desde config.json
 
         let captures = [];
         let missiles = {};
+        let cargo = {};
 
         // Cargar configuración
         async function loadConfig() {
@@ -662,7 +799,10 @@
                 if (response.ok) {
                     const config = await response.json();
                     MISSILES_ENDPOINT = config.missileMetricsUrl || config.missileApiUrl;
-                    console.log('✅ Config cargada, Missiles Endpoint:', MISSILES_ENDPOINT);
+                    CARGO_ENDPOINT = config.cargoMetricsUrl || config.cargoApiUrl;
+                    console.log('✅ Config cargada');
+                    console.log('   Missiles Endpoint:', MISSILES_ENDPOINT);
+                    console.log('   Cargo Endpoint:', CARGO_ENDPOINT);
                 }
             } catch (error) {
                 console.warn('⚠️ Error cargando config.json:', error);
@@ -897,6 +1037,105 @@
             console.log('✅ Renderizado completo');
         }
 
+        // Cargar datos de cargamentos
+        async function loadCargo() {
+            if (!CARGO_ENDPOINT) {
+                console.warn('⚠️ Cargo endpoint no configurado');
+                return;
+            }
+
+            try {
+                const response = await fetch(CARGO_ENDPOINT, {
+                    method: 'GET'
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+
+                const data = await response.json();
+                console.log('Respuesta de cargamentos:', data);
+
+                // Manejar respuesta con statusCode y body
+                let cargoData;
+                if (data.body && data.body.value) {
+                    cargoData = data.body.value;
+                } else if (data.value) {
+                    cargoData = data.value;
+                } else {
+                    console.error('Formato de respuesta de cargamentos desconocido');
+                    return;
+                }
+
+                // Procesar datos de cargamentos
+                if (Array.isArray(cargoData)) {
+                    cargoData.forEach(item => {
+                        const cargoNum = item.Title; // Número del cargamento como string ("1", "2", "3")
+                        const status = item.field_1; // Estado: "En posesión" o "Capturado"
+                        const timestamp = item.field_3 || item.Modified; // field_3 es timestamp de captura
+                        
+                        cargo[cargoNum] = {
+                            status: status,
+                            timestamp: timestamp,
+                            deviceId: item.field_2 || null,
+                            location: {
+                                lat: item.field_4 || 0,
+                                lng: item.field_5 || 0,
+                                accuracy: item.field_6 || 0
+                            }
+                        };
+                    });
+                }
+
+                console.log('✅ Cargamentos procesados:', cargo);
+                renderCargo();
+
+            } catch (error) {
+                console.error('Error loading cargo:', error);
+            }
+        }
+
+        // Renderizar estado de cargamentos
+        function renderCargo() {
+            console.log('🎨 Renderizando cargamentos:', cargo);
+            
+            for (let i = 1; i <= 3; i++) {
+                const card = document.querySelector(`.cargo-card[data-cargo="${i}"]`);
+                const statusBadge = document.getElementById(`cargoStatus${i}`);
+                const timeElement = document.getElementById(`cargoTime${i}`);
+                
+                // Convertir i a string para buscar en el objeto
+                const cargoData = cargo[i.toString()];
+                
+                console.log(`Cargamento ${i}:`, cargoData);
+                
+                if (cargoData) {
+                    const status = cargoData.status;
+                    
+                    if (status === 'Capturado') {
+                        card.classList.add('captured');
+                        statusBadge.className = 'cargo-status-badge captured';
+                        statusBadge.textContent = '✅ CAPTURADO';
+                        timeElement.textContent = `Capturado ${formatDate(cargoData.timestamp)}`;
+                    } else {
+                        // En posesión
+                        card.classList.remove('captured');
+                        statusBadge.className = 'cargo-status-badge possession';
+                        statusBadge.textContent = '🔶 EN POSESIÓN';
+                        timeElement.textContent = 'Disponible para capturar';
+                    }
+                } else {
+                    // Sin datos - estado en posesión por defecto
+                    card.classList.remove('captured');
+                    statusBadge.className = 'cargo-status-badge possession';
+                    statusBadge.textContent = '🔶 EN POSESIÓN';
+                    timeElement.textContent = 'Disponible para capturar';
+                }
+            }
+            
+            console.log('✅ Cargamentos renderizados');
+        }
+
         // Cargar datos
         async function loadMetrics() {
             const loadingOverlay = document.getElementById('loadingOverlay');
@@ -908,10 +1147,11 @@
                 refreshBtn.classList.add('loading');
                 errorMessage.classList.remove('active');
 
-                // Cargar capturas y misiles en paralelo
+                // Cargar capturas, misiles y cargamentos en paralelo
                 const [capturesResponse] = await Promise.all([
                     fetch(METRICS_ENDPOINT, { method: 'GET' }),
-                    loadMissiles()
+                    loadMissiles(),
+                    loadCargo()
                 ]);
 
                 if (!capturesResponse.ok) {

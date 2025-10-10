@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🧪 Test de Cargamentos - Airsoft QR</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(135deg, #0B0F12 0%, #1a1f24 100%);
+            color: #E8F5E9;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #FFA500;
+            text-shadow: 0 0 20px rgba(255, 165, 0, 0.5);
+        }
+
+        .section {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 165, 0, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            font-size: 20px;
+            margin-bottom: 15px;
+            color: #FFA500;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #FFA500, #FF8C00);
+            border: none;
+            padding: 12px 25px;
+            margin: 5px;
+            border-radius: 8px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(255, 165, 0, 0.4);
+        }
+
+        .btn-capture {
+            background: linear-gradient(135deg, #00C851, #00E676);
+        }
+
+        .output {
+            background: #0a0a0a;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .output pre {
+            margin: 0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .success {
+            color: #00C851;
+        }
+
+        .error {
+            color: #FF3B30;
+        }
+
+        .info {
+            color: #64B5F6;
+        }
+
+        .cargo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .cargo-item {
+            background: rgba(255, 165, 0, 0.1);
+            border: 2px solid rgba(255, 165, 0, 0.3);
+            border-radius: 8px;
+            padding: 15px;
+        }
+
+        .cargo-item h3 {
+            color: #FFA500;
+            margin-bottom: 10px;
+        }
+
+        .cargo-status {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            margin: 5px 0;
+        }
+
+        .cargo-status.possession {
+            background: #FFA500;
+            color: #0a0a0a;
+        }
+
+        .cargo-status.captured {
+            background: #00C851;
+            color: white;
+        }
+
+        .config-info {
+            background: rgba(100, 181, 246, 0.1);
+            border-left: 4px solid #64B5F6;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Test de Cargamentos</h1>
+
+        <div class="config-info">
+            <strong>📋 Configuración:</strong>
+            <div id="configStatus">Cargando config.json...</div>
+        </div>
+
+        <!-- Test GET -->
+        <div class="section">
+            <div class="section-title">📊 Test GET - Ver Estado de Todos los Cargamentos</div>
+            <button class="btn" onclick="testCargoGet()">🔍 Test GET</button>
+            <div class="output" id="getOutput">
+                <pre>Presiona el botón para probar el endpoint GET...</pre>
+            </div>
+            <div id="cargoList" class="cargo-grid"></div>
+        </div>
+
+        <!-- Test POST -->
+        <div class="section">
+            <div class="section-title">📦 Test POST - Capturar Cargamentos</div>
+            <button class="btn btn-capture" onclick="testCargoCapture('1')">📦 Capturar Cargamento 1</button>
+            <button class="btn btn-capture" onclick="testCargoCapture('2')">📦 Capturar Cargamento 2</button>
+            <button class="btn btn-capture" onclick="testCargoCapture('3')">📦 Capturar Cargamento 3</button>
+            <div class="output" id="postOutput">
+                <pre>Presiona un botón para capturar un cargamento...</pre>
+            </div>
+        </div>
+
+        <!-- URLs de Producción -->
+        <div class="section">
+            <div class="section-title">🌐 URLs de Producción</div>
+            <p><strong>Cargamento 1:</strong> <a href="cargamento.html?cargo=1" target="_blank" style="color: #FFA500">cargamento.html?cargo=1</a></p>
+            <p><strong>Cargamento 2:</strong> <a href="cargamento.html?cargo=2" target="_blank" style="color: #FFA500">cargamento.html?cargo=2</a></p>
+            <p><strong>Cargamento 3:</strong> <a href="cargamento.html?cargo=3" target="_blank" style="color: #FFA500">cargamento.html?cargo=3</a></p>
+        </div>
+    </div>
+
+    <script>
+        let CARGO_API_URL = null;
+        let CARGO_METRICS_URL = null;
+
+        // Cargar configuración
+        async function loadConfig() {
+            try {
+                const response = await fetch('config.json');
+                if (response.ok) {
+                    const config = await response.json();
+                    CARGO_API_URL = config.cargoApiUrl;
+                    CARGO_METRICS_URL = config.cargoMetricsUrl;
+                    
+                    document.getElementById('configStatus').innerHTML = `
+                        <div class="success">✅ Config cargada correctamente</div>
+                        <div style="margin-top: 10px; font-size: 12px;">
+                            <div><strong>POST URL:</strong> ${CARGO_API_URL ? '✅ Configurada' : '❌ No configurada'}</div>
+                            <div><strong>GET URL:</strong> ${CARGO_METRICS_URL ? '✅ Configurada' : '❌ No configurada'}</div>
+                        </div>
+                    `;
+                } else {
+                    throw new Error('config.json no encontrado');
+                }
+            } catch (error) {
+                document.getElementById('configStatus').innerHTML = `
+                    <div class="error">❌ Error cargando config.json: ${error.message}</div>
+                `;
+            }
+        }
+
+        // Test GET
+        async function testCargoGet() {
+            const output = document.getElementById('getOutput');
+            const cargoList = document.getElementById('cargoList');
+            
+            if (!CARGO_METRICS_URL) {
+                output.innerHTML = '<pre class="error">❌ Error: cargoMetricsUrl no configurada en config.json</pre>';
+                return;
+            }
+
+            output.innerHTML = '<pre class="info">⏳ Consultando estado de cargamentos...</pre>';
+            cargoList.innerHTML = '';
+
+            try {
+                const response = await fetch(CARGO_METRICS_URL, {
+                    method: 'GET'
+                });
+
+                const data = await response.json();
+                
+                let html = `<pre class="success">✅ Respuesta recibida (HTTP ${response.status})\n\n`;
+                html += JSON.stringify(data, null, 2);
+                html += '</pre>';
+                
+                output.innerHTML = html;
+
+                // Renderizar lista de cargamentos
+                let cargoData;
+                if (data.value && Array.isArray(data.value)) {
+                    cargoData = data.value;
+                } else if (data.body && data.body.value) {
+                    cargoData = data.body.value;
+                }
+
+                if (cargoData) {
+                    cargoData.forEach(cargo => {
+                        const status = cargo.field_1 || 'En posesión';
+                        const statusClass = status === 'Capturado' ? 'captured' : 'possession';
+                        const icon = status === 'Capturado' ? '✅' : '🔶';
+                        const timestamp = cargo.field_3 ? new Date(cargo.field_3).toLocaleString('es-AR') : '-';
+                        
+                        cargoList.innerHTML += `
+                            <div class="cargo-item">
+                                <h3>📦 Cargamento ${cargo.Title}</h3>
+                                <div class="cargo-status ${statusClass}">${icon} ${status}</div>
+                                <div style="font-size: 12px; margin-top: 10px;">
+                                    <div><strong>ID:</strong> ${cargo.ID}</div>
+                                    <div><strong>Device:</strong> ${cargo.field_2 || 'N/A'}</div>
+                                    <div><strong>Timestamp:</strong> ${timestamp}</div>
+                                    <div><strong>GPS:</strong> ${cargo.field_4 && cargo.field_5 ? `${cargo.field_4}, ${cargo.field_5}` : 'N/A'}</div>
+                                </div>
+                            </div>
+                        `;
+                    });
+                }
+
+            } catch (error) {
+                output.innerHTML = `<pre class="error">❌ Error: ${error.message}\n\n${error.stack}</pre>`;
+            }
+        }
+
+        // Test POST - Capturar
+        async function testCargoCapture(cargoNum) {
+            const output = document.getElementById('postOutput');
+            
+            if (!CARGO_API_URL) {
+                output.innerHTML = '<pre class="error">❌ Error: cargoApiUrl no configurada en config.json</pre>';
+                return;
+            }
+
+            const payload = {
+                cargo: cargoNum,
+                action: 'capture',
+                ts: new Date().toISOString(),
+                deviceId: 'test-device-' + Math.random().toString(36).substr(2, 9),
+                userAgent: navigator.userAgent,
+                location: {
+                    lat: parseFloat((-32.83114 + (Math.random() - 0.5) * 0.001).toFixed(5)),
+                    lng: parseFloat((-60.70558 + (Math.random() - 0.5) * 0.001).toFixed(5)),
+                    accuracy: Math.floor(Math.random() * 30) + 10
+                }
+            };
+
+            output.innerHTML = `<pre class="info">⏳ Capturando Cargamento ${cargoNum}...\n\nPayload enviado:\n${JSON.stringify(payload, null, 2)}</pre>`;
+
+            try {
+                const response = await fetch(CARGO_API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await response.json();
+                
+                let html = `<pre class="${response.ok ? 'success' : 'error'}">`;
+                html += `${response.ok ? '✅' : '❌'} Respuesta recibida (HTTP ${response.status})\n\n`;
+                html += `Payload enviado:\n${JSON.stringify(payload, null, 2)}\n\n`;
+                html += `Respuesta del servidor:\n${JSON.stringify(data, null, 2)}`;
+                html += '</pre>';
+                
+                output.innerHTML = html;
+
+                // Actualizar automáticamente el GET
+                if (response.ok) {
+                    setTimeout(() => testCargoGet(), 1000);
+                }
+
+            } catch (error) {
+                output.innerHTML = `<pre class="error">❌ Error: ${error.message}\n\n${error.stack}</pre>`;
+            }
+        }
+
+        // Inicializar
+        loadConfig();
+    </script>
+</body>
+</html>

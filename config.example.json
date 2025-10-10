@@ -3,6 +3,8 @@
   "missileApiUrl": "TU_URL_DE_POWER_AUTOMATE_MISILES_POST_AQUI",
   "missileLaunchUrl": "TU_URL_DE_POWER_AUTOMATE_MISILES_LAUNCH_AQUI",
   "missileMetricsUrl": "TU_URL_DE_POWER_AUTOMATE_MISILES_GET_AQUI",
+  "cargoApiUrl": "TU_URL_DE_POWER_AUTOMATE_CARGO_POST_AQUI",
+  "cargoMetricsUrl": "TU_URL_DE_POWER_AUTOMATE_CARGO_GET_AQUI",
   "cooldownMinutes": 30,
   "eventLocation": {
     "lat": -32.8311426,

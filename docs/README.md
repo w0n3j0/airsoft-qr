@@ -53,7 +53,26 @@ Resumen de la implementación del sistema de misiles V1.
 
 ---
 
-## 📊 Sistema de Métricas
+## � Sistema de Cargamentos
+
+### [CARGAMENTOS_BACKEND.md](CARGAMENTOS_BACKEND.md) ⭐ **NUEVO**
+**Configuración completa del sistema de cargamentos** para Power Automate:
+- Sistema de 2 estados: En Posesión, Capturado
+- 1 QR code por cargamento
+- Captura única (no reversible)
+- Validación de estado
+- Integración con métricas
+
+**Características:**
+- 📦 3 cargamentos independientes
+- 🔶 Estado inicial: "En Posesión"
+- ✅ Captura única e irreversible
+- 📍 Registro de GPS y timestamp
+- 🎯 Objetivo secundario estratégico
+
+---
+
+## �📊 Sistema de Métricas
 
 ### [METRICS_GUIDE.md](METRICS_GUIDE.md)
 Guía completa del dashboard de métricas:
@@ -94,6 +113,17 @@ Resumen de las métricas disponibles y cómo interpretarlas.
 | `field_5` | Longitud GPS |
 | `field_6` | Precisión GPS |
 
+### Sistema de Cargamentos
+| Campo SharePoint | Descripción |
+|------------------|-------------|
+| `Title` | Número del cargamento (1, 2, 3) |
+| `field_1` | Estado (En posesión/Capturado) |
+| `field_2` | Device ID |
+| `field_3` | Timestamp de captura |
+| `field_4` | Latitud GPS |
+| `field_5` | Longitud GPS |
+| `field_6` | Precisión GPS |
+
 ---
 
 ## 🔄 Versiones
@@ -106,6 +136,8 @@ Resumen de las métricas disponibles y cómo interpretarlas.
 ### V2 (Actual) ⭐
 - **3 estados de misiles**: Armado, Lanzado, Desactivado
 - **2 QR codes por misil**: Lanzar y Desactivar
+- **Sistema de cargamentos**: 3 cargamentos con captura única
+- **2 QR code por cargamento**: Solo captura
 - Sistema de confianza en métricas
 - Validación avanzada de transiciones de estado
 
@@ -119,7 +151,8 @@ Resumen de las métricas disponibles y cómo interpretarlas.
    - Bases: `index.html`
    - Misiles Desactivar: `misil.html?missile=X`
    - Misiles Lanzar: `lanzar-misil.html?missile=X`
-4. **Probar**: Usa `test-api.html` y `test-misiles.html`
+   - Cargamentos: `cargamento.html?cargo=X`
+4. **Probar**: Usa `test-api.html`, `test-misiles.html` y `test-cargamentos.html`
 5. **Monitorear**: Abre `metrics.html` para ver el dashboard en tiempo real
 
 ---
@@ -134,4 +167,4 @@ Si encuentras problemas:
 ---
 
 **Última actualización**: Octubre 10, 2025  
-**Versión**: 2.0 (Sistema Dual-Action)
+**Versión**: 2.1 (Sistema Dual-Action + Cargamentos)
