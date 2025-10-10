@@ -655,4 +655,16 @@ MIT License - Libre para usar y modificar
 
 ---
 
-**Última actualización:** 6 de octubre de 2025
+## 📚 Documentación Completa
+
+Toda la documentación técnica está organizada en la carpeta [`docs/`](./docs/):
+
+- 📋 **[docs/README.md](./docs/README.md)** - Índice completo de documentación
+- 🔧 **[docs/BACKEND_POWERAUTOMATE.md](./docs/BACKEND_POWERAUTOMATE.md)** - Configuración de Power Automate para captura de bases
+- 🚀 **[docs/MISILES_BACKEND_V2.md](./docs/MISILES_BACKEND_V2.md)** - Sistema de misiles V2 (3 estados, 2 QR codes)
+- 📊 **[docs/METRICS_GUIDE.md](./docs/METRICS_GUIDE.md)** - Guía del dashboard de métricas
+- 🎯 **[docs/MISILES_V2_GUIA.md](./docs/MISILES_V2_GUIA.md)** - Guía rápida del sistema de misiles
+
+---
+
+**Última actualización:** 10 de octubre de 2025 - Sistema V2.0 con misiles dual-action

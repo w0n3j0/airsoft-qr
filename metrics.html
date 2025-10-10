@@ -412,6 +412,10 @@
             background: radial-gradient(circle, rgba(0, 255, 136, 0.1) 0%, transparent 70%);
         }
 
+        .missile-card.launched::before {
+            background: radial-gradient(circle, rgba(255, 140, 0, 0.15) 0%, transparent 70%);
+        }
+
         .missile-card:hover {
             transform: translateY(-5px);
             box-shadow: 0 8px 30px rgba(255, 56, 56, 0.3);
@@ -419,6 +423,10 @@
 
         .missile-card.deactivated:hover {
             box-shadow: 0 8px 30px rgba(0, 255, 136, 0.3);
+        }
+
+        .missile-card.launched:hover {
+            box-shadow: 0 8px 30px rgba(255, 140, 0, 0.5);
         }
 
         .missile-icon-small {
@@ -459,6 +467,23 @@
         .missile-status-badge.deactivated {
             background: #00FF88;
             color: #0B0F12;
+        }
+
+        .missile-status-badge.launched {
+            background: #FF8C00;
+            color: white;
+            animation: missileLaunched 2s ease-in-out infinite;
+        }
+
+        @keyframes missileLaunched {
+            0%, 100% { 
+                box-shadow: 0 0 15px rgba(255, 140, 0, 0.6);
+                transform: scale(1);
+            }
+            50% { 
+                box-shadow: 0 0 25px rgba(255, 140, 0, 0.9);
+                transform: scale(1.03);
+            }
         }
 
         @keyframes missileAlert {
@@ -838,16 +863,34 @@
                 
                 console.log(`Misil ${i}:`, missileData);
                 
-                if (missileData && missileData.status === 'Desactivado') {
-                    card.classList.add('deactivated');
-                    statusBadge.className = 'missile-status-badge deactivated';
-                    statusBadge.textContent = '🟢 DESACTIVADO';
-                    timeElement.textContent = `Desactivado ${formatDate(missileData.timestamp)}`;
+                if (missileData) {
+                    const status = missileData.status;
+                    
+                    if (status === 'Desactivado') {
+                        card.classList.remove('launched');
+                        card.classList.add('deactivated');
+                        statusBadge.className = 'missile-status-badge deactivated';
+                        statusBadge.textContent = '🟢 DESACTIVADO';
+                        timeElement.textContent = `Desactivado ${formatDate(missileData.timestamp)}`;
+                    } else if (status === 'Lanzado') {
+                        card.classList.remove('deactivated');
+                        card.classList.add('launched');
+                        statusBadge.className = 'missile-status-badge launched';
+                        statusBadge.textContent = '🚀 LANZADO';
+                        timeElement.textContent = `Lanzado ${formatDate(missileData.timestamp)}`;
+                    } else {
+                        // Armado
+                        card.classList.remove('deactivated', 'launched');
+                        statusBadge.className = 'missile-status-badge armed';
+                        statusBadge.textContent = '🔴 ARMADO';
+                        timeElement.textContent = 'Esperando acción...';
+                    }
                 } else {
-                    card.classList.remove('deactivated');
+                    // Sin datos - estado armado por defecto
+                    card.classList.remove('deactivated', 'launched');
                     statusBadge.className = 'missile-status-badge armed';
                     statusBadge.textContent = '🔴 ARMADO';
-                    timeElement.textContent = 'Esperando desactivación...';
+                    timeElement.textContent = 'Esperando acción...';
                 }
             }
             

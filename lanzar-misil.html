@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🚀 Desactivación de Misil - Airsoft QR</title>
+    <title>🚀 Lanzamiento de Misil - Airsoft QR</title>
     <style>
         * {
             margin: 0;
@@ -14,8 +14,9 @@
         :root {
             --missile-red: #FF3838;
             --missile-orange: #FF8C00;
-            --missile-green: #00FF88;
-            --missile-glow: rgba(255, 56, 56, 0.6);
+            --missile-blue: #00A8FF;
+            --missile-yellow: #FFD700;
+            --missile-glow: rgba(255, 165, 0, 0.8);
             --bg-dark: #0B0F12;
             --text-light: #E8F5E9;
         }
@@ -45,19 +46,19 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Animación de alerta */
-        .alert-pulse {
-            animation: alertPulse 1.5s ease-in-out infinite;
+        /* Animación de alerta de lanzamiento */
+        .launch-pulse {
+            animation: launchPulse 1s ease-in-out infinite;
         }
 
-        @keyframes alertPulse {
+        @keyframes launchPulse {
             0%, 100% { 
-                box-shadow: 0 0 30px var(--missile-glow),
-                           inset 0 0 20px rgba(255, 56, 56, 0.2);
+                box-shadow: 0 0 40px var(--missile-glow),
+                           inset 0 0 30px rgba(255, 165, 0, 0.3);
             }
             50% { 
-                box-shadow: 0 0 60px var(--missile-glow),
-                           inset 0 0 40px rgba(255, 56, 56, 0.4);
+                box-shadow: 0 0 80px var(--missile-glow),
+                           inset 0 0 50px rgba(255, 165, 0, 0.5);
             }
         }
 
@@ -65,13 +66,13 @@
         .missile-icon {
             font-size: 120px;
             margin-bottom: 20px;
-            text-shadow: 0 0 30px var(--missile-red);
-            animation: rocketShake 0.5s ease-in-out infinite;
+            text-shadow: 0 0 40px var(--missile-orange);
+            animation: rocketFloat 1.5s ease-in-out infinite;
         }
 
-        @keyframes rocketShake {
-            0%, 100% { transform: rotate(-2deg); }
-            50% { transform: rotate(2deg); }
+        @keyframes rocketFloat {
+            0%, 100% { transform: translateY(0) rotate(-45deg); }
+            50% { transform: translateY(-15px) rotate(-45deg); }
         }
 
         /* Título */
@@ -81,7 +82,7 @@
             text-transform: uppercase;
             letter-spacing: 3px;
             margin-bottom: 10px;
-            color: var(--missile-red);
+            color: var(--missile-orange);
             text-shadow: 0 0 20px var(--missile-glow);
         }
 
@@ -93,8 +94,8 @@
 
         /* Panel de información */
         .info-panel {
-            background: rgba(255, 255, 255, 0.05);
-            border: 2px solid var(--missile-red);
+            background: rgba(255, 165, 0, 0.1);
+            border: 2px solid var(--missile-orange);
             border-radius: 12px;
             padding: 30px;
             margin-bottom: 30px;
@@ -103,15 +104,15 @@
         }
 
         .info-panel::before {
-            content: '⚠️ PELIGRO ⚠️';
+            content: '🚀 SISTEMA DE LANZAMIENTO 🚀';
             position: absolute;
             top: -1px;
             left: 50%;
             transform: translateX(-50%);
-            background: var(--missile-red);
-            color: white;
+            background: var(--missile-orange);
+            color: #0B0F12;
             padding: 5px 20px;
-            font-size: 12px;
+            font-size: 11px;
             font-weight: bold;
             letter-spacing: 2px;
         }
@@ -119,7 +120,7 @@
         .missile-id {
             font-size: 64px;
             font-weight: bold;
-            color: var(--missile-red);
+            color: var(--missile-orange);
             margin: 20px 0;
             text-shadow: 0 0 30px var(--missile-glow);
         }
@@ -141,9 +142,14 @@
             animation: pulse 1s ease-in-out infinite;
         }
 
+        .status-badge.launched {
+            background: var(--missile-orange);
+            color: white;
+        }
+
         .status-badge.deactivated {
-            background: var(--missile-green);
-            color: #0B0F12;
+            background: #555;
+            color: #999;
         }
 
         @keyframes pulse {
@@ -151,8 +157,8 @@
             50% { transform: scale(1.05); }
         }
 
-        /* Botón de desactivación */
-        .deactivate-btn {
+        /* Botón de lanzamiento */
+        .launch-btn {
             display: inline-flex;
             align-items: center;
             justify-content: center;
@@ -162,27 +168,27 @@
             font-weight: bold;
             text-transform: uppercase;
             letter-spacing: 2px;
-            background: linear-gradient(135deg, var(--missile-red), var(--missile-orange));
+            background: linear-gradient(135deg, var(--missile-orange), var(--missile-yellow));
             border: 3px solid white;
             border-radius: 12px;
-            color: white;
+            color: #0B0F12;
             cursor: pointer;
             transition: all 0.3s ease;
-            box-shadow: 0 6px 30px rgba(255, 56, 56, 0.5);
+            box-shadow: 0 6px 30px rgba(255, 165, 0, 0.5);
             position: relative;
             overflow: hidden;
         }
 
-        .deactivate-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 40px rgba(255, 56, 56, 0.7);
+        .launch-btn:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 8px 40px rgba(255, 165, 0, 0.8);
         }
 
-        .deactivate-btn:active {
+        .launch-btn:active {
             transform: translateY(-1px);
         }
 
-        .deactivate-btn::before {
+        .launch-btn::before {
             content: '';
             position: absolute;
             top: -50%;
@@ -192,11 +198,11 @@
             background: linear-gradient(
                 45deg,
                 transparent,
-                rgba(255, 255, 255, 0.3),
+                rgba(255, 255, 255, 0.5),
                 transparent
             );
             transform: rotate(45deg);
-            animation: shimmer 3s infinite;
+            animation: shimmer 2s infinite;
         }
 
         @keyframes shimmer {
@@ -204,24 +210,24 @@
             100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
         }
 
-        .deactivate-btn.disabled {
+        .launch-btn.disabled {
             background: #555;
             cursor: not-allowed;
             opacity: 0.5;
             pointer-events: none;
         }
 
-        .deactivate-btn .spinner {
+        .launch-btn .spinner {
             display: none;
             width: 24px;
             height: 24px;
-            border: 3px solid rgba(255, 255, 255, 0.3);
-            border-top-color: white;
+            border: 3px solid rgba(0, 0, 0, 0.3);
+            border-top-color: #0B0F12;
             border-radius: 50%;
             animation: spin 0.8s linear infinite;
         }
 
-        .deactivate-btn.loading .spinner {
+        .launch-btn.loading .spinner {
             display: block;
         }
 
@@ -229,40 +235,45 @@
             to { transform: rotate(360deg); }
         }
 
-        /* Pantalla de éxito */
+        /* Pantalla de éxito (lanzamiento) */
         .success-screen {
             display: none;
             text-align: center;
-            animation: successZoom 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            animation: rocketLaunch 1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
         .success-screen.active {
             display: block;
         }
 
-        @keyframes successZoom {
-            from { transform: scale(0); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
+        @keyframes rocketLaunch {
+            0% { transform: translateY(100vh) scale(0.5); opacity: 0; }
+            60% { transform: translateY(-20px) scale(1.1); opacity: 1; }
+            100% { transform: translateY(0) scale(1); opacity: 1; }
         }
 
         .success-icon {
             font-size: 150px;
-            color: var(--missile-green);
-            text-shadow: 0 0 50px var(--missile-green);
             margin-bottom: 20px;
-            animation: successBounce 0.6s ease-in-out;
+            animation: rocketFly 1.5s ease-in-out infinite;
         }
 
-        @keyframes successBounce {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.2); }
+        @keyframes rocketFly {
+            0%, 100% { transform: translateY(0) rotate(-45deg); }
+            50% { transform: translateY(-20px) rotate(-35deg); }
         }
 
         .success-title {
             font-size: 36px;
-            color: var(--missile-green);
-            text-shadow: 0 0 20px rgba(0, 255, 136, 0.5);
+            color: var(--missile-orange);
+            text-shadow: 0 0 30px var(--missile-glow);
             margin-bottom: 20px;
+            animation: textGlow 1.5s ease-in-out infinite;
+        }
+
+        @keyframes textGlow {
+            0%, 100% { text-shadow: 0 0 20px var(--missile-glow); }
+            50% { text-shadow: 0 0 40px var(--missile-glow); }
         }
 
         .success-message {
@@ -275,6 +286,30 @@
             font-size: 14px;
             opacity: 0.6;
             margin-top: 20px;
+        }
+
+        /* Explosión de partículas */
+        .explosion {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+        }
+
+        .particle {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: var(--missile-orange);
+            border-radius: 50%;
+            opacity: 0;
+            animation: explode 1s ease-out forwards;
+        }
+
+        @keyframes explode {
+            0% { transform: translate(0, 0) scale(1); opacity: 1; }
+            100% { transform: translate(var(--x), var(--y)) scale(0); opacity: 0; }
         }
 
         /* Error Message */
@@ -303,16 +338,6 @@
             margin-bottom: 10px;
         }
 
-        /* Contador regresivo */
-        .countdown-timer {
-            font-size: 48px;
-            font-weight: bold;
-            color: var(--missile-red);
-            text-shadow: 0 0 20px var(--missile-glow);
-            margin: 20px 0;
-            font-family: 'Courier New', monospace;
-        }
-
         /* Responsive */
         @media (max-width: 600px) {
             .missile-icon {
@@ -323,7 +348,7 @@
                 padding: 25px 15px;
             }
 
-            .deactivate-btn {
+            .launch-btn {
                 padding: 15px 30px;
                 font-size: 18px;
             }
@@ -335,18 +360,17 @@
         <!-- Pantalla de estado del misil -->
         <div id="missileStatus">
             <div class="missile-icon">🚀</div>
-            <h1 class="missile-title" id="missileTitle">MISIL DETECTADO</h1>
-            <p class="missile-subtitle">Objetivo Secundario</p>
+            <h1 class="missile-title" id="missileTitle">SISTEMA DE LANZAMIENTO</h1>
+            <p class="missile-subtitle">Preparado para Lanzamiento</p>
 
-            <div class="info-panel alert-pulse">
+            <div class="info-panel launch-pulse">
                 <div class="missile-id" id="missileNumber">-</div>
-                <div class="status-badge armed" id="statusBadge">🔴 ARMADO</div>
-                <div class="countdown-timer" id="countdownTimer" style="display: none;">--:--</div>
+                <div class="status-badge armed" id="statusBadge">🔴 LISTO PARA LANZAR</div>
             </div>
 
-            <button class="deactivate-btn" id="deactivateBtn">
+            <button class="launch-btn" id="launchBtn">
                 <span class="spinner"></span>
-                <span class="btn-text">⚡ DESACTIVAR AHORA</span>
+                <span class="btn-text">🚀 LANZAR MISIL</span>
             </button>
 
             <div class="error-message" id="errorMessage">
@@ -357,13 +381,15 @@
 
         <!-- Pantalla de éxito -->
         <div class="success-screen" id="successScreen">
-            <div class="success-icon">✅</div>
-            <h2 class="success-title">MISIL DESACTIVADO</h2>
-            <p class="success-message">El misil ha sido neutralizado con éxito</p>
-            <p class="success-message" id="deactivationMessage">-</p>
+            <div class="success-icon">🚀💨</div>
+            <h2 class="success-title">¡MISIL LANZADO!</h2>
+            <p class="success-message">El misil ha sido lanzado con éxito</p>
+            <p class="success-message" id="launchMessage">-</p>
             <p class="timestamp" id="timestampDisplay">-</p>
         </div>
     </div>
+
+    <div class="explosion" id="explosion"></div>
 
     <script>
         // ============================================
@@ -406,8 +432,8 @@
                 showError('URL inválida. Use ?missile=1, ?missile=2 o ?missile=3');
             }
 
-            // Event listener para botón de desactivación
-            document.getElementById('deactivateBtn').addEventListener('click', deactivateMissile);
+            // Event listener para botón de lanzamiento
+            document.getElementById('launchBtn').addEventListener('click', launchMissile);
         });
 
         // ============================================
@@ -433,10 +459,14 @@
         }
 
         function getApiUrl() {
+            if (CONFIG && CONFIG.missileLaunchUrl) {
+                return CONFIG.missileLaunchUrl;
+            }
+            // Fallback al missileApiUrl con action=launch
             if (CONFIG && CONFIG.missileApiUrl) {
                 return CONFIG.missileApiUrl;
             }
-            console.error('❌ No se encontró missileApiUrl en config.json');
+            console.error('❌ No se encontró API URL en config.json');
             return null;
         }
 
@@ -465,15 +495,13 @@
         async function checkMissileStatus() {
             document.getElementById('missileNumber').textContent = `MISIL ${currentMissile}`;
             
-            const apiUrl = getApiUrl();
-            if (!apiUrl) {
-                showError('API no configurada. Verifica config.json');
+            if (!CONFIG || !CONFIG.missileMetricsUrl) {
+                console.warn('⚠️ missileMetricsUrl no configurado');
                 return;
             }
 
             try {
-                // Consultar estado del misil (GET devuelve todos los misiles)
-                const response = await fetch(apiUrl, {
+                const response = await fetch(CONFIG.missileMetricsUrl, {
                     method: 'GET'
                 });
 
@@ -484,7 +512,6 @@
                 const data = await response.json();
                 console.log('Estado de misiles:', data);
                 
-                // Manejar respuesta con statusCode y body
                 let missileData;
                 if (data.body && data.body.value) {
                     missileData = data.body.value;
@@ -495,30 +522,33 @@
                     return;
                 }
 
-                // Buscar el misil actual en el array
                 const missile = missileData.find(m => m.Title === currentMissile.toString());
                 
-                if (missile && missile.field_1 === 'Desactivado') {
-                    showAlreadyDeactivated(missile.Modified, missile.Editor.DisplayName);
+                if (missile) {
+                    const status = missile.field_1;
+                    if (status === 'Lanzado') {
+                        showAlreadyLaunched(missile.Modified);
+                    } else if (status === 'Desactivado') {
+                        showAlreadyDeactivated(missile.Modified);
+                    }
                 }
                 
             } catch (error) {
                 console.warn('⚠️ Error verificando estado:', error);
-                // Continuar de todas formas (modo offline)
             }
         }
 
         // ============================================
-        // DESACTIVAR MISIL
+        // LANZAR MISIL
         // ============================================
 
-        async function deactivateMissile() {
-            const btn = document.getElementById('deactivateBtn');
+        async function launchMissile() {
+            const btn = document.getElementById('launchBtn');
             const errorMessage = document.getElementById('errorMessage');
             
             btn.classList.add('loading');
             errorMessage.classList.remove('active');
-            vibrate(50);
+            vibrate(100);
 
             // Obtener geolocalización
             let userLocation = null;
@@ -544,7 +574,7 @@
 
             const payload = {
                 missile: currentMissile,
-                action: 'deactivate',
+                action: 'launch',
                 ts: new Date().toISOString(),
                 deviceId: deviceId,
                 userAgent: navigator.userAgent,
@@ -563,18 +593,46 @@
                 });
 
                 if (response.ok) {
-                    console.log('✅ Misil desactivado con éxito');
-                    vibrate([100, 50, 100]);
+                    console.log('✅ Misil lanzado con éxito');
+                    vibrate([200, 100, 200, 100, 200]);
+                    createExplosion();
                     showSuccess(payload.ts);
                 } else {
                     const errorData = await response.json();
                     throw new Error(errorData.message || `HTTP ${response.status}`);
                 }
             } catch (error) {
-                console.error('❌ Error al desactivar:', error);
+                console.error('❌ Error al lanzar:', error);
                 btn.classList.remove('loading');
                 showError(error.message || 'Error de conexión. Intenta nuevamente.');
                 vibrate([50, 50, 50]);
+            }
+        }
+
+        // ============================================
+        // EFECTOS VISUALES
+        // ============================================
+
+        function createExplosion() {
+            const explosion = document.getElementById('explosion');
+            const particleCount = 30;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                
+                const angle = (360 / particleCount) * i;
+                const distance = 100 + Math.random() * 100;
+                const x = Math.cos(angle * Math.PI / 180) * distance;
+                const y = Math.sin(angle * Math.PI / 180) * distance;
+                
+                particle.style.setProperty('--x', `${x}px`);
+                particle.style.setProperty('--y', `${y}px`);
+                particle.style.animationDelay = `${Math.random() * 0.2}s`;
+                
+                explosion.appendChild(particle);
+                
+                setTimeout(() => particle.remove(), 1000);
             }
         }
 
@@ -585,17 +643,26 @@
         function showSuccess(timestamp) {
             document.getElementById('missileStatus').style.display = 'none';
             document.getElementById('successScreen').classList.add('active');
-            document.getElementById('deactivationMessage').textContent = `Misil ${currentMissile} neutralizado`;
+            document.getElementById('launchMessage').textContent = `Misil ${currentMissile} en vuelo`;
             document.getElementById('timestampDisplay').textContent = formatDate(timestamp);
         }
 
-        function showAlreadyDeactivated(timestamp, deviceId) {
-            document.getElementById('statusBadge').className = 'status-badge deactivated';
-            document.getElementById('statusBadge').textContent = '🟢 DESACTIVADO';
-            document.getElementById('deactivateBtn').classList.add('disabled');
-            document.getElementById('deactivateBtn').querySelector('.btn-text').textContent = 'YA DESACTIVADO';
+        function showAlreadyLaunched(timestamp) {
+            document.getElementById('statusBadge').className = 'status-badge launched';
+            document.getElementById('statusBadge').textContent = '🚀 YA LANZADO';
+            document.getElementById('launchBtn').classList.add('disabled');
+            document.getElementById('launchBtn').querySelector('.btn-text').textContent = 'YA LANZADO';
             
-            showError(`Este misil fue desactivado el ${formatDate(timestamp)}`);
+            showError(`Este misil fue lanzado el ${formatDate(timestamp)}`);
+        }
+
+        function showAlreadyDeactivated(timestamp) {
+            document.getElementById('statusBadge').className = 'status-badge deactivated';
+            document.getElementById('statusBadge').textContent = '🔴 DESACTIVADO';
+            document.getElementById('launchBtn').classList.add('disabled');
+            document.getElementById('launchBtn').querySelector('.btn-text').textContent = 'DESACTIVADO';
+            
+            showError(`Este misil fue desactivado el ${formatDate(timestamp)}. No puede ser lanzado.`);
         }
 
         function showError(message) {

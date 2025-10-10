@@ -1,6 +1,7 @@
 {
   "apiUrl": "https://prod-XX.eastus.logic.azure.com:443/workflows/YOUR_FLOW_ID/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=YOUR_SIGNATURE",
   "missileApiUrl": "TU_URL_DE_POWER_AUTOMATE_MISILES_POST_AQUI",
+  "missileLaunchUrl": "TU_URL_DE_POWER_AUTOMATE_MISILES_LAUNCH_AQUI",
   "missileMetricsUrl": "TU_URL_DE_POWER_AUTOMATE_MISILES_GET_AQUI",
   "cooldownMinutes": 30,
   "eventLocation": {
