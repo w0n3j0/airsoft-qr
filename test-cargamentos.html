@@ -247,7 +247,8 @@
 
                 if (cargoData) {
                     cargoData.forEach(cargo => {
-                        const status = cargo.field_1 || 'En posesión';
+                        // Parsear el campo choice de SharePoint
+                        const status = cargo.field_1?.[0]?.Value || cargo.field_1 || 'En posesión';
                         const statusClass = status === 'Capturado' ? 'captured' : 'possession';
                         const icon = status === 'Capturado' ? '✅' : '🔶';
                         const timestamp = cargo.field_3 ? new Date(cargo.field_3).toLocaleString('es-AR') : '-';

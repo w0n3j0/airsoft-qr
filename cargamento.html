@@ -447,7 +447,8 @@
                 }
 
                 if (cargoData) {
-                    currentStatus = cargoData.field_1 || 'En posesión';
+                    // Parsear el campo choice de SharePoint
+                    currentStatus = cargoData.field_1?.[0]?.Value || cargoData.field_1 || 'En posesión';
                     updateStatusDisplay(currentStatus, cargoData.field_3 || cargoData.Modified);
                 } else {
                     statusTime.textContent = 'Cargamento no encontrado';

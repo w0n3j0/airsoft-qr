@@ -1071,7 +1071,8 @@
                 if (Array.isArray(cargoData)) {
                     cargoData.forEach(item => {
                         const cargoNum = item.Title; // Número del cargamento como string ("1", "2", "3")
-                        const status = item.field_1; // Estado: "En posesión" o "Capturado"
+                        // Parsear el campo choice de SharePoint
+                        const status = item.field_1?.[0]?.Value || item.field_1 || 'En posesión';
                         const timestamp = item.field_3 || item.Modified; // field_3 es timestamp de captura
                         
                         cargo[cargoNum] = {
