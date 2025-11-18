@@ -1108,9 +1108,26 @@
                 if (Array.isArray(cargoData)) {
                     cargoData.forEach(item => {
                         const cargoNum = item.Title; // Número del cargamento como string ("1", "2", "3")
-                        // Parsear el campo choice de SharePoint
-                        const status = item.field_1?.[0]?.Value || item.field_1 || 'En posesión';
+                        
+                        // Parsear el campo choice de SharePoint - probar múltiples formatos
+                        let status;
+                        if (item.field_1) {
+                            if (Array.isArray(item.field_1) && item.field_1[0]?.Value) {
+                                status = item.field_1[0].Value;
+                            } else if (typeof item.field_1 === 'string') {
+                                status = item.field_1;
+                            } else if (item.field_1.Value) {
+                                status = item.field_1.Value;
+                            } else {
+                                status = 'En posesión';
+                            }
+                        } else {
+                            status = 'En posesión';
+                        }
+                        
                         const timestamp = item.field_3 || item.Modified; // field_3 es timestamp de captura
+                        
+                        console.log(`Cargamento ${cargoNum} - Status raw:`, item.field_1, '- Parsed:', status);
                         
                         cargo[cargoNum] = {
                             status: status,
