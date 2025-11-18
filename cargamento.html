@@ -289,7 +289,7 @@
 <body>
     <div class="container">
         <div class="cargo-icon">📦</div>
-        <h1 class="title">Cargamento</h1>
+        <h1 class="title">Zona</h1>
         <div class="cargo-number" id="cargoNumber">?</div>
 
         <div class="status-container">
@@ -352,9 +352,17 @@
         const locationDisplay = document.getElementById('location');
         const deviceIdDisplay = document.getElementById('deviceId');
 
+        // Mapeo de cargo a zona
+        const cargoToZone = {
+            '1': 'A',
+            '2': 'B',
+            '3': 'C'
+        };
+
         // Inicializar
         async function init() {
-            cargoNumber.textContent = cargoNum;
+            const zoneLetter = cargoToZone[cargoNum] || cargoNum;
+            cargoNumber.textContent = zoneLetter;
             
             // Cargar configuración
             await loadConfig();

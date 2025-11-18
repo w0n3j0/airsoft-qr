@@ -498,8 +498,17 @@
                 // Buscar el misil actual en el array
                 const missile = missileData.find(m => m.Title === currentMissile.toString());
                 
-                if (missile && missile.field_1 === 'Desactivado') {
-                    showAlreadyDeactivated(missile.Modified, missile.Editor.DisplayName);
+                if (missile) {
+                    const status = missile.field_1;
+                    const timestamp = missile.field_3 || missile.Modified;
+                    
+                    if (status === 'Desactivado') {
+                        showAlreadyDeactivated(timestamp, missile.Editor?.DisplayName || 'Desconocido');
+                    } else if (status === 'Lanzado') {
+                        showAlreadyLaunched(timestamp);
+                    } else if (status === 'Conteo') {
+                        showCountdownInProgress(timestamp);
+                    }
                 }
                 
             } catch (error) {
@@ -587,6 +596,45 @@
             document.getElementById('successScreen').classList.add('active');
             document.getElementById('deactivationMessage').textContent = `Misil ${currentMissile} neutralizado`;
             document.getElementById('timestampDisplay').textContent = formatDate(timestamp);
+        }
+
+        function showCountdownInProgress(startTimestamp) {
+            const startTime = new Date(startTimestamp);
+            const now = new Date();
+            const elapsed = Math.floor((now - startTime) / 1000); // segundos transcurridos
+            const totalSeconds = 60 * 60; // 60 minutos
+            const remaining = totalSeconds - elapsed;
+
+            if (remaining <= 0) {
+                // Ya pasaron los 60 minutos, debería estar lanzado
+                showAlreadyLaunched(startTimestamp);
+                return;
+            }
+
+            const hours = Math.floor(remaining / 3600);
+            const minutes = Math.floor((remaining % 3600) / 60);
+            const seconds = remaining % 60;
+
+            document.getElementById('statusBadge').className = 'status-badge armed';
+            document.getElementById('statusBadge').innerHTML = `⏳ CUENTA REGRESIVA`;
+            
+            const timeDisplay = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            showError(`⚠️ ¡URGENTE! Tiempo restante: ${timeDisplay}\n¡DESACTIVA EL MISIL AHORA!\nIniciado: ${formatDate(startTimestamp)}`);
+
+            // Mantener el botón habilitado para poder desactivar
+            // Actualizar cada segundo
+            setTimeout(() => {
+                checkMissileStatus();
+            }, 1000);
+        }
+
+        function showAlreadyLaunched(timestamp) {
+            document.getElementById('statusBadge').className = 'status-badge deactivated';
+            document.getElementById('statusBadge').textContent = '🚀 LANZADO';
+            document.getElementById('deactivateBtn').classList.add('disabled');
+            document.getElementById('deactivateBtn').querySelector('.btn-text').textContent = 'YA LANZADO';
+            
+            showError(`Este misil fue lanzado el ${formatDate(timestamp)}. Ya no puede ser desactivado.`);
         }
 
         function showAlreadyDeactivated(timestamp, deviceId) {

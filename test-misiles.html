@@ -273,36 +273,64 @@
 
         <!-- Test 3: Misiles POST -->
         <div class="test-section">
-            <h2>3️⃣ Desactivar Misiles (POST)</h2>
+            <h2>3️⃣ Iniciar Cuenta Regresiva (POST - Launch)</h2>
             <div class="test-grid">
                 <div class="test-card">
                     <h3>🚀 Misil 1</h3>
-                    <button class="btn-danger" onclick="testMissilePost('1')">⚡ Desactivar Misil 1</button>
+                    <button class="btn-danger" onclick="testMissileLaunch('1')">🔥 Iniciar Misil 1</button>
+                    <div class="loader" id="loader-launch-1"></div>
+                    <div class="result" id="result-launch-1"></div>
+                </div>
+                <div class="test-card">
+                    <h3>🚀 Misil 2</h3>
+                    <button class="btn-danger" onclick="testMissileLaunch('2')">🔥 Iniciar Misil 2</button>
+                    <div class="loader" id="loader-launch-2"></div>
+                    <div class="result" id="result-launch-2"></div>
+                </div>
+                <div class="test-card">
+                    <h3>🚀 Misil 3</h3>
+                    <button class="btn-danger" onclick="testMissileLaunch('3')">🔥 Iniciar Misil 3</button>
+                    <div class="loader" id="loader-launch-3"></div>
+                    <div class="result" id="result-launch-3"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Test 4: Desactivar Misiles -->
+        <div class="test-section">
+            <h2>4️⃣ Desactivar Misiles (POST - Deactivate)</h2>
+            <div class="test-grid">
+                <div class="test-card">
+                    <h3>🛡️ Misil 1</h3>
+                    <button class="btn-test" onclick="testMissileDeactivate('1')">⚡ Desactivar Misil 1</button>
                     <div class="loader" id="loader-post-1"></div>
                     <div class="result" id="result-post-1"></div>
                 </div>
                 <div class="test-card">
-                    <h3>🚀 Misil 2</h3>
-                    <button class="btn-danger" onclick="testMissilePost('2')">⚡ Desactivar Misil 2</button>
+                    <h3>�️ Misil 2</h3>
+                    <button class="btn-test" onclick="testMissileDeactivate('2')">⚡ Desactivar Misil 2</button>
                     <div class="loader" id="loader-post-2"></div>
                     <div class="result" id="result-post-2"></div>
                 </div>
                 <div class="test-card">
-                    <h3>🚀 Misil 3</h3>
-                    <button class="btn-danger" onclick="testMissilePost('3')">⚡ Desactivar Misil 3</button>
+                    <h3>�️ Misil 3</h3>
+                    <button class="btn-test" onclick="testMissileDeactivate('3')">⚡ Desactivar Misil 3</button>
                     <div class="loader" id="loader-post-3"></div>
                     <div class="result" id="result-post-3"></div>
                 </div>
             </div>
         </div>
 
-        <!-- Test 4: Links Rápidos -->
+        <!-- Test 5: Links Rápidos -->
         <div class="test-section">
-            <h2>4️⃣ Accesos Rápidos</h2>
+            <h2>5️⃣ Accesos Rápidos</h2>
             <div class="quick-links">
-                <a href="misil.html?missile=1" target="_blank">🚀 Misil 1 (Página Real)</a>
-                <a href="misil.html?missile=2" target="_blank">🚀 Misil 2 (Página Real)</a>
-                <a href="misil.html?missile=3" target="_blank">🚀 Misil 3 (Página Real)</a>
+                <a href="lanzar-misil.html?missile=1" target="_blank">� Lanzar Misil 1</a>
+                <a href="lanzar-misil.html?missile=2" target="_blank">🔥 Lanzar Misil 2</a>
+                <a href="lanzar-misil.html?missile=3" target="_blank">� Lanzar Misil 3</a>
+                <a href="misil.html?missile=1" target="_blank">🛡️ Desactivar Misil 1</a>
+                <a href="misil.html?missile=2" target="_blank">�️ Desactivar Misil 2</a>
+                <a href="misil.html?missile=3" target="_blank">🛡️ Desactivar Misil 3</a>
                 <a href="metrics.html" target="_blank">📊 Métricas</a>
                 <a href="index.html?team=india" target="_blank">🇮🇳 Captura India</a>
                 <a href="index.html?team=pakistan" target="_blank">🇵🇰 Captura Pakistan</a>
@@ -427,8 +455,76 @@
             }
         }
 
-        // Test 3: POST Desactivar Misil
-        async function testMissilePost(missileId) {
+        // Test 3: POST Iniciar/Lanzar Misil (action: "initiate")
+        async function testMissileLaunch(missileId) {
+            if (!CONFIG) {
+                showResult(`result-launch-${missileId}`, 'error', '❌ Config no cargado');
+                return;
+            }
+
+            showLoader(`loader-launch-${missileId}`, true);
+            showResult(`result-launch-${missileId}`, 'info', '⏳ Iniciando cuenta regresiva...');
+
+            const payload = {
+                missile: missileId,
+                action: 'initiate',
+                ts: new Date().toISOString(),
+                deviceId: 'test-device-' + Math.random().toString(36).substr(2, 9),
+                userAgent: navigator.userAgent,
+                location: {
+                    lat: -32.83114,
+                    lng: -60.70558,
+                    accuracy: 10
+                }
+            };
+
+            try {
+                const response = await fetch(CONFIG.missileLaunchUrl || CONFIG.missileApiUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                showLoader(`loader-launch-${missileId}`, false);
+
+                // Primero obtener el texto de la respuesta
+                const responseText = await response.text();
+                console.log('Response raw:', responseText);
+
+                let data;
+                try {
+                    data = JSON.parse(responseText);
+                } catch (e) {
+                    showResult(`result-launch-${missileId}`, 'error', 
+                        `❌ Respuesta no es JSON válido (Status ${response.status})`,
+                        responseText
+                    );
+                    return;
+                }
+
+                if (response.ok) {
+                    showResult(`result-launch-${missileId}`, 'success', 
+                        `✅ Misil ${missileId} - Cuenta regresiva iniciada (60 min)`,
+                        JSON.stringify(data, null, 2)
+                    );
+                } else {
+                    showResult(`result-launch-${missileId}`, 'error', 
+                        `❌ Error ${response.status}: ${data.error || response.statusText}`,
+                        JSON.stringify(data, null, 2)
+                    );
+                }
+            } catch (error) {
+                showLoader(`loader-launch-${missileId}`, false);
+                showResult(`result-launch-${missileId}`, 'error', 
+                    `❌ Error de conexión: ${error.message}`
+                );
+            }
+        }
+
+        // Test 4: POST Desactivar Misil (action: "deactivate")
+        async function testMissileDeactivate(missileId) {
             if (!CONFIG) {
                 showResult(`result-post-${missileId}`, 'error', '❌ Config no cargado');
                 return;
@@ -439,6 +535,7 @@
 
             const payload = {
                 missile: missileId,
+                action: 'deactivate',
                 ts: new Date().toISOString(),
                 deviceId: 'test-device-' + Math.random().toString(36).substr(2, 9),
                 userAgent: navigator.userAgent,
@@ -460,7 +557,20 @@
 
                 showLoader(`loader-post-${missileId}`, false);
 
-                const data = await response.json();
+                // Primero obtener el texto de la respuesta
+                const responseText = await response.text();
+                console.log('Response raw:', responseText);
+
+                let data;
+                try {
+                    data = JSON.parse(responseText);
+                } catch (e) {
+                    showResult(`result-post-${missileId}`, 'error', 
+                        `❌ Respuesta no es JSON válido (Status ${response.status})`,
+                        responseText
+                    );
+                    return;
+                }
 
                 if (response.ok) {
                     showResult(`result-post-${missileId}`, 'success', 

@@ -142,6 +142,12 @@
             animation: pulse 1s ease-in-out infinite;
         }
 
+        .status-badge.counting {
+            background: var(--missile-orange);
+            color: white;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
         .status-badge.launched {
             background: var(--missile-orange);
             color: white;
@@ -526,10 +532,14 @@
                 
                 if (missile) {
                     const status = missile.field_1;
+                    const timestamp = missile.field_3 || missile.Modified;
+                    
                     if (status === 'Lanzado') {
-                        showAlreadyLaunched(missile.Modified);
+                        showAlreadyLaunched(timestamp);
                     } else if (status === 'Desactivado') {
-                        showAlreadyDeactivated(missile.Modified);
+                        showAlreadyDeactivated(timestamp);
+                    } else if (status === 'Conteo') {
+                        showCountdownInProgress(timestamp);
                     }
                 }
                 
@@ -574,7 +584,7 @@
 
             const payload = {
                 missile: currentMissile,
-                action: 'launch',
+                action: 'initiate',
                 ts: new Date().toISOString(),
                 deviceId: deviceId,
                 userAgent: navigator.userAgent,
@@ -593,10 +603,9 @@
                 });
 
                 if (response.ok) {
-                    console.log('✅ Misil lanzado con éxito');
-                    vibrate([200, 100, 200, 100, 200]);
-                    createExplosion();
-                    showSuccess(payload.ts);
+                    console.log('✅ Cuenta regresiva iniciada');
+                    vibrate([200, 100, 200]);
+                    showCountdownStarted(payload.ts);
                 } else {
                     const errorData = await response.json();
                     throw new Error(errorData.message || `HTTP ${response.status}`);
@@ -640,10 +649,53 @@
         // PANTALLAS
         // ============================================
 
+        function showCountdownStarted(timestamp) {
+            document.getElementById('missileStatus').style.display = 'none';
+            document.getElementById('successScreen').classList.add('active');
+            document.getElementById('launchMessage').textContent = `¡CUENTA REGRESIVA INICIADA!`;
+            document.getElementById('timestampDisplay').textContent = `Iniciada: ${formatDate(timestamp)}`;
+            
+            // Mostrar el tiempo restante
+            const successMsg = document.querySelector('.success-message');
+            successMsg.innerHTML = `El misil será lanzado en 60 minutos<br>Debe ser desactivado antes del lanzamiento`;
+        }
+
+        function showCountdownInProgress(startTimestamp) {
+            const startTime = new Date(startTimestamp);
+            const now = new Date();
+            const elapsed = Math.floor((now - startTime) / 1000); // segundos transcurridos
+            const totalSeconds = 60 * 60; // 60 minutos
+            const remaining = totalSeconds - elapsed;
+
+            if (remaining <= 0) {
+                // Ya pasaron los 60 minutos, debería estar lanzado
+                showAlreadyLaunched(startTimestamp);
+                return;
+            }
+
+            const hours = Math.floor(remaining / 3600);
+            const minutes = Math.floor((remaining % 3600) / 60);
+            const seconds = remaining % 60;
+
+            document.getElementById('statusBadge').className = 'status-badge counting';
+            document.getElementById('statusBadge').innerHTML = `⏳ CUENTA REGRESIVA`;
+            
+            document.getElementById('launchBtn').classList.add('disabled');
+            document.getElementById('launchBtn').querySelector('.btn-text').textContent = 'CONTEO EN PROGRESO';
+            
+            const timeDisplay = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            showError(`⏱️ Tiempo restante: ${timeDisplay}\nIniciado: ${formatDate(startTimestamp)}`);
+
+            // Actualizar cada segundo
+            setTimeout(() => {
+                checkMissileStatus();
+            }, 1000);
+        }
+
         function showSuccess(timestamp) {
             document.getElementById('missileStatus').style.display = 'none';
             document.getElementById('successScreen').classList.add('active');
-            document.getElementById('launchMessage').textContent = `Misil ${currentMissile} en vuelo`;
+            document.getElementById('launchMessage').textContent = `Misil ${currentMissile} lanzado`;
             document.getElementById('timestampDisplay').textContent = formatDate(timestamp);
         }
 
