@@ -465,15 +465,24 @@
         async function checkMissileStatus() {
             document.getElementById('missileNumber').textContent = `MISIL ${currentMissile}`;
             
-            const apiUrl = getApiUrl();
-            if (!apiUrl) {
-                showError('API no configurada. Verifica config.json');
-                return;
+            // Usar el endpoint de métricas (GET) en lugar del endpoint de acción (POST)
+            let metricsUrl = null;
+            
+            if (window.config && window.config.missileMetricsUrl) {
+                metricsUrl = window.config.missileMetricsUrl;
+            } else {
+                console.warn('⚠️ missileMetricsUrl no configurado, intentando con missileApiUrl');
+                metricsUrl = getApiUrl();
+            }
+            
+            if (!metricsUrl) {
+                console.warn('⚠️ No hay endpoint de métricas configurado');
+                return; // Mostrar pantalla por defecto (Armado)
             }
 
             try {
                 // Consultar estado del misil (GET devuelve todos los misiles)
-                const response = await fetch(apiUrl, {
+                const response = await fetch(metricsUrl, {
                     method: 'GET'
                 });
 
@@ -482,7 +491,7 @@
                 }
 
                 const data = await response.json();
-                console.log('Estado de misiles:', data);
+                console.log('✅ Estado de misiles recibido:', data);
                 
                 // Manejar respuesta con statusCode y body
                 let missileData;
@@ -490,8 +499,10 @@
                     missileData = data.body.value;
                 } else if (data.value) {
                     missileData = data.value;
+                } else if (Array.isArray(data)) {
+                    missileData = data;
                 } else {
-                    console.warn('Formato de respuesta desconocido');
+                    console.warn('Formato de respuesta desconocido:', data);
                     return;
                 }
 
@@ -502,18 +513,25 @@
                     const status = missile.field_1;
                     const timestamp = missile.field_3 || missile.Modified;
                     
+                    console.log(`Misil ${currentMissile} - Estado: ${status}, Timestamp: ${timestamp}`);
+                    
                     if (status === 'Desactivado') {
                         showAlreadyDeactivated(timestamp, missile.Editor?.DisplayName || 'Desconocido');
                     } else if (status === 'Lanzado') {
                         showAlreadyLaunched(timestamp);
                     } else if (status === 'Conteo') {
                         showCountdownInProgress(timestamp);
+                    } else {
+                        // Estado "Armado" - mostrar pantalla normal
+                        console.log('Misil armado - listo para desactivar');
                     }
+                } else {
+                    console.warn(`Misil ${currentMissile} no encontrado en la respuesta`);
                 }
                 
             } catch (error) {
                 console.warn('⚠️ Error verificando estado:', error);
-                // Continuar de todas formas (modo offline)
+                // Continuar de todas formas (modo offline) - mostrar pantalla por defecto
             }
         }
 
