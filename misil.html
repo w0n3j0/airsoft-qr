@@ -146,6 +146,12 @@
             color: #0B0F12;
         }
 
+        .status-badge.launched {
+            background: var(--missile-orange);
+            color: white;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
         @keyframes pulse {
             0%, 100% { transform: scale(1); }
             50% { transform: scale(1.05); }
@@ -468,15 +474,14 @@
             // Usar el endpoint de métricas (GET) en lugar del endpoint de acción (POST)
             let metricsUrl = null;
             
-            if (window.config && window.config.missileMetricsUrl) {
-                metricsUrl = window.config.missileMetricsUrl;
+            if (CONFIG && CONFIG.missileMetricsUrl) {
+                metricsUrl = CONFIG.missileMetricsUrl;
+                console.log('📊 Usando missileMetricsUrl:', metricsUrl);
+            } else if (CONFIG && CONFIG.missileApiUrl) {
+                console.warn('⚠️ missileMetricsUrl no configurado, usando missileApiUrl (puede fallar con GET)');
+                metricsUrl = CONFIG.missileApiUrl;
             } else {
-                console.warn('⚠️ missileMetricsUrl no configurado, intentando con missileApiUrl');
-                metricsUrl = getApiUrl();
-            }
-            
-            if (!metricsUrl) {
-                console.warn('⚠️ No hay endpoint de métricas configurado');
+                console.error('❌ No hay endpoint de métricas configurado');
                 return; // Mostrar pantalla por defecto (Armado)
             }
 
@@ -647,21 +652,87 @@
         }
 
         function showAlreadyLaunched(timestamp) {
-            document.getElementById('statusBadge').className = 'status-badge deactivated';
+            // Cambiar el badge a lanzado
+            document.getElementById('statusBadge').className = 'status-badge launched';
             document.getElementById('statusBadge').textContent = '🚀 LANZADO';
-            document.getElementById('deactivateBtn').classList.add('disabled');
-            document.getElementById('deactivateBtn').querySelector('.btn-text').textContent = 'YA LANZADO';
             
-            showError(`Este misil fue lanzado el ${formatDate(timestamp)}. Ya no puede ser desactivado.`);
+            // Cambiar el ícono del misil
+            const missileIcon = document.querySelector('.missile-icon');
+            if (missileIcon) {
+                missileIcon.textContent = '💥';
+                missileIcon.style.animation = 'none';
+            }
+            
+            // Deshabilitar el botón visualmente
+            const btn = document.getElementById('deactivateBtn');
+            btn.classList.add('disabled');
+            btn.style.cssText = 'opacity: 0.3; cursor: not-allowed; pointer-events: none; background: #666;';
+            btn.querySelector('.btn-text').textContent = 'NO DISPONIBLE';
+            
+            // Mostrar mensaje claro de que no se puede desactivar
+            const errorPanel = document.getElementById('errorMessage');
+            errorPanel.classList.add('active');
+            errorPanel.style.cssText = 'background: rgba(255, 140, 0, 0.15); border-color: #FF8C00; padding: 25px; margin-top: 25px; text-align: center;';
+            
+            const errorText = document.getElementById('errorText');
+            errorText.innerHTML = `
+                <div style="font-size: 72px; margin-bottom: 20px;">💥</div>
+                <h2 style="font-size: 32px; margin-bottom: 15px; color: #FF8C00; text-transform: uppercase; letter-spacing: 2px;">
+                    ¡MISIL LANZADO!
+                </h2>
+                <p style="font-size: 18px; margin-bottom: 15px; opacity: 0.9;">
+                    Este misil fue lanzado el:
+                </p>
+                <p style="font-size: 22px; font-weight: bold; color: #FF8C00; margin-bottom: 25px;">
+                    ${formatDate(timestamp)}
+                </p>
+                <div style="background: rgba(255, 140, 0, 0.2); border: 2px solid #FF8C00; border-radius: 8px; padding: 20px; margin-top: 20px;">
+                    <p style="font-size: 20px; font-weight: bold; margin-bottom: 10px;">⚠️ NO PUEDE SER DESACTIVADO</p>
+                    <p style="font-size: 16px; opacity: 0.8;">El tiempo límite para la desactivación ha expirado.</p>
+                </div>
+            `;
         }
 
         function showAlreadyDeactivated(timestamp, deviceId) {
+            // Cambiar el badge a desactivado
             document.getElementById('statusBadge').className = 'status-badge deactivated';
             document.getElementById('statusBadge').textContent = '🟢 DESACTIVADO';
-            document.getElementById('deactivateBtn').classList.add('disabled');
-            document.getElementById('deactivateBtn').querySelector('.btn-text').textContent = 'YA DESACTIVADO';
             
-            showError(`Este misil fue desactivado el ${formatDate(timestamp)}`);
+            // Cambiar el ícono del misil
+            const missileIcon = document.querySelector('.missile-icon');
+            if (missileIcon) {
+                missileIcon.textContent = '✅';
+                missileIcon.style.animation = 'none';
+            }
+            
+            // Deshabilitar el botón visualmente
+            const btn = document.getElementById('deactivateBtn');
+            btn.classList.add('disabled');
+            btn.style.cssText = 'opacity: 0.3; cursor: not-allowed; pointer-events: none; background: #00C851;';
+            btn.querySelector('.btn-text').textContent = 'YA NEUTRALIZADO';
+            
+            // Mostrar mensaje de éxito
+            const errorPanel = document.getElementById('errorMessage');
+            errorPanel.classList.add('active');
+            errorPanel.style.cssText = 'background: rgba(0, 255, 136, 0.1); border-color: #00FF88; padding: 25px; margin-top: 25px; text-align: center;';
+            
+            const errorText = document.getElementById('errorText');
+            errorText.innerHTML = `
+                <div style="font-size: 72px; margin-bottom: 20px;">✅</div>
+                <h2 style="font-size: 32px; margin-bottom: 15px; color: #00FF88; text-transform: uppercase; letter-spacing: 2px;">
+                    MISIL DESACTIVADO
+                </h2>
+                <p style="font-size: 18px; margin-bottom: 15px; opacity: 0.9;">
+                    Este misil fue neutralizado el:
+                </p>
+                <p style="font-size: 22px; font-weight: bold; color: #00FF88; margin-bottom: 25px;">
+                    ${formatDate(timestamp)}
+                </p>
+                <div style="background: rgba(0, 255, 136, 0.1); border: 2px solid #00FF88; border-radius: 8px; padding: 20px; margin-top: 20px;">
+                    <p style="font-size: 20px; font-weight: bold; margin-bottom: 10px;">✅ MISIÓN COMPLETADA</p>
+                    <p style="font-size: 16px; opacity: 0.8;">El peligro ha sido neutralizado con éxito.</p>
+                </div>
+            `;
         }
 
         function showError(message) {
